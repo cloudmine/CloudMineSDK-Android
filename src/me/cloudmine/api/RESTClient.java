@@ -5,9 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
+import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.http.HttpEntity;
@@ -39,11 +38,40 @@ public class RESTClient {
 	}
 
 	public HttpResponse makeRequest(int type, String uri) throws ClientProtocolException, IOException{
-		return makeRequest(type, uri, null);
+		return makeRequest(type, uri, null, null);
 	}
 	
-	public HttpResponse makeRequest(int type, String uri, String data) throws ClientProtocolException, IOException{
+	public HttpResponse makeRequest(int type, String uri, SnippetOptions options) throws ClientProtocolException, IOException{
+		return makeRequest(type, uri, null, options);
+	}
+	
+	public HttpResponse makeRequest(int type, String uri, String data) throws ClientProtocolException, IOException
+	{
+		return makeRequest(type, uri, data, null);
+	}
+	
+	@SuppressWarnings("deprecation")
+	public HttpResponse makeRequest(int type, String uri, String data, SnippetOptions options) throws ClientProtocolException, IOException{
 		HttpRequestBase request = null; 
+		
+		if (null != options)
+		{
+			if (null != options.params)
+			{
+				String params = URLEncoder.encode(options.params.toString());
+				uri += "&params=" + params;
+			}
+			
+			if (options.async)
+			{
+				uri += "&async=true";
+			}
+			
+			if (options.resultOnly)
+			{
+				uri += "&result_only=true";
+			}	
+		}
 		
 		switch(type){
 		case GET:
@@ -83,11 +111,11 @@ public class RESTClient {
 		
 		System.out.println("Making " + request.getMethod() + " request to: " + uri);
         HttpResponse httpResponse = client.execute(request);
-
+                
         this.response = httpResponse;
         return httpResponse;
 	}
-	    
+	
 	public HttpResponse getResponse(){
 		return this.response;
 	}
