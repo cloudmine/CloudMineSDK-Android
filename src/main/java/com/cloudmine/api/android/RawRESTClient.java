@@ -1,4 +1,4 @@
-package me.cloudmine.api;
+package com.cloudmine.api.android;
 
 import java.io.IOException;
 
