@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.List;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Copyright CloudMine LLC
@@ -339,6 +341,31 @@ public class CloudMineWebServiceIntegrationTest {
 
                 SimpleCMObject deepObject = loadObjectResponse.object("deepKeyed");
                 Assert.assertNull(deepObject.get("innerKey"));
+            }
+        }));
+        waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testAsyncDelete() {
+        store.set(COMPLEX_JSON);
+
+        store.asyncDelete("oneKey", TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
+            public void onCompletion(ObjectModificationResponse response) {
+                List<SimpleCMObject> successObjects = response.getSuccessObjects();
+                assertTrue(response.wasSuccess());
+                assertTrue(response.wasDeleted("oneKey"));
+                assertEquals(1, successObjects.size());
+            }
+        }));
+
+        store.asyncDelete(Arrays.asList("deepKeyed", "oneKey"), TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
+            public void onCompletion(ObjectModificationResponse response) {
+                List<SimpleCMObject> successObjects = response.getSuccessObjects();
+                assertTrue(response.wasSuccess());
+                assertTrue(response.wasDeleted("oneKey"));
+                assertEquals(1, successObjects.size());
+                assertEquals(1, response.getErrorObjects().size());
             }
         }));
         waitThenAssertTestResults();
