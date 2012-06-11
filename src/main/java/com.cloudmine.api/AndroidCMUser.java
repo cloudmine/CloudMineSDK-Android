@@ -9,27 +9,27 @@ import android.util.Base64;
  * CMUser: johnmccarthy
  * Date: 6/11/12, 2:45 PM
  */
-public class AndroidUser extends CMUser implements Parcelable {
+public class AndroidCMUser extends CMUser implements Parcelable {
 
-    public static final Parcelable.Creator<AndroidUser> CREATOR =
-            new Parcelable.Creator<AndroidUser>() {
+    public static final Parcelable.Creator<AndroidCMUser> CREATOR =
+            new Parcelable.Creator<AndroidCMUser>() {
 
                 @Override
-                public AndroidUser createFromParcel(Parcel parcel) {
-                    return new AndroidUser(parcel);
+                public AndroidCMUser createFromParcel(Parcel parcel) {
+                    return new AndroidCMUser(parcel);
                 }
 
                 @Override
-                public AndroidUser[] newArray(int i) {
-                    return new AndroidUser[i];
+                public AndroidCMUser[] newArray(int i) {
+                    return new AndroidCMUser[i];
                 }
             };
 
-    public AndroidUser(Parcel parcel) {
+    public AndroidCMUser(Parcel parcel) {
         super(parcel.readString(), parcel.readString());
     }
 
-    public AndroidUser(String email, String password) {
+    public AndroidCMUser(String email, String password) {
         super(email, password);
     }
 

@@ -1,0 +1,13 @@
+.#*
+*.class
+.idea
+.history
+*.iml
+reports
+
+# Package Files #
+*.jar
+*.war
+*.ear
+target
+.DS_Store

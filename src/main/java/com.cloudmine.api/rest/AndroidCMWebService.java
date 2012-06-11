@@ -15,7 +15,11 @@ public class AndroidCMWebService extends CMWebService implements Parcelable {
 
 
     public AndroidCMWebService(Parcel in) {
-        super(new CMURLBuilder(in.readString()), new AndroidAsynchronousHttpClient());
+        this(in.readString());
+    }
+
+    public AndroidCMWebService(String appId) {
+        super(appId, new AndroidAsynchronousHttpClient());
     }
 
     @Override

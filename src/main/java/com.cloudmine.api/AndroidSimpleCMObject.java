@@ -24,6 +24,9 @@ public class AndroidSimpleCMObject extends SimpleCMObject implements Parcelable 
             };
 
 
+    public AndroidSimpleCMObject(SimpleCMObject object) {
+        super(object);
+    }
 
     public AndroidSimpleCMObject(Parcel in) {
         super(new JsonString(in.readString()));
