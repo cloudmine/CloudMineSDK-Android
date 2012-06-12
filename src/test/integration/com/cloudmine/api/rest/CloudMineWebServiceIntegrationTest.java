@@ -63,7 +63,7 @@ public class CloudMineWebServiceIntegrationTest {
 
     @Test
     @Ignore
-    public void testUniqueId() { //TODO this test doesn't work but its not cause the impplementation is broken
+    public void testSentHeaders() { //TODO this test doesn't work but its not cause the impplementation is broken
 
         AndroidCMWebService androidService = new AndroidCMWebService();
         androidService.delete("someKey");
@@ -72,6 +72,10 @@ public class CloudMineWebServiceIntegrationTest {
         Header idHeader = sentRequest.getFirstHeader(DeviceIdentifier.DEVICE_HEADER_KEY);
         assertNotNull(idHeader);
         assertEquals(DeviceIdentifier.uniqueId(), idHeader.getValue());
+
+        Header agentHeader = sentRequest.getFirstHeader(CMWebService.AGENT_HEADER_KEY);
+        assertNotNull(agentHeader);
+        assertEquals(AndroidCMWebService.CLOUD_MINE_AGENT, agentHeader.getValue());
     }
 
     @Test

@@ -16,6 +16,8 @@ import org.apache.http.message.AbstractHttpMessage;
 public class AndroidCMWebService extends CMWebService implements Parcelable {
 
 
+    public static final String CLOUD_MINE_AGENT = "Android 1.0";
+
     public AndroidCMWebService(Parcel in) {
         this(in.readString());
     }
@@ -32,6 +34,11 @@ public class AndroidCMWebService extends CMWebService implements Parcelable {
     protected void addCloudMineHeader(AbstractHttpMessage message) {
         super.addCloudMineHeader(message);
         message.addHeader(DeviceIdentifier.deviceIdentifierHeader());
+    }
+
+    @Override
+    protected String cloudMineAgent() {
+        return CLOUD_MINE_AGENT;
     }
 
     @Override

@@ -7,7 +7,12 @@ import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.UserCMWebService;
 import org.apache.http.message.AbstractHttpMessage;
 
+/*
+ * There is some code duplication in here from AndroidCMWebService, because Java doesn't let us do
+ * multiple inheritance. Silly Java.
+ */
 /**
+ *
  * Copyright CloudMine LLC
  * CMUser: johnmccarthy
  * Date: 6/11/12, 2:41 PM
@@ -37,6 +42,11 @@ public class AndroidUserCMWebService extends UserCMWebService implements Parcela
     protected void addCloudMineHeader(AbstractHttpMessage message) {
         super.addCloudMineHeader(message);
         message.addHeader(DeviceIdentifier.deviceIdentifierHeader());
+    }
+
+    @Override
+    protected String cloudMineAgent() {
+        return AndroidCMWebService.CLOUD_MINE_AGENT;
     }
 
     @Override
