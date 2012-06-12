@@ -3,7 +3,9 @@ package com.cloudmine.api.rest;
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.cloudmine.api.CMUserToken;
+import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.UserCMWebService;
+import org.apache.http.message.AbstractHttpMessage;
 
 /**
  * Copyright CloudMine LLC
@@ -29,6 +31,12 @@ public class AndroidUserCMWebService extends UserCMWebService implements Parcela
         super(new CMURLBuilder(in.readString()),
                 new CMUserToken(in.readString()),
                 new AndroidAsynchronousHttpClient());
+    }
+
+    @Override
+    protected void addCloudMineHeader(AbstractHttpMessage message) {
+        super.addCloudMineHeader(message);
+        message.addHeader(DeviceIdentifier.deviceIdentifierHeader());
     }
 
     @Override
