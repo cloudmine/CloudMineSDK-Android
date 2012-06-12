@@ -1,10 +1,7 @@
 package com.cloudmine.api.rest;
 
 import com.cloudmine.api.*;
-import com.cloudmine.api.rest.callbacks.CMResponseCallback;
-import com.cloudmine.api.rest.callbacks.LoginResponseCallback;
-import com.cloudmine.api.rest.callbacks.ObjectModificationResponseCallback;
-import com.cloudmine.api.rest.callbacks.SimpleCMObjectResponseCallback;
+import com.cloudmine.api.rest.callbacks.*;
 import com.cloudmine.api.rest.response.*;
 import com.cloudmine.test.CloudMineTestRunner;
 import com.cloudmine.test.TestServiceCallback;
@@ -154,7 +151,7 @@ public class CloudMineWebServiceIntegrationTest {
                 insertedFile);
 
         CMFile loadedFile = store.getFile("theFileKey");
-//        Assert.assertArrayEquals(insertedFile.getFileContents(), loadedFile.getFileContents());
+//        Assert.assertArrayEquals(insertedFile.fileContents(), loadedFile.fileContents());
     }
 
     @Test
@@ -388,6 +385,49 @@ public class CloudMineWebServiceIntegrationTest {
             }
         }));
         waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testAsyncUpload() throws IOException {
+        InputStream input = getObjectInputStream();
+        CMFile file = new CMFile(input);
+        store.asyncUpload(file, TestServiceCallback.testCallback(new FileCreationResponseCallback() {
+            public void onCompletion(FileCreationResponse file) {
+                assertTrue(file.wasSuccess());
+                assertNotNull(file.fileKey());
+            }
+        }));
+        waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testAsyncFileLoad() throws Exception {
+        InputStream input = getObjectInputStream();
+        final CMFile file = new CMFile(input, null, "fileKey");
+        store.set(file);
+
+        store.asyncLoadFile("fileKey", TestServiceCallback.testCallback(new FileLoadCallback("fileKey") {
+           public void onCompletion(CMFile loadedFile) {
+               assertEquals(file, loadedFile);
+           }
+        }));
+        waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testAsyncDeleteFile() throws Exception {
+        InputStream input = getObjectInputStream();
+        final CMFile file = new CMFile(input, "fileKey", null);
+        store.set(file);
+
+        store.asyncDeleteFile(file, TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
+            public void onCompletion(ObjectModificationResponse response) {
+                assertTrue(response.wasSuccess());
+                assertTrue(response.wasDeleted("fileKey"));
+            }
+        }));
+        waitThenAssertTestResults();
+
     }
 
     @Test
