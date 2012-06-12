@@ -38,7 +38,10 @@ public class AndroidUserCMWebService extends UserCMWebService implements Parcela
                 new AndroidAsynchronousHttpClient());
     }
 
-    @Override
+    public AndroidUserCMWebService(CMURLBuilder baseUrl, CMUserToken token, AsynchronousHttpClient asynchronousHttpClient) {
+        super(baseUrl, token, asynchronousHttpClient);
+    }
+        @Override
     protected void addCloudMineHeader(AbstractHttpMessage message) {
         super.addCloudMineHeader(message);
         message.addHeader(DeviceIdentifier.deviceIdentifierHeader());
@@ -48,6 +51,7 @@ public class AndroidUserCMWebService extends UserCMWebService implements Parcela
     protected String cloudMineAgent() {
         return AndroidCMWebService.CLOUD_MINE_AGENT;
     }
+
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {

@@ -33,6 +33,8 @@ import static junit.framework.Assert.*;
  */
 @RunWith(CloudMineTestRunner.class)
 public class CloudMineWebServiceIntegrationTest {
+    private static final String APP_ID = "c1a562ee1e6f4a478803e7b51babe287";
+    private static final String API_KEY = "3fc494b36d6d432d9afb051d819bdd72";
 
     private static final String TEST_JSON = "{\"TESTING4703\": [\"value1\", \"value2\"]}";
     private static final String DEEP_KEYED_JSON =             "    \"deepKeyed\": {\n" +
@@ -54,7 +56,8 @@ public class CloudMineWebServiceIntegrationTest {
         reset();
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         DeviceIdentifier.initialize(Robolectric.application.getApplicationContext());
-        store = new AndroidCMWebService();
+        CMApiCredentials.initialize(APP_ID, API_KEY);
+        store = AndroidCMWebService.service();
     }
     @After
     public void cleanUp() {
@@ -65,7 +68,7 @@ public class CloudMineWebServiceIntegrationTest {
     @Ignore
     public void testSentHeaders() { //TODO this test doesn't work but its not cause the impplementation is broken
 
-        AndroidCMWebService androidService = new AndroidCMWebService();
+        AndroidCMWebService androidService = AndroidCMWebService.service();
         androidService.delete("someKey");
 
         HttpRequest sentRequest = Robolectric.getSentHttpRequest(0);
