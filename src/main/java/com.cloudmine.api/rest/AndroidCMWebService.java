@@ -5,7 +5,6 @@ import android.os.Parcelable;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMUserToken;
 import com.cloudmine.api.DeviceIdentifier;
-import com.cloudmine.api.UserCMWebService;
 import com.cloudmine.api.exceptions.CreationException;
 import org.apache.http.message.AbstractHttpMessage;
 

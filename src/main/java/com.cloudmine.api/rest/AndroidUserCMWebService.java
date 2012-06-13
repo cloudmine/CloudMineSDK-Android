@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.cloudmine.api.CMUserToken;
 import com.cloudmine.api.DeviceIdentifier;
-import com.cloudmine.api.UserCMWebService;
 import org.apache.http.message.AbstractHttpMessage;
 
 /*
