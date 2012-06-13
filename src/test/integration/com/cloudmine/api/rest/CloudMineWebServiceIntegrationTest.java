@@ -19,6 +19,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.*;
 import static junit.framework.Assert.*;
@@ -241,22 +242,38 @@ public class CloudMineWebServiceIntegrationTest {
     }
 
     @Test
-    public void testAsyncPasswordChange() {
-        store.set(USER);
-        try {
-            store.asyncChangePassword(USER, "newPassword", TestServiceCallback.testCallback(new CMResponseCallback() {
-               public void onCompletion(CMResponse response) {
-                   assertTrue(response.wasSuccess());
-               }
-            }));
-            waitThenAssertTestResults();
-            CMUser newPasswordUser = new CMUser(USER.email(), "newPassword");
-            LogInResponse response = store.login(newPasswordUser);
-            assertTrue(response.wasSuccess());
-        } finally {
-            CMUser newPasswordUser = new AndroidCMUser(USER.email(), "newPassword");
-            store.changePassword(newPasswordUser, USER.password());
-        }
+    public void testAsyncChangePassword() {
+        CMUser user = randomUser();
+        store.set(user);
+        store.asyncChangePassword(user, "newPassword", TestServiceCallback.testCallback(new CMResponseCallback() {
+           public void onCompletion(CMResponse response) {
+               assertTrue(response.wasSuccess());
+           }
+        }));
+        waitThenAssertTestResults();
+        CMUser newPasswordUser = new CMUser(user.email(), "newPassword");
+        LogInResponse response = store.login(newPasswordUser);
+        assertTrue(response.wasSuccess());
+    }
+
+    @Test
+    public void testAsyncResetPassword() {
+        CMUser user = randomUser();
+        store.set(user);
+
+        store.asyncResetPasswordRequest(user.email(), TestServiceCallback.testCallback(new CMResponseCallback() {
+            @Override
+            public void onCompletion(CMResponse response) {
+                assertTrue(response.wasSuccess());
+            }
+        }));//can't actually test the code since it goes to an email address
+        waitThenAssertTestResults();
+    }
+
+    private CMUser randomUser() {
+        String userName = UUID.randomUUID().toString().replaceAll("-", "") + "@gmail.com";
+        String password = "the";
+        return new AndroidCMUser(userName,  password);
     }
 
     @Test
