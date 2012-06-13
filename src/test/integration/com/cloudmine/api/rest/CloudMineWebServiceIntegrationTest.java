@@ -46,7 +46,7 @@ public class CloudMineWebServiceIntegrationTest {
            SIMPLE_JSON + ",\n" +
             DEEP_KEYED_JSON +
             "}";
-    public static final CMUser USER = new CMUser("francis@gmail.com", "GOD");
+    public static final CMUser USER = new AndroidCMUser("francis2@gmail.com", "GOD");
     private CMWebService store;
     @Before
     public void setUp() {
@@ -146,12 +146,17 @@ public class CloudMineWebServiceIntegrationTest {
 
     @Test
     public void testFileStorageGet() throws Exception {
-        CMFile insertedFile = new CMFile(getObjectInputStream(), CMFile.DEFAULT_CONTENT_TYPE, "theFileKey");
+        CMFile insertedFile = new CMFile(getObjectInputStream(), "theFileKey", CMFile.DEFAULT_CONTENT_TYPE);
         CMResponse response = store.set(
                 insertedFile);
 
         CMFile loadedFile = store.getFile("theFileKey");
-//        Assert.assertArrayEquals(insertedFile.fileContents(), loadedFile.fileContents());
+        byte[] insertedFileContents = insertedFile.fileContents();
+        byte[] loadedFileContents = loadedFile.fileContents();
+        assertEquals(insertedFileContents.length, loadedFileContents.length);
+        for(int i = 0; i < loadedFileContents.length; i++) {
+            assertEquals(insertedFileContents[i], loadedFileContents[i]);
+        }
     }
 
     @Test
@@ -236,18 +241,37 @@ public class CloudMineWebServiceIntegrationTest {
     }
 
     @Test
+    public void testAsyncPasswordChange() {
+        store.set(USER);
+        try {
+            store.asyncChangePassword(USER, "newPassword", TestServiceCallback.testCallback(new CMResponseCallback() {
+               public void onCompletion(CMResponse response) {
+                   assertTrue(response.wasSuccess());
+               }
+            }));
+            waitThenAssertTestResults();
+            CMUser newPasswordUser = new CMUser(USER.email(), "newPassword");
+            LogInResponse response = store.login(newPasswordUser);
+            assertTrue(response.wasSuccess());
+        } finally {
+            CMUser newPasswordUser = new AndroidCMUser(USER.email(), "newPassword");
+            store.changePassword(newPasswordUser, USER.password());
+        }
+    }
+
+    @Test
     public void testAsyncLogin() {
-        store.asyncLogin(new CMUser("thisdoesntexist@dddd.com", "somepass"), TestServiceCallback.testCallback(new LoginResponseCallback() {
-            public void onCompletion(LogInResponse response) {
-                Assert.assertEquals(CMUserToken.FAILED, response.userToken());
-            }
-        }));
-        waitThenAssertTestResults();
         store.set(USER);
         store.asyncLogin(USER, TestServiceCallback.testCallback(new LoginResponseCallback() {
             @Override
             public void onCompletion(LogInResponse response) {
                 Assert.assertTrue(response.wasSuccess());
+            }
+        }));
+        waitThenAssertTestResults();
+        store.asyncLogin(new CMUser("thisdoesntexist@dddd.com", "somepass"), TestServiceCallback.testCallback(new LoginResponseCallback() {
+            public void onCompletion(LogInResponse response) {
+                Assert.assertEquals(CMUserToken.FAILED, response.userToken());
             }
         }));
         waitThenAssertTestResults();
@@ -401,10 +425,11 @@ public class CloudMineWebServiceIntegrationTest {
     }
 
     @Test
-    public void testAsyncFileLoad() throws Exception {
+    public void testAsyncLoadFile() throws Exception {
         InputStream input = getObjectInputStream();
-        final CMFile file = new CMFile(input, null, "fileKey");
-        store.set(file);
+        final CMFile file = new CMFile(input, "fileKey", null);
+        CMResponse response = store.set(file);
+        assertTrue(response.wasSuccess());
 
         store.asyncLoadFile("fileKey", TestServiceCallback.testCallback(new FileLoadCallback("fileKey") {
            public void onCompletion(CMFile loadedFile) {
