@@ -20,7 +20,7 @@ public class DeviceIdentifier {
     public static final String DEVICE_HEADER_KEY = "X-CloudMine-UT";
 
     public static void initialize(Context context) {
-        SharedPreferences preferences = context.getSharedPreferences("CLOUDMINE_PREFERENCES", Context.MODE_WORLD_WRITEABLE);
+        SharedPreferences preferences = context.getSharedPreferences("CLOUDMINE_PREFERENCES", Context.MODE_PRIVATE);
         boolean isNotSet = !preferences.contains(UNIQUE_ID_KEY);
         if(isNotSet) {
             String uniqueId = generateUniqueDeviceIdentifier();
@@ -29,6 +29,9 @@ public class DeviceIdentifier {
             editor.apply();
         }
         uniqueId = preferences.getString(UNIQUE_ID_KEY, null); //null here so if we aren't getting the unique key, we fail hard
+        if(uniqueId == null) {
+            throw new RuntimeException("Unable to get unique id");
+        }
     }
 
     public static String uniqueId() throws RuntimeException {
@@ -39,7 +42,7 @@ public class DeviceIdentifier {
     }
 
     public static Header deviceIdentifierHeader() throws RuntimeException {
-        return new BasicHeader(DEVICE_HEADER_KEY, uniqueId);
+        return new BasicHeader(DEVICE_HEADER_KEY, uniqueId());
     }
 
     private static String generateUniqueDeviceIdentifier() {
