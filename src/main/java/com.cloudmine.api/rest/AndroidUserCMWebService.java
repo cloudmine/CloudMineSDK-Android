@@ -33,7 +33,7 @@ public class AndroidUserCMWebService extends UserCMWebService implements Parcela
 
     public AndroidUserCMWebService(Parcel in) {
         super(new CMURLBuilder(in.readString()),
-                new CMUserToken(in.readString()),
+                CMUserToken.CMUserToken(in.readString()),
                 new AndroidAsynchronousHttpClient());
     }
 
