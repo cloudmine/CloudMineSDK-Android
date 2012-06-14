@@ -67,7 +67,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     @Test
     @Ignore //Only works when we can delete users
     public void testAsyncCreateUser() throws Exception {
-        CMUser newUser = new CMUser("test2@test.com", "password");
+        CMUser newUser = CMUser.CMUser("test2@test.com", "password");
         store.asyncCreateUser(newUser, TestServiceCallback.testCallback(new CMResponseCallback() {
             @Override
             public void onCompletion(CMResponse response) {
@@ -125,14 +125,14 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     @Test
     public void testFileStorageSet() throws Exception {
         InputStream input = getObjectInputStream();
-        CMResponse response = store.set(new CMFile(input));
+        CMResponse response = store.set(CMFile.CMFile(input));
         Assert.assertNotNull(response);
         Assert.assertTrue(response.hasObject("key"));
     }
 
     @Test
     public void testFileStorageGet() throws Exception {
-        CMFile insertedFile = new CMFile(getObjectInputStream(), "theFileKey", CMFile.DEFAULT_CONTENT_TYPE);
+        CMFile insertedFile = CMFile.CMFile(getObjectInputStream(), "theFileKey", CMFile.DEFAULT_CONTENT_TYPE);
         CMResponse response = store.set(
                 insertedFile);
 
@@ -147,7 +147,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
     @Test
     public void testAsyncObjectLoad() throws Throwable {
-        final SimpleCMObject task = new SimpleCMObject();
+        final SimpleCMObject task = SimpleCMObject.SimpleCMObject();
         task.setClass("task");
         task.add("name", "Do dishes");
         task.add("isDone", false);
@@ -204,7 +204,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
     @Test
     public void testUserLogin() {
-        CMUser nonExistentUser = new CMUser("some@dude.com", "123");
+        CMUser nonExistentUser = CMUser.CMUser("some@dude.com", "123");
         LogInResponse response = store.login(nonExistentUser);
         Assert.assertTrue(response.was(401));
         store.set(USER);
@@ -215,7 +215,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
     @Test
     public void testUserLogout() {
-        CMResponse response = store.logout(new CMUserToken("this token doesn't exist", new Date()));
+        CMResponse response = store.logout(CMUserToken.CMUserToken("this token doesn't exist", new Date()));
         Assert.assertEquals(401, response.getStatusCode());
 
         store.set(USER);
@@ -236,7 +236,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
            }
         }));
         waitThenAssertTestResults();
-        CMUser newPasswordUser = new CMUser(user.email(), "newPassword");
+        CMUser newPasswordUser = CMUser.CMUser(user.email(), "newPassword");
         LogInResponse response = store.login(newPasswordUser);
         assertTrue(response.wasSuccess());
     }
@@ -271,7 +271,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
             }
         }));
         waitThenAssertTestResults();
-        store.asyncLogin(new CMUser("thisdoesntexist@dddd.com", "somepass"), TestServiceCallback.testCallback(new LoginResponseCallback() {
+        store.asyncLogin(CMUser.CMUser("thisdoesntexist@dddd.com", "somepass"), TestServiceCallback.testCallback(new LoginResponseCallback() {
             public void onCompletion(LogInResponse response) {
                 Assert.assertEquals(CMUserToken.FAILED, response.userToken());
             }
@@ -339,8 +339,8 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
     @Test
     public void testAsyncGeoSearch() {
-        SimpleCMObject geoObject = new SimpleCMObject("location");
-        geoObject.add("geoPoint", new CMGeoPoint(50, 50, "geo"));
+        SimpleCMObject geoObject = SimpleCMObject.SimpleCMObject("location");
+        geoObject.add("geoPoint", CMGeoPoint.CMGeoPoint(50, 50, "geo"));
 
         store.set(geoObject.asJson());
 
@@ -360,8 +360,8 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
     @Test
     public void testAsyncInsert() {
-        SimpleCMObject deepObject = new SimpleCMObject(JsonUtilities.jsonCollection(DEEP_KEYED_JSON));
-        SimpleCMObject simpleObject = new SimpleCMObject(JsonUtilities.jsonCollection(SIMPLE_JSON));
+        SimpleCMObject deepObject = SimpleCMObject.SimpleCMObject(JsonUtilities.jsonCollection(DEEP_KEYED_JSON));
+        SimpleCMObject simpleObject = SimpleCMObject.SimpleCMObject(JsonUtilities.jsonCollection(SIMPLE_JSON));
         store.asyncInsert(Arrays.asList(deepObject, simpleObject), TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
                 Assert.assertTrue(response.wasSuccess());
@@ -416,7 +416,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     @Test
     public void testAsyncUpload() throws IOException {
         InputStream input = getObjectInputStream();
-        CMFile file = new CMFile(input);
+        CMFile file = CMFile.CMFile(input);
         store.asyncUpload(file, TestServiceCallback.testCallback(new FileCreationResponseCallback() {
             public void onCompletion(FileCreationResponse file) {
                 assertTrue(file.wasSuccess());
@@ -429,7 +429,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     @Test
     public void testAsyncLoadFile() throws Exception {
         InputStream input = getObjectInputStream();
-        final CMFile file = new CMFile(input, "fileKey", null);
+        final CMFile file = CMFile.CMFile(input, "fileKey", null);
         CMResponse response = store.set(file);
         assertTrue(response.wasSuccess());
 
@@ -444,7 +444,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     @Test
     public void testAsyncDeleteFile() throws Exception {
         InputStream input = getObjectInputStream();
-        final CMFile file = new CMFile(input, "fileKey", null);
+        final CMFile file = CMFile.CMFile(input, "fileKey", null);
         store.set(file);
 
         store.asyncDeleteFile(file, TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
@@ -461,8 +461,8 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     public void testAsyncUpdate() {
         //These tests are the same as above EXCEPT when innerKey is deleted and then inserted, the value
         //should still exist on the returned object. copy/paste code D:
-        SimpleCMObject deepObject = new SimpleCMObject(JsonUtilities.jsonCollection(DEEP_KEYED_JSON));
-        SimpleCMObject simpleObject = new SimpleCMObject(JsonUtilities.jsonCollection(SIMPLE_JSON));
+        SimpleCMObject deepObject = SimpleCMObject.SimpleCMObject(JsonUtilities.jsonCollection(DEEP_KEYED_JSON));
+        SimpleCMObject simpleObject = SimpleCMObject.SimpleCMObject(JsonUtilities.jsonCollection(SIMPLE_JSON));
         store.asyncUpdate(Arrays.asList(deepObject, simpleObject),
                 TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
                     public void onCompletion(ObjectModificationResponse response) {
