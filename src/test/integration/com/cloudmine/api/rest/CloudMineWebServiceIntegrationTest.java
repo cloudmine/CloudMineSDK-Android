@@ -4,13 +4,12 @@ import com.cloudmine.api.*;
 import com.cloudmine.api.rest.callbacks.*;
 import com.cloudmine.api.rest.response.*;
 import com.cloudmine.test.CloudMineTestRunner;
+import com.cloudmine.test.ServiceTestBase;
 import com.cloudmine.test.TestServiceCallback;
 import com.xtremelabs.robolectric.Robolectric;
 import junit.framework.Assert;
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,9 +29,7 @@ import static junit.framework.Assert.*;
  * Date: 5/16/12, 2:40 PM
  */
 @RunWith(CloudMineTestRunner.class)
-public class CloudMineWebServiceIntegrationTest {
-    private static final String APP_ID = "c1a562ee1e6f4a478803e7b51babe287";
-    private static final String API_KEY = "3fc494b36d6d432d9afb051d819bdd72";
+public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
     private static final String TEST_JSON = "{\"TESTING4703\": [\"value1\", \"value2\"]}";
     private static final String DEEP_KEYED_JSON =             "    \"deepKeyed\": {\n" +
@@ -48,19 +45,7 @@ public class CloudMineWebServiceIntegrationTest {
             DEEP_KEYED_JSON +
             "}";
     public static final CMUser USER = new AndroidCMUser("francis2@gmail.com", "GOD");
-    private CMWebService store;
-    @Before
-    public void setUp() {
-        reset();
-        Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
-        DeviceIdentifier.initialize(Robolectric.application.getApplicationContext());
-        CMApiCredentials.initialize(APP_ID, API_KEY);
-        store = AndroidCMWebService.service();
-    }
-    @After
-    public void cleanUp() {
-        store.deleteAll();
-    }
+
 
     @Test
     @Ignore
