@@ -1,14 +1,23 @@
 package com.cloudmine.api.rest;
 
+import com.cloudmine.api.CMUser;
 import com.cloudmine.api.SimpleCMObject;
+import com.cloudmine.api.rest.callbacks.LoginResponseCallback;
+import com.cloudmine.api.rest.callbacks.ObjectModificationResponseCallback;
+import com.cloudmine.api.rest.response.LogInResponse;
+import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.cloudmine.api.rest.response.SimpleCMObjectResponse;
+import com.cloudmine.test.AsyncTestResultsCoordinator;
 import com.cloudmine.test.CloudMineTestRunner;
 import com.cloudmine.test.ServiceTestBase;
+import com.cloudmine.test.TestServiceCallback;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.fail;
 
 /**
  * Copyright CloudMine LLC
@@ -20,13 +29,41 @@ public class SimpleCMObjectIntegrationTest extends ServiceTestBase {
 
     @Test
     public void testDefaultSave() {
-        SimpleCMObject object = new SimpleCMObject();
+        final SimpleCMObject object = SimpleCMObject.SimpleCMObject();
         object.add("string", "value");
-        object.save();
-
-        SimpleCMObjectResponse response = AndroidCMWebService.service().get(object.key());
-        Assert.assertTrue(response.wasSuccess());
-        SimpleCMObject loadedObject = response.object(object.key());
-        assertEquals(object, loadedObject);
+        object.save(TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
+            public void onCompletion(ObjectModificationResponse response) {
+                SimpleCMObjectResponse loadResponse = AndroidCMWebService.service().get(object.key());
+                Assert.assertTrue(loadResponse.wasSuccess());
+                SimpleCMObject loadedObject = loadResponse.object(object.key());
+                assertEquals(object, loadedObject);
+            }
+        }));
+        waitThenAssertTestResults();
     }
+
+    @Test
+    public void testUserSave() {
+        final SimpleCMObject object = SimpleCMObject.SimpleCMObject();
+        object.add("bool", true);
+        final CMUser user = CMUser.CMUser("w@w.com", "w");
+        AsyncTestResultsCoordinator.reset(2);
+        user.login(TestServiceCallback.testCallback(new LoginResponseCallback() {
+            public void onCompletion(LogInResponse response) {
+                object.saveWith(response.userToken());
+                object.save(TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
+                    public void onCompletion(ObjectModificationResponse response) {
+                        SimpleCMObjectResponse loadedObjectResponse = store.get(object.key());
+                        SimpleCMObject loadedObject = loadedObjectResponse.object(object.key());
+
+                        Assert.assertNull(loadedObject);
+                    }
+
+                }));
+            }
+        }));
+        waitThenAssertTestResults();
+    }
+
+
 }

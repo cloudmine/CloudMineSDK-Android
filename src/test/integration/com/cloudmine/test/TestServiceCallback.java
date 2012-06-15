@@ -14,9 +14,6 @@ public class TestServiceCallback<T> extends CMWebServiceCallback<T> {
     public static <T> TestServiceCallback<T> testCallback(CMWebServiceCallback<T> callback) {
         return new TestServiceCallback<T>(callback);
     }
-    public static <T> TestServiceCallback<T> testCallback(int numberOfCallbacks, CMWebServiceCallback<T> callback) {
-        return new TestServiceCallback<T>(callback);
-    }
 
     public TestServiceCallback(CMWebServiceCallback<T> callback) {
         super(callback.constructor());
@@ -29,7 +26,11 @@ public class TestServiceCallback<T> extends CMWebServiceCallback<T> {
             callback.onCompletion(response);
         } catch(AssertionError t) {
             AsyncTestResultsCoordinator.add(t);
-        } finally {
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            System.out.println("Countdown: " + response);
             AsyncTestResultsCoordinator.done();
         }
     }
@@ -40,8 +41,6 @@ public class TestServiceCallback<T> extends CMWebServiceCallback<T> {
             callback.onFailure(thrown, message);
         } catch(AssertionError t) {
             AsyncTestResultsCoordinator.add(t);
-        } finally {
-            AsyncTestResultsCoordinator.done();
         }
     }
 }

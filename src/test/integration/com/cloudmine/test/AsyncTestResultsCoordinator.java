@@ -36,13 +36,17 @@ public class AsyncTestResultsCoordinator {
 
     public static void waitForTestResults() {
         try {
-            latch.await(TIMEOUT, TimeUnit.SECONDS);
+            boolean timedOut = !latch.await(5, TimeUnit.SECONDS);
+            if(timedOut) {
+                throw new RuntimeException("Timedout!");
+            }
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted", e);
         }
     }
 
     public static void done() {
+        System.out.println("Done " + latch.getCount());
         latch.countDown();
     }
 

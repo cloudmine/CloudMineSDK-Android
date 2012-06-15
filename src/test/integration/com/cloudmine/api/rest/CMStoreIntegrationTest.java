@@ -16,10 +16,10 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
 
     @Test
     public void testSaveObject() {
-        SimpleCMObject object = new SimpleCMObject();
+        SimpleCMObject object = SimpleCMObject.SimpleCMObject();
         object.add("bool", true);
 
-        CMStore store = new CMStore();
-        store.save(object);
+        CMStore store = CMStore.CMStore();
+        store.saveObject(object);
     }
 }
