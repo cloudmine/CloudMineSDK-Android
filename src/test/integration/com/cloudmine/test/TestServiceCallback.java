@@ -30,7 +30,6 @@ public class TestServiceCallback<T> extends CMWebServiceCallback<T> {
             e.printStackTrace();
         }
         finally {
-            System.out.println("Countdown: " + response);
             AsyncTestResultsCoordinator.done();
         }
     }

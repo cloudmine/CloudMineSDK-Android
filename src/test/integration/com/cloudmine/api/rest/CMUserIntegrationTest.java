@@ -17,7 +17,7 @@ public class CMUserIntegrationTest extends ServiceTestBase {
     @Test
     public void testLogin() {
         CMUser user = CMUser.CMUser("test@test.com", "test");
-        store.set(user);
+        service.set(user);
 
         user.login();
     }

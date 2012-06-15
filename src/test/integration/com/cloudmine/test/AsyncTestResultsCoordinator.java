@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class AsyncTestResultsCoordinator {
     private static final List<AssertionError> errors = new ArrayList<AssertionError>();
     private static CountDownLatch latch;
-    public static final int TIMEOUT = 5;
+    public static final int TIMEOUT = 10;
 
     public static void add(AssertionError error) {
         errors.add(error);
@@ -36,7 +36,7 @@ public class AsyncTestResultsCoordinator {
 
     public static void waitForTestResults() {
         try {
-            boolean timedOut = !latch.await(5, TimeUnit.SECONDS);
+            boolean timedOut = !latch.await(TIMEOUT, TimeUnit.SECONDS);
             if(timedOut) {
                 throw new RuntimeException("Timedout!");
             }
@@ -46,7 +46,6 @@ public class AsyncTestResultsCoordinator {
     }
 
     public static void done() {
-        System.out.println("Done " + latch.getCount());
         latch.countDown();
     }
 

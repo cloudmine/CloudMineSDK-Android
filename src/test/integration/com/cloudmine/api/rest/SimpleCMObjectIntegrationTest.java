@@ -17,7 +17,6 @@ import org.junit.runner.RunWith;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
 
 /**
  * Copyright CloudMine LLC
@@ -53,7 +52,7 @@ public class SimpleCMObjectIntegrationTest extends ServiceTestBase {
                 object.saveWith(response.userToken());
                 object.save(TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
                     public void onCompletion(ObjectModificationResponse response) {
-                        SimpleCMObjectResponse loadedObjectResponse = store.get(object.key());
+                        SimpleCMObjectResponse loadedObjectResponse = service.get(object.key());
                         SimpleCMObject loadedObject = loadedObjectResponse.object(object.key());
 
                         Assert.assertNull(loadedObject);

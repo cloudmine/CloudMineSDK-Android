@@ -225,24 +225,14 @@ public class AsyncHttpResponseHandler<T> {
 
     // Interface to AsyncHttpRequest
     void sendResponseMessage(HttpResponse response) {
-        completedThenConsume(response);
         StatusLine status = response.getStatusLine();
-        String responseBody = "";
-//        try {
-//            HttpEntity entity = null;
-//            HttpEntity temp = response.getEntity();
-//            if(temp != null) {
-//                entity = new BufferedHttpEntity(temp);
-//                responseBody = EntityUtils.toString(entity);
-//            }
-//        } catch(IOException e) {
-//            sendFailureMessage(e, null);
-//        }
-
-        if(status.getStatusCode() >= 300) {
-            sendFailureMessage(new HttpResponseException(status.getStatusCode(), status.getReasonPhrase()), responseBody);
-        } else {
-            sendSuccessMessage(responseBody);
+        try {
+            completedThenConsume(response);
+            String responseBody = "";
+        } finally {
+            if(status.getStatusCode() >= 300) {
+                sendFailureMessage(new HttpResponseException(status.getStatusCode(), status.getReasonPhrase()), "");
+            }
         }
     }
 }
