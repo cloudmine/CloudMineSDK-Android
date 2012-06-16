@@ -155,7 +155,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         service.asyncInsert(task, TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
             @Override
             public void onCompletion(ObjectModificationResponse response) {
-                service.allObjectsOfClass("task", new SimpleCMObjectResponseCallback() {
+                service.asyncLoadObjectsOfClass("task", new SimpleCMObjectResponseCallback() {
                     public void onCompletion(SimpleCMObjectResponse objectResponse) {
                         Assert.assertEquals(1, objectResponse.objects().size());
                         Assert.assertEquals(task, objectResponse.objects().get(0));
@@ -437,6 +437,22 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
            public void onCompletion(CMFile loadedFile) {
                assertEquals(file, loadedFile);
            }
+        }));
+        waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testUrlCharacters() {
+        service.asyncDelete("a key with spaces");
+    }
+
+    @Test
+    public void testAsyncLoadNullFile() {
+        service.asyncLoadFile("nonexistentfile", TestServiceCallback.testCallback(new FileLoadCallback("nonexistent key for a file") {
+            public void onCompletion(CMFile loadedFile) {
+                assertEquals(1, loadedFile.fileContents().length);
+                assertTrue(CMFile.isEmpty(loadedFile));
+            }
         }));
         waitThenAssertTestResults();
     }

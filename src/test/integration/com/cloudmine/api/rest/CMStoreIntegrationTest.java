@@ -140,4 +140,46 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         }));
         waitThenAssertTestResults();
     }
+
+    @Test
+    public void testDeleteObjects() {
+        final SimpleCMObject appObject = SimpleCMObject.SimpleCMObject();
+        appObject.add("SomeKey", "Value");
+
+
+        service.set(appObject.asJson());
+
+        store.deleteObject(appObject, TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
+            public void onCompletion(ObjectModificationResponse response) {
+                assertTrue(response.wasSuccess());
+                response.wasDeleted(appObject.key());
+            }
+        }));
+        waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testDeleteUserObject() {
+        final SimpleCMObject userObject = SimpleCMObject.SimpleCMObject();
+        userObject.add("key", "value");
+
+        CMUser user = user();
+        CMUserToken token = service.login(user).userToken();
+        userObject.saveWith(token);
+        store.setLoggedInUser(token);
+        store.saveObject(userObject, TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
+            public void onCompletion(ObjectModificationResponse response) {
+                assertTrue(response.wasSuccess());
+                assertTrue(response.wasCreated(userObject.key()));
+            }
+        }));
+        waitThenAssertTestResults();
+        store.deleteObject(userObject, TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
+            public void onCompletion(ObjectModificationResponse response) {
+                assertTrue(response.wasSuccess());
+                assertTrue(response.wasDeleted(userObject.key()));
+            }
+        }));
+        waitThenAssertTestResults();
+    }
 }
