@@ -19,6 +19,10 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.reset;
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
@@ -82,6 +86,10 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
             }
         }));
         waitThenAssertTestResults();
+
+        SimpleCMObjectResponse response = CMWebService.service().userWebService(token).get(object.key());
+        assertTrue(response.wasSuccess());
+        assertEquals(response.object(object.key()), object);
     }
 
     @Test
@@ -97,7 +105,6 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
                 store.allUserObjects(TestServiceCallback.testCallback(new SimpleCMObjectResponseCallback() {
                     public void onCompletion(SimpleCMObjectResponse response) {
                         assertTrue(response.wasSuccess());
-                        System.out.println("in here");
                         assertEquals("v", response.object("key").getString("k"));
                     }
                 }));
@@ -181,5 +188,18 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
             }
         }));
         waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testSaveAddedObjects() throws ExecutionException, TimeoutException, InterruptedException {
+        SimpleCMObject appObject = SimpleCMObject.SimpleCMObject();
+        appObject.saveWith(StoreIdentifier.DEFAULT);
+        appObject.add("simple", "value");
+
+        store.addObject(appObject);
+        Future<ObjectModificationResponse> responseFuture = store.saveStoreApplicationObjects();
+        ObjectModificationResponse response = responseFuture.get(10, TimeUnit.SECONDS);
+        assertTrue(response.wasSuccess());
+        assertTrue(response.wasCreated(appObject.key()));
     }
 }

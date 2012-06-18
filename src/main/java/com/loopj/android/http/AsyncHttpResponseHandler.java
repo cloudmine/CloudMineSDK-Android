@@ -64,7 +64,6 @@ import org.apache.http.client.HttpResponseException;
  * </pre>
  */
 public class AsyncHttpResponseHandler<T> {
-    private static final int SUCCESS_MESSAGE = 0;
     private static final int FAILURE_MESSAGE = 1;
     private static final int START_MESSAGE = 2;
     private static final int FINISH_MESSAGE = 3;
@@ -106,7 +105,7 @@ public class AsyncHttpResponseHandler<T> {
     public void onFinish() {}
 
     /**
-     * Fired when a request returns successfully, override to handle in your own code
+     * Fired when a request returns successfully, override to handle in your own code.
      * @param content the body of the HTTP response from the server
      */
     public void onSuccess(String content) {}
@@ -139,9 +138,6 @@ public class AsyncHttpResponseHandler<T> {
     // Pre-processing of messages (executes in background threadpool thread)
     //
 
-    protected void sendSuccessMessage(String responseBody) {
-        sendMessage(obtainMessage(SUCCESS_MESSAGE, responseBody));
-    }
 
     protected void sendFailureMessage(Throwable e, String responseBody) {
         sendMessage(obtainMessage(FAILURE_MESSAGE, new Object[]{e, responseBody}));
@@ -176,9 +172,6 @@ public class AsyncHttpResponseHandler<T> {
     // Methods which emulate android's Handler and Message methods
     protected void handleMessage(Message msg) {
         switch(msg.what) {
-            case SUCCESS_MESSAGE:
-                handleSuccessMessage((String)msg.obj);
-                break;
             case FAILURE_MESSAGE:
                 Object[] repsonse = (Object[])msg.obj;
                 handleFailureMessage((Throwable)repsonse[0], (String)repsonse[1]);
@@ -216,23 +209,26 @@ public class AsyncHttpResponseHandler<T> {
         return msg;
     }
 
-    private void completedThenConsume(HttpResponse response) {
+    private T completedThenConsume(HttpResponse response) {
         T responseObject = responseConstructor.construct(response);
         CMWebService.consumeEntityResponse(response);
         sendCompletedMessage(responseObject);
+        return responseObject;
     }
 
 
     // Interface to AsyncHttpRequest
-    void sendResponseMessage(HttpResponse response) {
+    T sendResponseMessage(HttpResponse response) {
         StatusLine status = response.getStatusLine();
+        T responseObject = null;
         try {
-            completedThenConsume(response);
+            responseObject = completedThenConsume(response);
             String responseBody = "";
         } finally {
             if(status.getStatusCode() >= 300) {
                 sendFailureMessage(new HttpResponseException(status.getStatusCode(), status.getReasonPhrase()), "");
             }
+            return responseObject;
         }
     }
 }
