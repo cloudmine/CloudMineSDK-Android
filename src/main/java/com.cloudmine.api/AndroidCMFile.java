@@ -22,13 +22,13 @@ public class AndroidCMFile extends CMFile {
     }
 
     /**
-     * Create an AndroidCMFile from a Bitmap, with the given key
+     * Create an AndroidCMFile from a Bitmap, with the given file name
      * @param picture will be the contents of this file. Must not be null.
-     * @param key the key to associate with this file. If null, a random key will be generated
+     * @param fileName the fileName to associate with this file. If null, a random fileName will be generated
      * @throws CreationException if given a null picture
      */
-    public AndroidCMFile(Bitmap picture, String key) throws CreationException {
-        super(getOutput(picture), key, IMAGE_PNG_CONTENT_TYPE);
+    public AndroidCMFile(Bitmap picture, String fileName) throws CreationException {
+        super(getOutput(picture), fileName, IMAGE_PNG_CONTENT_TYPE);
     }
 
     private static byte[] getOutput(Bitmap picture) throws CreationException {

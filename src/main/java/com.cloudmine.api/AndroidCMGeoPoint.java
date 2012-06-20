@@ -30,8 +30,8 @@ public class AndroidCMGeoPoint extends CMGeoPoint implements Parcelable {
         super(longitude, latitude);
     }
 
-    public AndroidCMGeoPoint(double longitude, double latitude, String key) throws CreationException {
-        super(longitude, latitude, key);
+    public AndroidCMGeoPoint(double longitude, double latitude, String objectId) throws CreationException {
+        super(longitude, latitude, objectId);
     }
 
     public AndroidCMGeoPoint(Parcel parcel) throws JsonConversionException, CreationException {

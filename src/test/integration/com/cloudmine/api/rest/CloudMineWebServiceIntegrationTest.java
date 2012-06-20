@@ -420,7 +420,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         service.asyncUpload(file, TestServiceCallback.testCallback(new FileCreationResponseCallback() {
             public void onCompletion(FileCreationResponse file) {
                 assertTrue(file.wasSuccess());
-                assertNotNull(file.getFileKey());
+                assertNotNull(file.getFileName());
             }
         }));
         waitThenAssertTestResults();
