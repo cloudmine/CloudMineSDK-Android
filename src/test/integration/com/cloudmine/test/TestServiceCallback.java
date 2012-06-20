@@ -1,21 +1,21 @@
 package com.cloudmine.test;
 
-import com.cloudmine.api.rest.callbacks.CMWebServiceCallback;
+import com.cloudmine.api.rest.callbacks.CMCallback;
 
 /**
  * Copyright CloudMine LLC
  * CMUser: johnmccarthy
  * Date: 6/6/12, 3:36 PM
  */
-public class TestServiceCallback<T> extends CMWebServiceCallback<T> {
+public class TestServiceCallback<T> extends CMCallback<T> {
 
-    private CMWebServiceCallback<T> callback;
+    private CMCallback<T> callback;
 
-    public static <T> TestServiceCallback<T> testCallback(CMWebServiceCallback<T> callback) {
+    public static <T> TestServiceCallback<T> testCallback(CMCallback<T> callback) {
         return new TestServiceCallback<T>(callback);
     }
 
-    public TestServiceCallback(CMWebServiceCallback<T> callback) {
+    public TestServiceCallback(CMCallback<T> callback) {
         super(callback.constructor());
         this.callback = callback;
     }

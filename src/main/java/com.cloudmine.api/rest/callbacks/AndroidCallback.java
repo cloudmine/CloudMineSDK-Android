@@ -4,19 +4,19 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.cloudmine.api.rest.response.ResponseConstructor;
 
 /**
- * A wrapper around WebServiceCallback that makes it work with the AsyncHttp library. Should not
+ * A wrapper around Callback that makes it work with the AsyncHttp library. Should not
  * be extended.
  * Copyright CloudMine LLC
  */
-public final class AndroidWebServiceCallback<T> extends AsyncHttpResponseHandler<T> implements WebServiceCallback<T> {
+public final class AndroidCallback<T> extends AsyncHttpResponseHandler<T> implements Callback<T> {
 
-    private final WebServiceCallback callback;
+    private final Callback callback;
 
-    public AndroidWebServiceCallback(ResponseConstructor<T> constructor) {
-        this(WebServiceCallback.DO_NOTHING, constructor);
+    public AndroidCallback(ResponseConstructor<T> constructor) {
+        this(Callback.DO_NOTHING, constructor);
     }
 
-    public AndroidWebServiceCallback(WebServiceCallback callback, ResponseConstructor<T> constructor) {
+    public AndroidCallback(Callback callback, ResponseConstructor<T> constructor) {
         super(constructor);
         this.callback = callback;
 
