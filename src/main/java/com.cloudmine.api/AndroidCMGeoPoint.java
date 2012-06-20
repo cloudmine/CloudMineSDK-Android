@@ -2,15 +2,20 @@ package com.cloudmine.api;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import com.cloudmine.api.exceptions.CreationException;
 import com.cloudmine.api.exceptions.JsonConversionException;
 import com.cloudmine.api.rest.JsonString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
+ * A parcelable implementation of CMGeoPoint
  * Copyright CloudMine LLC
  * CMUser: johnmccarthy
  * Date: 6/11/12, 3:47 PM
  */
 public class AndroidCMGeoPoint extends CMGeoPoint implements Parcelable {
+    private static final Logger LOG = LoggerFactory.getLogger(AndroidCMGeoPoint.class);
     public static final Creator<AndroidCMGeoPoint> CREATOR =
             new Creator<AndroidCMGeoPoint>() {
                 @Override
@@ -23,15 +28,15 @@ public class AndroidCMGeoPoint extends CMGeoPoint implements Parcelable {
                     return new AndroidCMGeoPoint[i];
                 }
             };
-    public AndroidCMGeoPoint(double longitude, double latitude) {
+    public AndroidCMGeoPoint(double longitude, double latitude) throws CreationException {
         super(longitude, latitude);
     }
 
-    public AndroidCMGeoPoint(double longitude, double latitude, String key) {
+    public AndroidCMGeoPoint(double longitude, double latitude, String key) throws CreationException {
         super(longitude, latitude, key);
     }
 
-    public AndroidCMGeoPoint(Parcel parcel) throws JsonConversionException{
+    public AndroidCMGeoPoint(Parcel parcel) throws JsonConversionException, CreationException {
         super(new JsonString(parcel.readString()));
     }
 
@@ -43,6 +48,10 @@ public class AndroidCMGeoPoint extends CMGeoPoint implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(asJson());
+        try {
+            parcel.writeString(asJson());
+        } catch (JsonConversionException e) {
+            LOG.error("Unable to convert AndroidCMGeoPoint to json, unparcelling this is going to throw a CreationException");
+        }
     }
 }

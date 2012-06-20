@@ -1,8 +1,8 @@
 package com.cloudmine.test;
 
 import com.cloudmine.api.CMApiCredentials;
+import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.CMUser;
-import com.cloudmine.api.CMUserToken;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.rest.AndroidCMWebService;
 import com.cloudmine.api.rest.CMWebService;
@@ -34,7 +34,7 @@ public class ServiceTestBase {
     public void cleanUp() {
         service.deleteAll();
         CMUser user = user();
-        CMUserToken token = service.login(user).userToken();
+        CMSessionToken token = service.login(user).userToken();
         service.userWebService(token).deleteAll();
     }
 

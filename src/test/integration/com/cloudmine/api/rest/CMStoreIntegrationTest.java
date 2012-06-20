@@ -1,13 +1,13 @@
 package com.cloudmine.api.rest;
 
+import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.CMUser;
-import com.cloudmine.api.CMUserToken;
 import com.cloudmine.api.SimpleCMObject;
 import com.cloudmine.api.StoreIdentifier;
 import com.cloudmine.api.rest.callbacks.LoginResponseCallback;
 import com.cloudmine.api.rest.callbacks.ObjectModificationResponseCallback;
 import com.cloudmine.api.rest.callbacks.SimpleCMObjectResponseCallback;
-import com.cloudmine.api.rest.response.LogInResponse;
+import com.cloudmine.api.rest.response.LoginResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.cloudmine.api.rest.response.SimpleCMObjectResponse;
 import com.cloudmine.test.CloudMineTestRunner;
@@ -69,7 +69,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         object.add("bool", true);
         CMUser user = CMUser.CMUser("dfljdsfkdfskd@t.com", "t");
         CMWebService.service().set(user);
-        final CMUserToken token = CMWebService.service().login(user).userToken();
+        final CMSessionToken token = CMWebService.service().login(user).userToken();
 
         object.saveWith(new StoreIdentifier(token));
         CMStore store = CMStore.CMStore();
@@ -96,11 +96,11 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
     public void testUserLogin() {
         CMUser user = user();
         service.set(user);
-        CMUserToken token = service.login(user).userToken();
+        CMSessionToken token = service.login(user).userToken();
         service.userWebService(token).set(SimpleCMObject.SimpleCMObject("key").add("k", "v").asJson());
         reset(2);
         store.login(user, TestServiceCallback.testCallback(new LoginResponseCallback() {
-            public void onCompletion(LogInResponse response) {
+            public void onCompletion(LoginResponse response) {
                 assertTrue(response.wasSuccess());
                 store.allUserObjects(TestServiceCallback.testCallback(new SimpleCMObjectResponseCallback() {
                     public void onCompletion(SimpleCMObjectResponse response) {
@@ -125,7 +125,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
 
         CMUser user = user();
         service.set(user);
-        CMUserToken token = service.login(user).userToken();
+        CMSessionToken token = service.login(user).userToken();
 
         final List<SimpleCMObject> userObjects = new ArrayList<SimpleCMObject>();
         UserCMWebService userService = service.userWebService(token);
@@ -171,7 +171,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         userObject.add("key", "value");
 
         CMUser user = user();
-        CMUserToken token = service.login(user).userToken();
+        CMSessionToken token = service.login(user).userToken();
         userObject.saveWith(token);
         store.setLoggedInUser(token);
         store.saveObject(userObject, TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {

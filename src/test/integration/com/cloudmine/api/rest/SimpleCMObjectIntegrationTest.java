@@ -4,7 +4,7 @@ import com.cloudmine.api.CMUser;
 import com.cloudmine.api.SimpleCMObject;
 import com.cloudmine.api.rest.callbacks.LoginResponseCallback;
 import com.cloudmine.api.rest.callbacks.ObjectModificationResponseCallback;
-import com.cloudmine.api.rest.response.LogInResponse;
+import com.cloudmine.api.rest.response.LoginResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.cloudmine.api.rest.response.SimpleCMObjectResponse;
 import com.cloudmine.test.AsyncTestResultsCoordinator;
@@ -48,7 +48,7 @@ public class SimpleCMObjectIntegrationTest extends ServiceTestBase {
         final CMUser user = CMUser.CMUser("w@w.com", "w");
         AsyncTestResultsCoordinator.reset(2);
         user.login(TestServiceCallback.testCallback(new LoginResponseCallback() {
-            public void onCompletion(LogInResponse response) {
+            public void onCompletion(LoginResponse response) {
                 object.saveWith(response.userToken());
                 object.save(TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
                     public void onCompletion(ObjectModificationResponse response) {

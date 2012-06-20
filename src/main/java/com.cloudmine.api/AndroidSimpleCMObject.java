@@ -2,14 +2,19 @@ package com.cloudmine.api;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import com.cloudmine.api.exceptions.CreationException;
+import com.cloudmine.api.exceptions.JsonConversionException;
 import com.cloudmine.api.rest.JsonString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
+ * Parcelable representation of SimpleCMObject
  * Copyright CloudMine LLC
- * CMUser: johnmccarthy
  * Date: 6/11/12, 2:35 PM
  */
 public class AndroidSimpleCMObject extends SimpleCMObject implements Parcelable {
+    private static final Logger LOG = LoggerFactory.getLogger(AndroidSimpleCMObject.class);
     public static final Creator<AndroidSimpleCMObject> CREATOR =
             new Creator<AndroidSimpleCMObject>() {
                 @Override
@@ -23,12 +28,19 @@ public class AndroidSimpleCMObject extends SimpleCMObject implements Parcelable 
                 }
             };
 
-
-    public AndroidSimpleCMObject(SimpleCMObject object) {
+    /**
+     * Create a new AndroidSimpleCMObject based on an existing SimpleCMObject, so it can be serialized
+     * @param object this new AndroidSimpleCMObject will be equivalent to this
+     * @throws JsonConversionException If unable to convert the SimpleCMObject to json. Should never be thrown,
+     *          as if the SimpleCMObject was created fine, this copy should be as well.
+     * @throws CreationException if the SimpleCMObject doesn't have a toplevel key mapped to a content map. Should never
+     *          be thrown, as if the SimpleCMObject was created fine, this copy should be as well.
+     */
+    public AndroidSimpleCMObject(SimpleCMObject object) throws JsonConversionException, CreationException {
         super(object);
     }
 
-    public AndroidSimpleCMObject(Parcel in) {
+    private AndroidSimpleCMObject(Parcel in) throws JsonConversionException, CreationException {
         super(new JsonString(in.readString()));
     }
 

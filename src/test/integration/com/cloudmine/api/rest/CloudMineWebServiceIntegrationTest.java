@@ -205,7 +205,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     @Test
     public void testUserLogin() {
         CMUser nonExistentUser = CMUser.CMUser("some@dude.com", "123");
-        LogInResponse response = service.login(nonExistentUser);
+        LoginResponse response = service.login(nonExistentUser);
         Assert.assertTrue(response.was(401));
         service.set(USER);
 
@@ -215,11 +215,11 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
     @Test
     public void testUserLogout() {
-        CMResponse response = service.logout(CMUserToken.CMUserToken("this token doesn't exist", new Date()));
+        CMResponse response = service.logout(CMSessionToken.CMSessionToken("this token doesn't exist", new Date()));
         Assert.assertEquals(401, response.getStatusCode());
 
         service.set(USER);
-        LogInResponse loginResponse = service.login(USER);
+        LoginResponse loginResponse = service.login(USER);
         Assert.assertTrue(loginResponse.was(200));
 
         response = service.logout(loginResponse.userToken());
@@ -237,7 +237,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         }));
         waitThenAssertTestResults();
         CMUser newPasswordUser = CMUser.CMUser(user.email(), "newPassword");
-        LogInResponse response = service.login(newPasswordUser);
+        LoginResponse response = service.login(newPasswordUser);
         assertTrue(response.wasSuccess());
     }
 
@@ -266,14 +266,14 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         service.set(USER);
         service.asyncLogin(USER, TestServiceCallback.testCallback(new LoginResponseCallback() {
             @Override
-            public void onCompletion(LogInResponse response) {
+            public void onCompletion(LoginResponse response) {
                 Assert.assertTrue(response.wasSuccess());
             }
         }));
         waitThenAssertTestResults();
         service.asyncLogin(CMUser.CMUser("thisdoesntexist@dddd.com", "somepass"), TestServiceCallback.testCallback(new LoginResponseCallback() {
-            public void onCompletion(LogInResponse response) {
-                Assert.assertEquals(CMUserToken.FAILED, response.userToken());
+            public void onCompletion(LoginResponse response) {
+                Assert.assertEquals(CMSessionToken.FAILED, response.userToken());
             }
         }));
         waitThenAssertTestResults();
@@ -284,7 +284,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         service.set(USER);
         reset(2);
         service.asyncLogin(USER, TestServiceCallback.testCallback(new LoginResponseCallback() {
-            public void onCompletion(LogInResponse response) {
+            public void onCompletion(LoginResponse response) {
                 Assert.assertTrue(response.wasSuccess());
 
                 service.asyncLogout(response.userToken(), TestServiceCallback.testCallback(new CMResponseCallback() {
@@ -394,7 +394,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
         service.asyncDelete("oneKey", TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
-                List<SimpleCMObject> successObjects = response.getSuccessObjects();
+                List<SimpleCMObject> successObjects = response.successObjects();
                 assertTrue(response.wasSuccess());
                 assertTrue(response.wasDeleted("oneKey"));
                 assertEquals(1, successObjects.size());
@@ -403,11 +403,11 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         waitThenAssertTestResults();
         service.asyncDelete(Arrays.asList("deepKeyed", "oneKey"), TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
-                List<SimpleCMObject> successObjects = response.getSuccessObjects();
+                List<SimpleCMObject> successObjects = response.successObjects();
                 assertTrue(response.wasSuccess());
                 assertTrue(response.wasDeleted("deepKeyed"));
                 assertEquals(1, successObjects.size());
-                assertEquals(1, response.getErrorObjects().size());
+                assertEquals(1, response.errorObjects().size());
             }
         }));
         waitThenAssertTestResults();

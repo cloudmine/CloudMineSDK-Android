@@ -3,10 +3,11 @@ package com.cloudmine.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Base64;
+import com.cloudmine.api.exceptions.CreationException;
 
 /**
+ * Parcelable implementation of CMUser that encodes using the Android libraries
  * Copyright CloudMine LLC
- * CMUser: johnmccarthy
  * Date: 6/11/12, 2:45 PM
  */
 public class AndroidCMUser extends CMUser implements Parcelable {
@@ -25,11 +26,17 @@ public class AndroidCMUser extends CMUser implements Parcelable {
                 }
             };
 
-    public AndroidCMUser(Parcel parcel) {
+    public AndroidCMUser(Parcel parcel) throws CreationException {
         super(parcel.readString(), parcel.readString());
     }
 
-    public AndroidCMUser(String email, String password) {
+    /**
+     * Create a new AndroidCMUser with the given email and password.
+     * @param email a non null email address
+     * @param password a non null password
+     * @throws CreationException if given a null email or password
+     */
+    public AndroidCMUser(String email, String password) throws CreationException {
         super(email, password);
     }
 

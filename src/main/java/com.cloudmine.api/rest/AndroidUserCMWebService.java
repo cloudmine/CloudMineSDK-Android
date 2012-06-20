@@ -2,7 +2,7 @@ package com.cloudmine.api.rest;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.cloudmine.api.CMUserToken;
+import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.DeviceIdentifier;
 import org.apache.http.message.AbstractHttpMessage;
 
@@ -11,9 +11,8 @@ import org.apache.http.message.AbstractHttpMessage;
  * multiple inheritance. Silly Java.
  */
 /**
- *
+ * Android specific implementation of UserCMWebService, which allows it to be parcelable
  * Copyright CloudMine LLC
- * CMUser: johnmccarthy
  * Date: 6/11/12, 2:41 PM
  */
 public class AndroidUserCMWebService extends UserCMWebService implements Parcelable {
@@ -31,13 +30,13 @@ public class AndroidUserCMWebService extends UserCMWebService implements Parcela
             };
 
 
-    public AndroidUserCMWebService(Parcel in) {
+    protected AndroidUserCMWebService(Parcel in) {
         super(new CMURLBuilder(in.readString()),
-                CMUserToken.CMUserToken(in.readString()),
+                CMSessionToken.CMSessionToken(in.readString()),
                 new AndroidAsynchronousHttpClient());
     }
 
-    public AndroidUserCMWebService(CMURLBuilder baseUrl, CMUserToken token, AsynchronousHttpClient asynchronousHttpClient) {
+    protected AndroidUserCMWebService(CMURLBuilder baseUrl, CMSessionToken token, AsynchronousHttpClient asynchronousHttpClient) {
         super(baseUrl, token, asynchronousHttpClient);
     }
         @Override
@@ -55,7 +54,7 @@ public class AndroidUserCMWebService extends UserCMWebService implements Parcela
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(baseUrl.appPath());
-        parcel.writeString(userToken.asJson());
+        parcel.writeString(sessionToken.asJson());
     }
 
     @Override

@@ -9,8 +9,8 @@ import org.apache.http.client.methods.HttpUriRequest;
 import java.util.concurrent.Future;
 
 /**
+ * Implementation of AsynchronousHttpClient for the Android platform.
  * Copyright CloudMine LLC
- * CMUser: johnmccarthy
  * Date: 5/23/12, 6:26 PM
  */
 public class AndroidAsynchronousHttpClient extends AsyncHttpClient implements AsynchronousHttpClient{

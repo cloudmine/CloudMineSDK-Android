@@ -8,8 +8,10 @@ import org.apache.http.message.BasicHeader;
 import java.util.UUID;
 
 /**
+ * An identifier that is unique per device per application. Uses SharedPreferences, so if the phone is
+ * factory reset, a new identifier will be generated. Must be initialized before any calls to the
+ * CloudMine api are made
  * Copyright CloudMine LLC
- * User: johnmccarthy
  * Date: 6/12/12, 1:22 PM
  */
 public class DeviceIdentifier {
@@ -19,6 +21,12 @@ public class DeviceIdentifier {
     private static String uniqueId;
     public static final String DEVICE_HEADER_KEY = "X-CloudMine-UT";
 
+    /**
+     * Retrieves the unique id for this application and device from the preferences. If this is the
+     * first time the application has been run, a new unique id will be generated and saved in the
+     * preferences
+     * @param context the application context, accessable from an activity this.getApplicationContext()
+     */
     public static void initialize(Context context) {
         SharedPreferences preferences = context.getSharedPreferences("CLOUDMINE_PREFERENCES", Context.MODE_PRIVATE);
         boolean isNotSet = !preferences.contains(UNIQUE_ID_KEY);
@@ -34,6 +42,11 @@ public class DeviceIdentifier {
         }
     }
 
+    /**
+     * Get the unique identifier for this Device and application
+     * @return the unique identifier
+     * @throws RuntimeException if initialize has not been called
+     */
     public static String uniqueId() throws RuntimeException {
         if(uniqueId == null) {
             throw new RuntimeException("You must call DeviceIdentifier.initialize before using the cloudmine api");
@@ -41,6 +54,11 @@ public class DeviceIdentifier {
         return uniqueId;
     }
 
+    /**
+     * Get the header that should be included with any requests to cloudmine
+     * @return the header that should be included with any requests to cloudmine
+     * @throws RuntimeException if initialize has not been called
+     */
     public static Header deviceIdentifierHeader() throws RuntimeException {
         return new BasicHeader(DEVICE_HEADER_KEY, uniqueId());
     }
