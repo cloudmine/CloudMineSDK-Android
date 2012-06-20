@@ -434,8 +434,12 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         assertTrue(response.wasSuccess());
 
         service.asyncLoadFile("fileKey", TestServiceCallback.testCallback(new FileLoadCallback("fileKey") {
-           public void onCompletion(CMFile loadedFile) {
+
+           public void onCompletion(FileLoadResponse loadedFileResponse) {
+               assertTrue(loadedFileResponse.wasSuccess());
+               CMFile loadedFile = loadedFileResponse.getFile();
                assertEquals(file, loadedFile);
+
            }
         }));
         waitThenAssertTestResults();
@@ -449,7 +453,9 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     @Test
     public void testAsyncLoadNullFile() {
         service.asyncLoadFile("nonexistentfile", TestServiceCallback.testCallback(new FileLoadCallback("nonexistent key for a file") {
-            public void onCompletion(CMFile loadedFile) {
+            public void onCompletion(FileLoadResponse loadedFileResponse) {
+                assertFalse(loadedFileResponse.wasSuccess());
+                CMFile loadedFile = loadedFileResponse.getFile();
                 assertEquals(1, loadedFile.getFileContents().length);
                 assertTrue(CMFile.isEmpty(loadedFile));
             }
