@@ -28,14 +28,14 @@ public class ServiceTestBase {
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         DeviceIdentifier.initialize(Robolectric.application.getApplicationContext());
         CMApiCredentials.initialize(APP_ID, API_KEY);
-        service = AndroidCMWebService.service();
+        service = AndroidCMWebService.getService();
     }
     @After
     public void cleanUp() {
         service.deleteAll();
         CMUser user = user();
-        CMSessionToken token = service.login(user).userToken();
-        service.userWebService(token).deleteAll();
+        CMSessionToken token = service.login(user).getSessionToken();
+        service.getUserWebService(token).deleteAll();
     }
 
     public CMUser user() {

@@ -51,13 +51,13 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     @Ignore
     public void testSentHeaders() { //TODO this test doesn't work but its not cause the impplementation is broken
 
-        AndroidCMWebService androidService = AndroidCMWebService.service();
+        AndroidCMWebService androidService = AndroidCMWebService.getService();
         androidService.delete("someKey");
 
         HttpRequest sentRequest = Robolectric.getSentHttpRequest(0);
         Header idHeader = sentRequest.getFirstHeader(DeviceIdentifier.DEVICE_HEADER_KEY);
         assertNotNull(idHeader);
-        assertEquals(DeviceIdentifier.uniqueId(), idHeader.getValue());
+        assertEquals(DeviceIdentifier.getUniqueId(), idHeader.getValue());
 
         Header agentHeader = sentRequest.getFirstHeader(CMWebService.AGENT_HEADER_KEY);
         assertNotNull(agentHeader);
@@ -85,7 +85,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
     @Test
     public void testBasicSet() {
-        ObjectModificationResponse response = service.set(TEST_JSON);
+        ObjectModificationResponse response = service.insert(TEST_JSON);
         assertWasSuccess(response);
 
         Assert.assertTrue(response.hasSuccessKey("TESTING4703"));
@@ -93,15 +93,15 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
     @Test
     public void testStringSearch() {
-        service.set(COMPLEX_JSON);
+        service.insert(COMPLEX_JSON);
 
-        SimpleCMObjectResponse response = service.search("[innerKey=\"inner spaced String\"]");
+        SimpleCMObjectResponse response = service.loadSearch("[innerKey=\"inner spaced String\"]");
         assertWasSuccess(response);
     }
 
     @Test
     public void testDeleteAll() {
-        service.set(TEST_JSON);
+        service.insert(TEST_JSON);
         ObjectModificationResponse response = service.deleteAll();
         assertWasSuccess(response);
     }
@@ -116,8 +116,8 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
     @Test
     public void testBasicGet() {
-        service.set(TEST_JSON);
-        SimpleCMObjectResponse response = service.get();
+        service.insert(TEST_JSON);
+        SimpleCMObjectResponse response = service.loadAllObjects();
         assertWasSuccess(response);
         Assert.assertTrue(response.hasSuccessKey("TESTING4703"));
     }
@@ -125,7 +125,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     @Test
     public void testFileStorageSet() throws Exception {
         InputStream input = getObjectInputStream();
-        CMResponse response = service.set(CMFile.CMFile(input));
+        CMResponse response = service.insert(CMFile.CMFile(input));
         Assert.assertNotNull(response);
         Assert.assertTrue(response.hasObject("key"));
     }
@@ -133,12 +133,12 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     @Test
     public void testFileStorageGet() throws Exception {
         CMFile insertedFile = CMFile.CMFile(getObjectInputStream(), "theFileKey", CMFile.DEFAULT_CONTENT_TYPE);
-        CMResponse response = service.set(
+        CMResponse response = service.insert(
                 insertedFile);
 
-        CMFile loadedFile = service.getFile("theFileKey");
-        byte[] insertedFileContents = insertedFile.fileContents();
-        byte[] loadedFileContents = loadedFile.fileContents();
+        CMFile loadedFile = service.loadFile("theFileKey");
+        byte[] insertedFileContents = insertedFile.getFileContents();
+        byte[] loadedFileContents = loadedFile.getFileContents();
         assertEquals(insertedFileContents.length, loadedFileContents.length);
         for(int i = 0; i < loadedFileContents.length; i++) {
             assertEquals(insertedFileContents[i], loadedFileContents[i]);
@@ -157,8 +157,8 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
             public void onCompletion(ObjectModificationResponse response) {
                 service.asyncLoadObjectsOfClass("task", new SimpleCMObjectResponseCallback() {
                     public void onCompletion(SimpleCMObjectResponse objectResponse) {
-                        Assert.assertEquals(1, objectResponse.objects().size());
-                        Assert.assertEquals(task, objectResponse.objects().get(0));
+                        Assert.assertEquals(1, objectResponse.getObjects().size());
+                        Assert.assertEquals(task, objectResponse.getObjects().get(0));
                     }
                 });
                 assertWasSuccess(response);
@@ -176,21 +176,21 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
     @Test
     public void testKeyedDelete() {
-        service.set(COMPLEX_JSON);
+        service.insert(COMPLEX_JSON);
 
         SuccessErrorResponse response = service.delete("deepKeyed");
 
         assertWasSuccess(response);
 
-        response = service.get();
+        response = service.loadAllObjects();
         assertWasSuccess(response);
         Assert.assertTrue(response.hasSuccessKey("oneKey"));
         Assert.assertFalse(response.hasSuccessKey("deepKeyed"));
 
-        service.set(COMPLEX_JSON);
+        service.insert(COMPLEX_JSON);
 
         service.delete(Arrays.asList("deepKeyed", "oneKey"));
-        response = service.get();
+        response = service.loadAllObjects();
         Assert.assertFalse(response.hasSuccessKey("oneKey"));
         Assert.assertFalse(response.hasSuccessKey("deepKeyed"));
     }
@@ -198,7 +198,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     @Test
     @Ignore // until we can delete users this test will fail every time but the first time its run
     public void testCreateUser() {
-        CMResponse response = service.set(USER);
+        CMResponse response = service.insert(USER);
         Assert.assertTrue(response.was(201));
     }
 
@@ -207,7 +207,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         CMUser nonExistentUser = CMUser.CMUser("some@dude.com", "123");
         LoginResponse response = service.login(nonExistentUser);
         Assert.assertTrue(response.was(401));
-        service.set(USER);
+        service.insert(USER);
 
         response = service.login(USER);
         Assert.assertTrue(response.was(200));
@@ -218,25 +218,25 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         CMResponse response = service.logout(CMSessionToken.CMSessionToken("this token doesn't exist", new Date()));
         Assert.assertEquals(401, response.getStatusCode());
 
-        service.set(USER);
+        service.insert(USER);
         LoginResponse loginResponse = service.login(USER);
         Assert.assertTrue(loginResponse.was(200));
 
-        response = service.logout(loginResponse.userToken());
+        response = service.logout(loginResponse.getSessionToken());
         Assert.assertTrue(response.was(200));
     }
 
     @Test
     public void testAsyncChangePassword() {
         CMUser user = randomUser();
-        service.set(user);
+        service.insert(user);
         service.asyncChangePassword(user, "newPassword", TestServiceCallback.testCallback(new CMResponseCallback() {
            public void onCompletion(CMResponse response) {
                assertTrue(response.wasSuccess());
            }
         }));
         waitThenAssertTestResults();
-        CMUser newPasswordUser = CMUser.CMUser(user.email(), "newPassword");
+        CMUser newPasswordUser = CMUser.CMUser(user.getEmail(), "newPassword");
         LoginResponse response = service.login(newPasswordUser);
         assertTrue(response.wasSuccess());
     }
@@ -244,9 +244,9 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     @Test
     public void testAsyncResetPassword() {
         CMUser user = randomUser();
-        service.set(user);
+        service.insert(user);
 
-        service.asyncResetPasswordRequest(user.email(), TestServiceCallback.testCallback(new CMResponseCallback() {
+        service.asyncResetPasswordRequest(user.getEmail(), TestServiceCallback.testCallback(new CMResponseCallback() {
             @Override
             public void onCompletion(CMResponse response) {
                 assertTrue(response.wasSuccess());
@@ -263,7 +263,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
     @Test
     public void testAsyncLogin() {
-        service.set(USER);
+        service.insert(USER);
         service.asyncLogin(USER, TestServiceCallback.testCallback(new LoginResponseCallback() {
             @Override
             public void onCompletion(LoginResponse response) {
@@ -273,7 +273,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         waitThenAssertTestResults();
         service.asyncLogin(CMUser.CMUser("thisdoesntexist@dddd.com", "somepass"), TestServiceCallback.testCallback(new LoginResponseCallback() {
             public void onCompletion(LoginResponse response) {
-                Assert.assertEquals(CMSessionToken.FAILED, response.userToken());
+                Assert.assertEquals(CMSessionToken.FAILED, response.getSessionToken());
             }
         }));
         waitThenAssertTestResults();
@@ -281,13 +281,13 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
     @Test
     public void testAsyncLogout() {
-        service.set(USER);
+        service.insert(USER);
         reset(2);
         service.asyncLogin(USER, TestServiceCallback.testCallback(new LoginResponseCallback() {
             public void onCompletion(LoginResponse response) {
                 Assert.assertTrue(response.wasSuccess());
 
-                service.asyncLogout(response.userToken(), TestServiceCallback.testCallback(new CMResponseCallback() {
+                service.asyncLogout(response.getSessionToken(), TestServiceCallback.testCallback(new CMResponseCallback() {
                     public void onCompletion(CMResponse response) {
                         Assert.assertTrue(response.wasSuccess());
                     }
@@ -299,11 +299,11 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
     @Test
     public void testAsyncGet() {
-        service.set(COMPLEX_JSON);
+        service.insert(COMPLEX_JSON);
         service.asyncLoadObjects(TestServiceCallback.testCallback(new SimpleCMObjectResponseCallback() {
             public void onCompletion(SimpleCMObjectResponse response) {
-                Assert.assertEquals(2, response.objects().size());
-                SimpleCMObject object = response.object("deepKeyed");
+                Assert.assertEquals(2, response.getObjects().size());
+                SimpleCMObject object = response.getSimpleCMObject("deepKeyed");
                 Assert.assertEquals(Integer.valueOf(45), object.getInteger("innerKeyToNumber"));
             }
         }));
@@ -312,7 +312,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         service.asyncLoadObject("oneKey", TestServiceCallback.testCallback(new SimpleCMObjectResponseCallback() {
             public void onCompletion(SimpleCMObjectResponse response) {
                 Assert.assertTrue(response.wasSuccess());
-                Assert.assertEquals(1, response.objects().size());
+                Assert.assertEquals(1, response.getObjects().size());
             }
         }));
         waitThenAssertTestResults();
@@ -320,13 +320,13 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
     @Test
     public void testAsyncSearch() {
-        service.set(COMPLEX_JSON);
+        service.insert(COMPLEX_JSON);
 
         service.asyncSearch("[innerKey=\"inner spaced String\"]", TestServiceCallback.testCallback(new SimpleCMObjectResponseCallback() {
             public void onCompletion(SimpleCMObjectResponse response) {
                 Assert.assertTrue(response.wasSuccess());
-                Assert.assertEquals(1, response.objects().size());
-                SimpleCMObject object = response.object("deepKeyed");
+                Assert.assertEquals(1, response.getObjects().size());
+                SimpleCMObject object = response.getSimpleCMObject("deepKeyed");
 
                 SimpleCMObject anotherObject = object.getSimpleCMObject("anotherObject");
 
@@ -342,16 +342,16 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         SimpleCMObject geoObject = SimpleCMObject.SimpleCMObject("location");
         geoObject.add("geoPoint", CMGeoPoint.CMGeoPoint(50, 50, "geo"));
 
-        service.set(geoObject.asJson());
+        service.insert(geoObject.asJson());
 
         service.asyncSearch("[geoPoint near (50, 50)]", TestServiceCallback.testCallback(new SimpleCMObjectResponseCallback() {
             public void onCompletion(SimpleCMObjectResponse response) {
-                List<SimpleCMObject> objects = response.objects();
+                List<SimpleCMObject> objects = response.getObjects();
                 Assert.assertEquals(1, objects.size());
 
                 CMGeoPoint geoPoint = objects.get(0).getGeoPoint("geoPoint");
-                Assert.assertEquals(50, geoPoint.latitude(), 2);
-                Assert.assertEquals(50, geoPoint.longitude(), 2);
+                Assert.assertEquals(50, geoPoint.getLatitude(), 2);
+                Assert.assertEquals(50, geoPoint.getLongitude(), 2);
 
             }
         }));
@@ -378,10 +378,10 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
                 Assert.assertTrue(response.wasSuccess());
                 Assert.assertTrue(response.wasUpdated("deepKeyed"));
                 Assert.assertTrue(response.wasUpdated("oneKey"));
-                SimpleCMObjectResponse loadObjectResponse = service.get();
-                Assert.assertEquals(2, loadObjectResponse.objects().size());
+                SimpleCMObjectResponse loadObjectResponse = service.loadAllObjects();
+                Assert.assertEquals(2, loadObjectResponse.getObjects().size());
 
-                SimpleCMObject deepObject = loadObjectResponse.object("deepKeyed");
+                SimpleCMObject deepObject = loadObjectResponse.getSimpleCMObject("deepKeyed");
                 Assert.assertNull(deepObject.get("innerKey"));
             }
         }));
@@ -390,11 +390,11 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
     @Test
     public void testAsyncDelete() {
-        service.set(COMPLEX_JSON);
+        service.insert(COMPLEX_JSON);
 
         service.asyncDelete("oneKey", TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
-                List<SimpleCMObject> successObjects = response.successObjects();
+                List<SimpleCMObject> successObjects = response.getSuccessObjects();
                 assertTrue(response.wasSuccess());
                 assertTrue(response.wasDeleted("oneKey"));
                 assertEquals(1, successObjects.size());
@@ -403,11 +403,11 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         waitThenAssertTestResults();
         service.asyncDelete(Arrays.asList("deepKeyed", "oneKey"), TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
-                List<SimpleCMObject> successObjects = response.successObjects();
+                List<SimpleCMObject> successObjects = response.getSuccessObjects();
                 assertTrue(response.wasSuccess());
                 assertTrue(response.wasDeleted("deepKeyed"));
                 assertEquals(1, successObjects.size());
-                assertEquals(1, response.errorObjects().size());
+                assertEquals(1, response.getErrorObjects().size());
             }
         }));
         waitThenAssertTestResults();
@@ -420,7 +420,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         service.asyncUpload(file, TestServiceCallback.testCallback(new FileCreationResponseCallback() {
             public void onCompletion(FileCreationResponse file) {
                 assertTrue(file.wasSuccess());
-                assertNotNull(file.fileKey());
+                assertNotNull(file.getFileKey());
             }
         }));
         waitThenAssertTestResults();
@@ -430,7 +430,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     public void testAsyncLoadFile() throws Exception {
         InputStream input = getObjectInputStream();
         final CMFile file = CMFile.CMFile(input, "fileKey", null);
-        CMResponse response = service.set(file);
+        CMResponse response = service.insert(file);
         assertTrue(response.wasSuccess());
 
         service.asyncLoadFile("fileKey", TestServiceCallback.testCallback(new FileLoadCallback("fileKey") {
@@ -450,7 +450,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     public void testAsyncLoadNullFile() {
         service.asyncLoadFile("nonexistentfile", TestServiceCallback.testCallback(new FileLoadCallback("nonexistent key for a file") {
             public void onCompletion(CMFile loadedFile) {
-                assertEquals(1, loadedFile.fileContents().length);
+                assertEquals(1, loadedFile.getFileContents().length);
                 assertTrue(CMFile.isEmpty(loadedFile));
             }
         }));
@@ -461,7 +461,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     public void testAsyncDeleteFile() throws Exception {
         InputStream input = getObjectInputStream();
         final CMFile file = CMFile.CMFile(input, "fileKey", null);
-        service.set(file);
+        service.insert(file);
 
         service.asyncDeleteFile(file, TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
@@ -499,10 +499,10 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
                         Assert.assertTrue(response.wasSuccess());
                         Assert.assertTrue(response.wasUpdated("deepKeyed"));
                         Assert.assertTrue(response.wasUpdated("oneKey"));
-                        SimpleCMObjectResponse loadObjectResponse = service.get();
-                        Assert.assertEquals(2, loadObjectResponse.objects().size());
+                        SimpleCMObjectResponse loadObjectResponse = service.loadAllObjects();
+                        Assert.assertEquals(2, loadObjectResponse.getObjects().size());
 
-                        SimpleCMObject deepObject = loadObjectResponse.object("deepKeyed");
+                        SimpleCMObject deepObject = loadObjectResponse.getSimpleCMObject("deepKeyed");
                         Assert.assertNotNull(deepObject.get("innerKey")); //This is where this test differs from above
                     }
                 }));

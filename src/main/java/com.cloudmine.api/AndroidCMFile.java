@@ -9,8 +9,6 @@ import java.io.ByteArrayOutputStream;
  * Android specific implementation of CMFile, which provides some convenient methods specific to the
  * Android platform
  * Copyright CloudMine LLC
- * CMUser: johnmccarthy
- * Date: 6/11/12, 2:23 PM
  */
 public class AndroidCMFile extends CMFile {
 

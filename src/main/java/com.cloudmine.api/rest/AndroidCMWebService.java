@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
  * Extension of CMWebService that allows the service to be converted to a parcel for sending.
  * between Android Activities
  * Copyright CloudMine LLC
- * Date: 6/11/12, 2:16 PM
  */
 public class AndroidCMWebService extends CMWebService implements Parcelable {
     private static final Logger LOG = LoggerFactory.getLogger(CMWebService.class);
@@ -37,7 +36,7 @@ public class AndroidCMWebService extends CMWebService implements Parcelable {
                 }
             };
 
-    protected static final String CLOUD_MINE_AGENT = "Android 1.0";
+    static final String CLOUD_MINE_AGENT = "Android 1.0";
 
     private static final AndroidCMWebService service;
     static {
@@ -56,7 +55,7 @@ public class AndroidCMWebService extends CMWebService implements Parcelable {
      * @throws CreationException if CMApiCredentials.initialize has not been called yet
      * @return
      */
-    public static AndroidCMWebService service() throws CreationException {
+    public static AndroidCMWebService getService() throws CreationException {
         if(service == null) {
             throw new CreationException("Service could not be instantiated. Has CMApiCredentials.initialize been called?");
         }
@@ -72,7 +71,7 @@ public class AndroidCMWebService extends CMWebService implements Parcelable {
      * @throws CreationException if CMApiCredentials.initialize has not been called yet
      */
     private AndroidCMWebService() throws CreationException {
-        this(CMApiCredentials.applicationIdentifier());
+        this(CMApiCredentials.getApplicationIdentifier());
     }
 
     private AndroidCMWebService(String appId) {
@@ -82,7 +81,7 @@ public class AndroidCMWebService extends CMWebService implements Parcelable {
     @Override
     protected void addCloudMineHeader(AbstractHttpMessage message) {
         super.addCloudMineHeader(message);
-        message.addHeader(DeviceIdentifier.deviceIdentifierHeader());
+        message.addHeader(DeviceIdentifier.getDeviceIdentifierHeader());
     }
 
 
@@ -92,7 +91,7 @@ public class AndroidCMWebService extends CMWebService implements Parcelable {
     }
 
     @Override
-    protected String cloudMineAgent() {
+    protected String getCloudMineAgent() {
         return CLOUD_MINE_AGENT;
     }
 
@@ -103,6 +102,6 @@ public class AndroidCMWebService extends CMWebService implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(baseUrl.appPath());
+        parcel.writeString(baseUrl.getApplicationPath());
     }
 }

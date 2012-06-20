@@ -7,7 +7,6 @@ import com.cloudmine.api.rest.response.ResponseConstructor;
  * A wrapper around WebServiceCallback that makes it work with the AsyncHttp library. Should not
  * be extended.
  * Copyright CloudMine LLC
- * Date: 5/23/12, 3:51 PM
  */
 public final class AndroidWebServiceCallback<T> extends AsyncHttpResponseHandler<T> implements WebServiceCallback<T> {
 

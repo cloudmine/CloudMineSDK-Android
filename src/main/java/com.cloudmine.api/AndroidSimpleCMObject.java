@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Parcelable representation of SimpleCMObject
  * Copyright CloudMine LLC
- * Date: 6/11/12, 2:35 PM
  */
 public class AndroidSimpleCMObject extends SimpleCMObject implements Parcelable {
     private static final Logger LOG = LoggerFactory.getLogger(AndroidSimpleCMObject.class);

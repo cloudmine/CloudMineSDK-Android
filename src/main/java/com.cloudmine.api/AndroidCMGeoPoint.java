@@ -11,8 +11,6 @@ import org.slf4j.LoggerFactory;
 /**
  * A parcelable implementation of CMGeoPoint
  * Copyright CloudMine LLC
- * CMUser: johnmccarthy
- * Date: 6/11/12, 3:47 PM
  */
 public class AndroidCMGeoPoint extends CMGeoPoint implements Parcelable {
     private static final Logger LOG = LoggerFactory.getLogger(AndroidCMGeoPoint.class);

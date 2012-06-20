@@ -39,21 +39,22 @@ public class AndroidUserCMWebService extends UserCMWebService implements Parcela
     protected AndroidUserCMWebService(CMURLBuilder baseUrl, CMSessionToken token, AsynchronousHttpClient asynchronousHttpClient) {
         super(baseUrl, token, asynchronousHttpClient);
     }
-        @Override
+
+    @Override
     protected void addCloudMineHeader(AbstractHttpMessage message) {
         super.addCloudMineHeader(message);
-        message.addHeader(DeviceIdentifier.deviceIdentifierHeader());
+        message.addHeader(DeviceIdentifier.getDeviceIdentifierHeader());
     }
 
     @Override
-    protected String cloudMineAgent() {
+    protected String getCloudMineAgent() {
         return AndroidCMWebService.CLOUD_MINE_AGENT;
     }
 
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(baseUrl.appPath());
+        parcel.writeString(baseUrl.getApplicationPath());
         parcel.writeString(sessionToken.asJson());
     }
 

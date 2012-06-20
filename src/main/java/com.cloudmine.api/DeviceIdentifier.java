@@ -12,7 +12,6 @@ import java.util.UUID;
  * factory reset, a new identifier will be generated. Must be initialized before any calls to the
  * CloudMine api are made
  * Copyright CloudMine LLC
- * Date: 6/12/12, 1:22 PM
  */
 public class DeviceIdentifier {
 
@@ -47,7 +46,7 @@ public class DeviceIdentifier {
      * @return the unique identifier
      * @throws RuntimeException if initialize has not been called
      */
-    public static String uniqueId() throws RuntimeException {
+    public static String getUniqueId() throws RuntimeException {
         if(uniqueId == null) {
             throw new RuntimeException("You must call DeviceIdentifier.initialize before using the cloudmine api");
         }
@@ -59,8 +58,8 @@ public class DeviceIdentifier {
      * @return the header that should be included with any requests to cloudmine
      * @throws RuntimeException if initialize has not been called
      */
-    public static Header deviceIdentifierHeader() throws RuntimeException {
-        return new BasicHeader(DEVICE_HEADER_KEY, uniqueId());
+    public static Header getDeviceIdentifierHeader() throws RuntimeException {
+        return new BasicHeader(DEVICE_HEADER_KEY, getUniqueId());
     }
 
     private static String generateUniqueDeviceIdentifier() {

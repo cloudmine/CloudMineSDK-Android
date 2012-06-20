@@ -32,9 +32,9 @@ public class SimpleCMObjectIntegrationTest extends ServiceTestBase {
         object.add("string", "value");
         object.save(TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
-                SimpleCMObjectResponse loadResponse = AndroidCMWebService.service().get(object.key());
+                SimpleCMObjectResponse loadResponse = AndroidCMWebService.getService().loadObject(object.getObjectId());
                 Assert.assertTrue(loadResponse.wasSuccess());
-                SimpleCMObject loadedObject = loadResponse.object(object.key());
+                SimpleCMObject loadedObject = loadResponse.getSimpleCMObject(object.getObjectId());
                 assertEquals(object, loadedObject);
             }
         }));
@@ -49,11 +49,11 @@ public class SimpleCMObjectIntegrationTest extends ServiceTestBase {
         AsyncTestResultsCoordinator.reset(2);
         user.login(TestServiceCallback.testCallback(new LoginResponseCallback() {
             public void onCompletion(LoginResponse response) {
-                object.saveWith(response.userToken());
+                object.setSaveWith(response.getSessionToken());
                 object.save(TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
                     public void onCompletion(ObjectModificationResponse response) {
-                        SimpleCMObjectResponse loadedObjectResponse = service.get(object.key());
-                        SimpleCMObject loadedObject = loadedObjectResponse.object(object.key());
+                        SimpleCMObjectResponse loadedObjectResponse = service.loadObject(object.getObjectId());
+                        SimpleCMObject loadedObject = loadedObjectResponse.getSimpleCMObject(object.getObjectId());
 
                         Assert.assertNull(loadedObject);
                     }

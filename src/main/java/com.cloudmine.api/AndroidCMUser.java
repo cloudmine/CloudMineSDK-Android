@@ -8,7 +8,6 @@ import com.cloudmine.api.exceptions.CreationException;
 /**
  * Parcelable implementation of CMUser that encodes using the Android libraries
  * Copyright CloudMine LLC
- * Date: 6/11/12, 2:45 PM
  */
 public class AndroidCMUser extends CMUser implements Parcelable {
 
@@ -52,7 +51,7 @@ public class AndroidCMUser extends CMUser implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(email());
-        parcel.writeString(password());
+        parcel.writeString(getEmail());
+        parcel.writeString(getPassword());
     }
 }
