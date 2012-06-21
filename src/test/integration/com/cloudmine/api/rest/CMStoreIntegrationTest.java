@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -227,7 +228,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
     }
 
     @Test
-    public void testStoreOptions() throws ExecutionException, TimeoutException, InterruptedException {
+    public void testStoreFunctionOptions() throws ExecutionException, TimeoutException, InterruptedException {
         SimpleCMObject object = simpleObject();
         object.add("string", "dog");
         assertTrue(store.saveObject(object).get(FUTURE_WAIT_TIME, TimeUnit.SECONDS).wasSuccess());
@@ -237,6 +238,25 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         SimpleCMObjectResponse response = loadResponseFuture.get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
         Object result = response.getObject("result");
         //assertNotNull(result);
+    }
+
+    @Test
+    public void testStorePagingOptions() throws ExecutionException, TimeoutException, InterruptedException {
+        Collection<SimpleCMObject> objects = new ArrayList<SimpleCMObject>();
+        for(int i = 0; i < 5; i++) {
+            objects.add(simpleObject());
+        }
+        store.addObjects(objects);
+        ObjectModificationResponse response = store.saveStoreApplicationObjects().get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
+        assertTrue(response.wasSuccess());
+
+        CMRequestOptions options = CMRequestOptions.CMRequestOptions(CMPagingOptions.CMPagingOptions(2, 0, true));
+        SimpleCMObjectResponse loadResponse = store.loadAllApplicationObjects(Callback.DO_NOTHING, options).get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
+        assertTrue(loadResponse.wasSuccess());
+
+        assertEquals(2, loadResponse.getObjects().size());
+        assertEquals(5, loadResponse.getCount());
+
     }
 
     private SimpleCMObject simpleObject() {
