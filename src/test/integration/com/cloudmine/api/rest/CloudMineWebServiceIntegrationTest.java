@@ -136,7 +136,9 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         CMResponse response = service.insert(
                 insertedFile);
 
-        CMFile loadedFile = service.loadFile("theFileKey");
+        FileLoadResponse loadedFileResponse = service.loadFile("theFileKey");
+        assertTrue(loadedFileResponse.wasSuccess());
+        CMFile loadedFile = loadedFileResponse.getFile();
         byte[] insertedFileContents = insertedFile.getFileContents();
         byte[] loadedFileContents = loadedFile.getFileContents();
         assertEquals(insertedFileContents.length, loadedFileContents.length);

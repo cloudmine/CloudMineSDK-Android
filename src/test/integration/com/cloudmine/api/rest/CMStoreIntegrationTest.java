@@ -1,9 +1,7 @@
 package com.cloudmine.api.rest;
 
-import com.cloudmine.api.CMSessionToken;
-import com.cloudmine.api.CMUser;
-import com.cloudmine.api.SimpleCMObject;
-import com.cloudmine.api.StoreIdentifier;
+import com.cloudmine.api.*;
+import com.cloudmine.api.rest.callbacks.Callback;
 import com.cloudmine.api.rest.callbacks.LoginResponseCallback;
 import com.cloudmine.api.rest.callbacks.ObjectModificationResponseCallback;
 import com.cloudmine.api.rest.callbacks.SimpleCMObjectResponseCallback;
@@ -36,6 +34,8 @@ import static junit.framework.Assert.*;
 @RunWith(CloudMineTestRunner.class)
 public class CMStoreIntegrationTest extends ServiceTestBase {
     private CMStore store;
+    private int FUTURE_WAIT_TIME = 10;
+
     @Before
     public void setUp() {
         super.setUp();
@@ -198,8 +198,50 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
 
         store.addObject(appObject);
         Future<ObjectModificationResponse> responseFuture = store.saveStoreApplicationObjects();
-        ObjectModificationResponse response = responseFuture.get(10, TimeUnit.SECONDS);
+        ObjectModificationResponse response = responseFuture.get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
         assertTrue(response.wasSuccess());
         assertTrue(response.wasCreated(appObject.getObjectId()));
+    }
+
+    @Test
+    public void testStoreKeepValues() throws ExecutionException, TimeoutException, InterruptedException {
+        SimpleCMObject object = simpleObject();
+
+        Future<ObjectModificationResponse> responseFuture = store.saveObject(object);
+        responseFuture.get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
+        object.add("number", 10);
+        object.add("string", "name");
+        object.setClass("testObject");
+
+        Future<ObjectModificationResponse> secondSaveFuture = store.saveStoreApplicationObjects();
+        ObjectModificationResponse response = secondSaveFuture.get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
+        assertTrue(response.wasSuccess());
+        assertEquals(object, store.getStoredObject(object.getObjectId()));
+
+        Future<SimpleCMObjectResponse> loadFuture = store.loadAllApplicationObjects();
+        SimpleCMObjectResponse loadResponse = loadFuture.get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
+        assertTrue(loadResponse.wasSuccess());
+        SimpleCMObject loadObject = loadResponse.getSimpleCMObject(object.getObjectId());
+        assertEquals(object, loadObject);
+        assertEquals(object, store.getStoredObject(object.getObjectId()));
+    }
+
+    @Test
+    public void testStoreOptions() throws ExecutionException, TimeoutException, InterruptedException {
+        SimpleCMObject object = simpleObject();
+        object.add("string", "dog");
+        assertTrue(store.saveObject(object).get(FUTURE_WAIT_TIME, TimeUnit.SECONDS).wasSuccess());
+        CMServerFunction function = CMServerFunction.CMServerFunction("NewSnippet", false);
+        Future<SimpleCMObjectResponse> loadResponseFuture = store.loadApplicationObjectWithObjectId(object.getObjectId(), Callback.DO_NOTHING,
+                CMRequestOptions.CMRequestOptions(function));
+        SimpleCMObjectResponse response = loadResponseFuture.get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
+        Object result = response.getObject("result");
+        //assertNotNull(result);
+    }
+
+    private SimpleCMObject simpleObject() {
+        SimpleCMObject object = SimpleCMObject.SimpleCMObject();
+        object.add("bool", false);
+        return object;
     }
 }
