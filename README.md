@@ -5,7 +5,9 @@ Setup
 
 Eclipse
 ----
+
 This assumes you already have the Android SDK installed, Eclipse installed, and the ADT Eclipse plug in installed
+
 1. Go to File->New->Android Project
 2. Enter a project name and click next
 3. Select your SDK; the CloudMine android SDK is built against 2.3.3
@@ -16,7 +18,9 @@ This assumes you already have the Android SDK installed, Eclipse installed, and 
 
 IntelliJ
 ----
+
 This assumes you already have the Android SDK installed and IntelliJ installed
+
 1. Go to File->New Project
 2. Select Create Project from Scratch and click next
 3. Enter your project name, module name, and select Android Module and hit Next
@@ -27,6 +31,7 @@ This assumes you already have the Android SDK installed and IntelliJ installed
 
 Both
 ----
+
 8. Open your main activity class and add
 ```java
 private static final String APP_ID = "c1a...." //find this in your developer console
