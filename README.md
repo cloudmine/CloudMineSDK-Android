@@ -36,14 +36,14 @@ Both
 
 Open your main activity class and add
 
-```
+```java
 private static final String APP_ID = "c1a...." //find this in your developer console
 private static final String API_KEY = "3fc..." //find this in your developer console
 ```
 
 at the top of the class definition. In onCreate, add calls to
 
-```
+```java
 DeviceIdentifier.initialize(getApplicationContext()); //This initializes the unique ID that will be sent with each request to identify this user
 CMApiCredentials.initialize(APP_ID, API_KEY); //This will initialize your credentials
 ```
