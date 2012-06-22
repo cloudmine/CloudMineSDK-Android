@@ -28,7 +28,7 @@ import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestR
 import static junit.framework.Assert.*;
 
 /**
- * Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
+ * <br>Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
  * User: johnmccarthy
  * Date: 6/13/12, 3:51 PM
  */
@@ -191,6 +191,8 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
             }
         }));
         waitThenAssertTestResults();
+
+        assertEquals(0, store.getStoredObjects());
     }
 
     @Test

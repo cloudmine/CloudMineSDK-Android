@@ -12,7 +12,7 @@ import org.junit.Before;
 import static com.cloudmine.test.AsyncTestResultsCoordinator.reset;
 
 /**
- * Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
+ * <br>Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
  * User: johnmccarthy
  * Date: 6/14/12, 11:13 AM
  */

@@ -10,7 +10,7 @@ import java.util.concurrent.Future;
 
 /**
  * Implementation of AsynchronousHttpClient for the Android platform.
- * Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
+ * <br>Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
  */
 public class AndroidAsynchronousHttpClient extends AsyncHttpClient implements AsynchronousHttpClient{
     @Override

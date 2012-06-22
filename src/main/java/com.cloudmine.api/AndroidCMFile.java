@@ -8,7 +8,7 @@ import java.io.ByteArrayOutputStream;
 /**
  * Android specific implementation of CMFile, which provides some convenient methods specific to the
  * Android platform
- * Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
+ * <br>Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
  */
 public class AndroidCMFile extends CMFile {
 

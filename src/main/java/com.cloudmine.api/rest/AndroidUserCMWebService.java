@@ -12,7 +12,7 @@ import org.apache.http.message.AbstractHttpMessage;
  */
 /**
  * Android specific implementation of UserCMWebService, which allows it to be parcelable
- * Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
+ * <br>Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
  * Date: 6/11/12, 2:41 PM
  */
 public class AndroidUserCMWebService extends UserCMWebService implements Parcelable {

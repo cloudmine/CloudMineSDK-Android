@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Extension of CMWebService that allows the service to be converted to a parcel for sending.
  * between Android Activities
- * Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
+ * <br>Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
  */
 public class AndroidCMWebService extends CMWebService implements Parcelable {
     private static final Logger LOG = LoggerFactory.getLogger(CMWebService.class);

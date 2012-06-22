@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Parcelable representation of SimpleCMObject
- * Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
+ * <br>Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
  */
 public class AndroidSimpleCMObject extends SimpleCMObject implements Parcelable {
     private static final Logger LOG = LoggerFactory.getLogger(AndroidSimpleCMObject.class);

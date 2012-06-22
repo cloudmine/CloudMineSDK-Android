@@ -3,7 +3,7 @@ package com.cloudmine.test;
 import com.cloudmine.api.rest.callbacks.CMCallback;
 
 /**
- * Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
+ * <br>Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
  * CMUser: johnmccarthy
  * Date: 6/6/12, 3:36 PM
  */
