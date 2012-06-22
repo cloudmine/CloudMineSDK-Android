@@ -11,7 +11,7 @@ import java.util.UUID;
  * An identifier that is unique per device per application. Uses SharedPreferences, so if the phone is
  * factory reset, a new identifier will be generated. Must be initialized before any calls to the
  * CloudMine api are made
- * Copyright CloudMine LLC
+ * Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
  */
 public class DeviceIdentifier {
 

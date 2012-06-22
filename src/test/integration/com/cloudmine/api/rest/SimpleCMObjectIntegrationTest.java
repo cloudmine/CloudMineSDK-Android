@@ -22,7 +22,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 
 /**
- * Copyright CloudMine LLC
+ * Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
  * User: johnmccarthy
  * Date: 6/14/12, 10:53 AM
  */

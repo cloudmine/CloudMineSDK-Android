@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * Copyright CloudMine LLC
+ * Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
  * User: johnmccarthy
  * Date: 6/14/12, 4:11 PM
  */

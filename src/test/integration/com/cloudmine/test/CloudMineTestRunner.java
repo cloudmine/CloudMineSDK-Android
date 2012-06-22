@@ -5,7 +5,7 @@ import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.junit.runners.model.InitializationError;
 
 /**
- * Copyright CloudMine LLC
+ * Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
  * CMUser: johnmccarthy
  * Date: 6/6/12, 4:30 PM
  */

@@ -7,7 +7,7 @@ import com.cloudmine.api.exceptions.CreationException;
 
 /**
  * Parcelable implementation of CMUser that encodes using the Android libraries
- * Copyright CloudMine LLC
+ * Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
  */
 public class AndroidCMUser extends CMUser implements Parcelable {
 

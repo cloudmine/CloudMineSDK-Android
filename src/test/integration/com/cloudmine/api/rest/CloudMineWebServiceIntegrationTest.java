@@ -24,7 +24,7 @@ import static com.cloudmine.test.AsyncTestResultsCoordinator.*;
 import static junit.framework.Assert.*;
 
 /**
- * Copyright CloudMine LLC
+ * Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
  * CMUser: johnmccarthy
  * Date: 5/16/12, 2:40 PM
  */
