@@ -15,6 +15,7 @@ This assumes you already have the Android SDK installed, Eclipse installed, and 
 5. In Package Explorer, right click your project and select "Properties"
 6. Select Java Build Path, Libraries
 7. Select Add External Jars and add the CloudMine android SDK jar
+8. Copy the CloudMine android SDK jar to a folder called 'libs' in the root directory of your project
 
 IntelliJ
 ----
@@ -28,6 +29,7 @@ This assumes you already have the Android SDK installed and IntelliJ installed
 5. Right click your module and select "Open Module Settings"
 6. Select Project Settings -> Modules -> Your Module -> Dependencies
 7. Click (+) Add, Jars or Directories, and select the CloudMine android SDK jar, and click OK
+8. Grab a beer and continue on to the "both" section
 
 Both
 ----
