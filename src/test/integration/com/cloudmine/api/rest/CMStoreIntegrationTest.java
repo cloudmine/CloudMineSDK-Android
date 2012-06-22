@@ -72,7 +72,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         CMWebService.getService().insert(user);
         final CMSessionToken token = CMWebService.getService().login(user).getSessionToken();
 
-        object.setSaveWith(new StoreIdentifier(token));
+        object.setSaveWith(StoreIdentifier.StoreIdentifier(token));
         CMStore store = CMStore.CMStore();
         store.setLoggedInUser(token);
 
@@ -126,7 +126,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
 
         CMUser user = user();
         service.insert(user);
-        CMSessionToken token = service.login(user).getSessionToken();
+        final CMSessionToken token = service.login(user).getSessionToken();
 
         final List<SimpleCMObject> userObjects = new ArrayList<SimpleCMObject>();
         UserCMWebService userService = service.getUserWebService(token);
@@ -142,7 +142,9 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
                 assertTrue(response.wasSuccess());
                 assertEquals(userObjects.size(), response.getObjects().size());
                 for (SimpleCMObject object : userObjects) {
-                    assertEquals(object, response.getSimpleCMObject(object.getObjectId()));
+                    SimpleCMObject responseObject = response.getSimpleCMObject(object.getObjectId());
+                    assertEquals(StoreIdentifier.StoreIdentifier(token), responseObject.getSavedWith());
+                    assertEquals(object, responseObject);
                 }
             }
         }));
@@ -258,6 +260,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         assertEquals(5, loadResponse.getCount());
 
     }
+
 
     private SimpleCMObject simpleObject() {
         SimpleCMObject object = SimpleCMObject.SimpleCMObject();

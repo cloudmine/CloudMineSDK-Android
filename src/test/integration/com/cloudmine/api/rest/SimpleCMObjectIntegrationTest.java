@@ -1,5 +1,6 @@
 package com.cloudmine.api.rest;
 
+import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.SimpleCMObject;
 import com.cloudmine.api.rest.callbacks.LoginResponseCallback;
@@ -17,6 +18,8 @@ import org.junit.runner.RunWith;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
 
 /**
  * Copyright CloudMine LLC
@@ -39,6 +42,15 @@ public class SimpleCMObjectIntegrationTest extends ServiceTestBase {
             }
         }));
         waitThenAssertTestResults();
+        CMUser user = user();
+        service.insert(user);
+        CMSessionToken token = service.login(user).getSessionToken();
+        assertFalse(object.setSaveWith(token));
+
+        object.save();
+        SimpleCMObject loadedObject = service.getUserWebService(token).loadObject(object.getObjectId()).getSimpleCMObject(object.getObjectId());
+        assertNull(loadedObject);
+
     }
 
     @Test

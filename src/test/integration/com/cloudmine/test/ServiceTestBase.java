@@ -7,7 +7,6 @@ import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.rest.AndroidCMWebService;
 import com.cloudmine.api.rest.CMWebService;
 import com.xtremelabs.robolectric.Robolectric;
-import org.junit.After;
 import org.junit.Before;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.reset;
@@ -29,9 +28,10 @@ public class ServiceTestBase {
         DeviceIdentifier.initialize(Robolectric.application.getApplicationContext());
         CMApiCredentials.initialize(APP_ID, API_KEY);
         service = AndroidCMWebService.getService();
+        deleteAll();
     }
-    @After
-    public void cleanUp() {
+
+    private void deleteAll() {
         service.deleteAll();
         CMUser user = user();
         CMSessionToken token = service.login(user).getSessionToken();

@@ -1,0 +1,54 @@
+
+
+The first step is to set up your credentials. This requires two method calls; it is recmomended that you put these calls in your main Android Activity.
+Example:
+public class MainActivity extends Activity {
+       
+    private static final String APP_ID = "c1a...." //find this in your developer console
+    private static final String API_KEY = "3fc..." //find this in your developer 
+
+    public void onCreate(Bundle savedInstanceState) {
+        DeviceIdentifier.initialize(getApplicationContext()); //This initializes the unique ID that will be sent with each request to identify this user
+        CMApiCredentials.initialize(APP_ID, API_KEY); //This will initialize your credentials
+    }
+}
+
+        //Now, lets do something useful. First lets create some application data. Application data can be accessed by any user.
+
+        SimpleCMObject wilbur = SimpleCMObject.SimpleCMObject(); //Create a new SimpleCMObject with a random objectId
+        wilbur.setClass("animal");
+        wilbur.add("name", "Wilbur");
+        wilbur.add("birthday", new Date());
+        wilbur.save();
+        String wilburObjectIdi = wilbur.getObjectId();
+        //now we have persisted an animal named wilbur that was born today
+        //while we can do our save operations directly on SimpleCMObject, it is usually easier to use the CMStore
+        //Wilbur is in our store, because we saved him earlier. Lets pull him out
+        SimpleCMObject wilbur = CMStore.getStore().getStoredObjects(wilburObjectId);
+        //make some changes
+        wilbur.add("favoriteFood", "apples");
+        //persist them back to CloudMine
+        CMStore.getStore().saveStoreApplicationObjects();
+        //What about user's though? lets pretend we have two EditText fields, e-mail and password, and two methods
+        //getEmail and getPassword, that we let our user populate. Our createAccount method might look like:
+        final CMUser user = CMUser.CMUser(getEmail(), getPassword());
+        user.createUser();
+        //and our login method might look like:
+        final CMUser user = CMUser.CMUser(getEmail(), getPassword());
+        user.login(new LoginResponseCallback() {
+            public void onCompletion(LoginResponse loginResponse) {
+                if(loginResponse.wasSuccess()) {
+                    CMStore.getStore().setLoggedInUser(loginResponse.getSessionToken()); //set the default store to use this user for all user level operations
+                    //Create an intent and switch to a different activity
+                }
+            }
+        });
+       //Now lets create some user level data
+        SimpleCMObject favoriteAnimals = SimpleCMObject.SimpleCMObject();
+        //You can specify where objects are saved - application level or for a specific user. If you don't, application level is assumed
+        favoriteAnimals.setSaveWith(CMStore.getStore().getUserStoreIdentifier()); 
+        favoriteAnimals.add("favoritePig", "Wilbur");
+        favoriteAnimals.save();
+        //Now we have a default store that our user is logged into. Our store has two objects in it 
+        //wilbur, who is application level, and favoriteAnimals, which is specific to our logged in user
+                
