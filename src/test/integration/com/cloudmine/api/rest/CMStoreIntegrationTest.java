@@ -184,6 +184,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
             }
         }));
         waitThenAssertTestResults();
+        assertEquals(1, store.getStoredObjects().size());
         store.deleteObject(userObject, TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
                 assertTrue(response.wasSuccess());
@@ -191,8 +192,8 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
             }
         }));
         waitThenAssertTestResults();
+        assertEquals(0, store.getStoredObjects().size());
 
-        assertEquals(0, store.getStoredObjects());
     }
 
     @Test
