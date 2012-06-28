@@ -3,6 +3,8 @@ package com.cloudmine.api.rest;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.SimpleCMObject;
+import com.cloudmine.api.StoreIdentifier;
+import com.cloudmine.api.exceptions.CreationException;
 import com.cloudmine.api.rest.callbacks.ObjectModificationResponseCallback;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.cloudmine.api.rest.response.SimpleCMObjectResponse;
@@ -71,6 +73,15 @@ public class SimpleCMObjectIntegrationTest extends ServiceTestBase {
         final SimpleCMObject object = simpleObject();
         object.saveWithUser(user(), hasSuccessAndHasModified(object));
         waitThenAssertTestResults();
+
+        SimpleCMObject appObject = simpleObject();
+        appObject.setSaveWith(StoreIdentifier.applicationLevel());
+        try {
+            appObject.saveWithUser(user());
+            fail();
+        } catch(CreationException ce) {
+            //expected
+        }
     }
 
 
