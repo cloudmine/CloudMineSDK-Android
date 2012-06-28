@@ -1,20 +1,18 @@
 package com.cloudmine.api.rest;
 
 import com.cloudmine.api.*;
-import com.cloudmine.api.rest.callbacks.Callback;
-import com.cloudmine.api.rest.callbacks.LoginResponseCallback;
-import com.cloudmine.api.rest.callbacks.ObjectModificationResponseCallback;
-import com.cloudmine.api.rest.callbacks.SimpleCMObjectResponseCallback;
+import com.cloudmine.api.rest.callbacks.*;
+import com.cloudmine.api.rest.response.FileLoadResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.cloudmine.api.rest.response.SimpleCMObjectResponse;
 import com.cloudmine.test.CloudMineTestRunner;
 import com.cloudmine.test.ServiceTestBase;
-import com.cloudmine.test.TestServiceCallback;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,6 +23,7 @@ import java.util.concurrent.TimeoutException;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.reset;
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
+import static com.cloudmine.test.TestServiceCallback.testCallback;
 import static junit.framework.Assert.*;
 
 /**
@@ -49,7 +48,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         object.add("bool", true);
 
 
-        store.saveObject(object, TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
+        store.saveObject(object, testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
 
                 SimpleCMObjectResponse loadResponse = CMWebService.getService().loadObject(object.getObjectId());
@@ -65,20 +64,21 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
     }
 
     @Test
-    public void testSaveUserObject() {
+    public void testSaveUserObject() throws ExecutionException, InterruptedException {
         final SimpleCMObject object = SimpleCMObject.SimpleCMObject();
         object.add("bool", true);
-        CMUser user = CMUser.CMUser("dfljdsfkdfskd@t.com", "t");
+        final CMUser user = CMUser.CMUser("dfljdsfkdfskd@t.com", "t");
         CMWebService.getService().insert(user);
-        final CMSessionToken token = CMWebService.getService().login(user).getSessionToken();
 
-        object.setSaveWith(StoreIdentifier.StoreIdentifier(token));
+
+        object.setSaveWith(StoreIdentifier.StoreIdentifier(user));
         CMStore store = CMStore.CMStore();
-        store.setLoggedInUser(token);
+        store.setUser(user);
 
-        store.saveObject(object, TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
+        store.saveObject(object, testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse ignoredResponse) {
                 assertTrue(ignoredResponse.wasSuccess());
+                final CMSessionToken token = CMWebService.getService().login(user).getSessionToken();
                 SimpleCMObjectResponse response = CMWebService.getService().getUserWebService(token).loadObject(object.getObjectId());
                 assertTrue(response.wasSuccess());
                 SimpleCMObject loadedObject = response.getSimpleCMObject(object.getObjectId());
@@ -87,7 +87,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
             }
         }));
         waitThenAssertTestResults();
-
+        final CMSessionToken token = user.login().get().getSessionToken();
         SimpleCMObjectResponse response = CMWebService.getService().getUserWebService(token).loadObject(object.getObjectId());
         assertTrue(response.wasSuccess());
         assertEquals(response.getSimpleCMObject(object.getObjectId()), object);
@@ -100,10 +100,10 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         CMSessionToken token = service.login(user).getSessionToken();
         service.getUserWebService(token).insert(SimpleCMObject.SimpleCMObject("key").add("k", "v").asJson());
         reset(2);
-        store.login(user, TestServiceCallback.testCallback(new LoginResponseCallback() {
+        store.login(user, testCallback(new LoginResponseCallback() {
             public void onCompletion(LoginResponse response) {
                 assertTrue(response.wasSuccess());
-                store.loadAllUserObjects(TestServiceCallback.testCallback(new SimpleCMObjectResponseCallback() {
+                store.loadAllUserObjects(testCallback(new SimpleCMObjectResponseCallback() {
                     public void onCompletion(SimpleCMObjectResponse response) {
                         assertTrue(response.wasSuccess());
                         assertEquals("v", response.getSimpleCMObject("key").getString("k"));
@@ -124,7 +124,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
 
         service.insert(appObject.asJson());
 
-        CMUser user = user();
+        final CMUser user = user();
         service.insert(user);
         final CMSessionToken token = service.login(user).getSessionToken();
 
@@ -136,14 +136,14 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
             userObjects.add(userObject);
             userService.insert(userObject.asJson());
         }
-        store.setLoggedInUser(token);
-        store.loadAllUserObjects(TestServiceCallback.testCallback(new SimpleCMObjectResponseCallback() {
+        store.setUser(user);
+        store.loadAllUserObjects(testCallback(new SimpleCMObjectResponseCallback() {
             public void onCompletion(SimpleCMObjectResponse response) {
                 assertTrue(response.wasSuccess());
                 assertEquals(userObjects.size(), response.getObjects().size());
                 for (SimpleCMObject object : userObjects) {
                     SimpleCMObject responseObject = response.getSimpleCMObject(object.getObjectId());
-                    assertEquals(StoreIdentifier.StoreIdentifier(token), responseObject.getSavedWith());
+                    assertEquals(StoreIdentifier.StoreIdentifier(user), responseObject.getSavedWith());
                     assertEquals(object, responseObject);
                 }
             }
@@ -152,14 +152,28 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
     }
 
     @Test
+    public void testLoadUserObjectsOfClass() {
+        SimpleCMObject object = simpleObject();
+        object.setClass("testObject");
+        object.setSaveWith(user());
+        object.save(hasSuccess);
+
+        waitThenAssertTestResults();
+        user().logout(hasSuccess);
+        waitThenAssertTestResults();
+        store.setUser(user());
+        store.loadUserObjectsOfClass("testObject", hasSuccessAndHasLoaded(object));
+        waitThenAssertTestResults();
+
+    }
+
+    @Test
     public void testDeleteObjects() {
         final SimpleCMObject appObject = SimpleCMObject.SimpleCMObject();
         appObject.add("SomeKey", "Value");
-
-
         service.insert(appObject.asJson());
 
-        store.deleteObject(appObject, TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
+        store.deleteObject(appObject, testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
                 assertTrue(response.wasSuccess());
                 response.wasDeleted(appObject.getObjectId());
@@ -169,15 +183,24 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
     }
 
     @Test
+    public void testSaveStoreUserObjects() {
+        SimpleCMObject object = simpleUserObject();
+        store.addObject(object);
+        store.setUser(user());
+        store.saveStoreUserObjects(hasSuccessAndHasModified(object));
+        waitThenAssertTestResults();
+    }
+
+    @Test
     public void testDeleteUserObject() {
         final SimpleCMObject userObject = SimpleCMObject.SimpleCMObject();
         userObject.add("key", "value");
 
         CMUser user = user();
-        CMSessionToken token = service.login(user).getSessionToken();
-        userObject.setSaveWith(token);
-        store.setLoggedInUser(token);
-        store.saveObject(userObject, TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
+
+        userObject.setSaveWith(user);
+        store.setUser(user);
+        store.saveObject(userObject, testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
                 assertTrue(response.wasSuccess());
                 assertTrue(response.wasCreated(userObject.getObjectId()));
@@ -185,7 +208,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         }));
         waitThenAssertTestResults();
         assertEquals(1, store.getStoredObjects().size());
-        store.deleteObject(userObject, TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
+        store.deleteObject(userObject, testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
                 assertTrue(response.wasSuccess());
                 assertTrue(response.wasDeleted(userObject.getObjectId()));
@@ -197,32 +220,65 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
     }
 
     @Test
+    public void testCreateAndLoadUserFile() throws IOException {
+        final CMUser user = user();
+        final CMFile file = CMFile.CMFile(getObjectInputStream());
+        file.setSaveWith(user);
+        store.setUser(user);
+
+        store.saveFile(file, hasSuccess);
+        waitThenAssertTestResults();
+        user.logout(hasSuccess);
+        waitThenAssertTestResults();
+        store.loadUserFile(file.getFileName(), testCallback(new FileLoadCallback(file.getFileName()) {
+            public void onCompletion(FileLoadResponse response) {
+                assertTrue(response.wasSuccess());
+                assertEquals(file, response.getFile());
+            }
+        }));
+        waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testDeleteUserFile() throws IOException {
+        final CMUser user = user();
+        final CMFile file = CMFile.CMFile(getObjectInputStream());
+
+        file.setSaveWith(user);
+        file.save(hasSuccess);
+        waitThenAssertTestResults();
+        store.setUser(user);
+        store.deleteUserFile(file.getFileName(), testCallback(new ObjectModificationResponseCallback() {
+            public void onCompletion(ObjectModificationResponse response) {
+                assertTrue(response.wasSuccess());
+                assertTrue(response.wasDeleted(file.getFileName()));
+            }
+        }));
+        waitThenAssertTestResults();
+    }
+
+    @Test
     public void testSaveAddedObjects() throws ExecutionException, TimeoutException, InterruptedException {
         SimpleCMObject appObject = SimpleCMObject.SimpleCMObject();
         appObject.setSaveWith(StoreIdentifier.DEFAULT);
         appObject.add("simple", "value");
 
         store.addObject(appObject);
-        Future<ObjectModificationResponse> responseFuture = store.saveStoreApplicationObjects();
-        ObjectModificationResponse response = responseFuture.get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
-        assertTrue(response.wasSuccess());
-        assertTrue(response.wasCreated(appObject.getObjectId()));
+        store.saveStoreApplicationObjects(hasSuccessAndHasModified(appObject));
+        waitThenAssertTestResults();
     }
 
     @Test
     public void testStoreKeepValues() throws ExecutionException, TimeoutException, InterruptedException {
         SimpleCMObject object = simpleObject();
 
-        Future<ObjectModificationResponse> responseFuture = store.saveObject(object);
-        responseFuture.get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
+        store.saveObject(object, testCallback());
+        waitThenAssertTestResults();
         object.add("number", 10);
         object.add("string", "name");
         object.setClass("testObject");
 
-        Future<ObjectModificationResponse> secondSaveFuture = store.saveStoreApplicationObjects();
-        ObjectModificationResponse response = secondSaveFuture.get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
-        assertTrue(response.wasSuccess());
-        assertEquals(object, store.getStoredObject(object.getObjectId()));
+        store.saveStoreApplicationObjects(hasSuccessAndHasModified(object));;
 
         Future<SimpleCMObjectResponse> loadFuture = store.loadAllApplicationObjects();
         SimpleCMObjectResponse loadResponse = loadFuture.get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
@@ -236,13 +292,16 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
     public void testStoreFunctionOptions() throws ExecutionException, TimeoutException, InterruptedException {
         SimpleCMObject object = simpleObject();
         object.add("string", "dog");
-        assertTrue(store.saveObject(object).get(FUTURE_WAIT_TIME, TimeUnit.SECONDS).wasSuccess());
+        store.saveObject(object, hasSuccess);
+        waitThenAssertTestResults();
         CMServerFunction function = CMServerFunction.CMServerFunction("NewSnippet", false);
-        Future<SimpleCMObjectResponse> loadResponseFuture = store.loadApplicationObjectWithObjectId(object.getObjectId(), Callback.DO_NOTHING,
+        store.loadApplicationObjectWithObjectId(object.getObjectId(), new SimpleCMObjectResponseCallback() {
+            public void onCompletion(SimpleCMObjectResponse response) {
+                Object result = response.getObject("result");
+                assertNotNull(result);
+            }
+        },
                 CMRequestOptions.CMRequestOptions(function));
-        SimpleCMObjectResponse response = loadResponseFuture.get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
-        Object result = response.getObject("result");
-        //assertNotNull(result);
     }
 
     @Test
@@ -252,9 +311,8 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
             objects.add(simpleObject());
         }
         store.addObjects(objects);
-        ObjectModificationResponse response = store.saveStoreApplicationObjects().get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
-        assertTrue(response.wasSuccess());
-
+        store.saveStoreApplicationObjects(hasSuccess);
+        waitThenAssertTestResults();
         CMRequestOptions options = CMRequestOptions.CMRequestOptions(CMPagingOptions.CMPagingOptions(2, 0, true));
         SimpleCMObjectResponse loadResponse = store.loadAllApplicationObjects(Callback.DO_NOTHING, options).get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
         assertTrue(loadResponse.wasSuccess());
@@ -262,12 +320,5 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         assertEquals(2, loadResponse.getObjects().size());
         assertEquals(5, loadResponse.getCount());
 
-    }
-
-
-    private SimpleCMObject simpleObject() {
-        SimpleCMObject object = SimpleCMObject.SimpleCMObject();
-        object.add("bool", false);
-        return object;
     }
 }

@@ -1,6 +1,7 @@
 package com.cloudmine.test;
 
 import com.cloudmine.api.rest.callbacks.CMCallback;
+import com.cloudmine.api.rest.callbacks.CMResponseCallback;
 
 /**
  * <br>Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
@@ -13,6 +14,10 @@ public class TestServiceCallback<T> extends CMCallback<T> {
 
     public static <T> TestServiceCallback<T> testCallback(CMCallback<T> callback) {
         return new TestServiceCallback<T>(callback);
+    }
+
+    public static TestServiceCallback testCallback() {
+        return new TestServiceCallback(new CMResponseCallback());
     }
 
     public TestServiceCallback(CMCallback<T> callback) {

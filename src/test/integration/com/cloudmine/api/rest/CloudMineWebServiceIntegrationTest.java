@@ -517,18 +517,6 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         waitThenAssertTestResults();
     }
 
-
-    private InputStream getObjectInputStream() throws IOException {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutput = new ObjectOutputStream(output);
-        objectOutput.write(55);
-        objectOutput.writeObject("Some String is Written");
-        objectOutput.flush();
-        objectOutput.close();
-
-        return new ByteArrayInputStream(output.toByteArray());
-    }
-
     private void assertWasSuccess(SuccessErrorResponse response) {
         Assert.assertNotNull(response);
         Assert.assertFalse(response.hasError());
