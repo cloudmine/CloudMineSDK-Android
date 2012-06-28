@@ -66,5 +66,12 @@ public class SimpleCMObjectIntegrationTest extends ServiceTestBase {
         waitThenAssertTestResults();
     }
 
+    @Test
+    public void testSaveWithUser() {
+        final SimpleCMObject object = simpleObject();
+        object.saveWithUser(user(), hasSuccessAndHasModified(object));
+        waitThenAssertTestResults();
+    }
+
 
 }
