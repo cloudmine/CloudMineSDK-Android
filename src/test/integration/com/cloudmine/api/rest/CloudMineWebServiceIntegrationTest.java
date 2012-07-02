@@ -125,7 +125,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     @Test
     public void testFileStorageSet() throws Exception {
         InputStream input = getObjectInputStream();
-        CMResponse response = service.insert(CMFile.CMFile(input));
+        ResponseBase response = service.insert(CMFile.CMFile(input));
         Assert.assertNotNull(response);
         Assert.assertTrue(response.hasObject("key"));
     }
@@ -133,7 +133,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     @Test
     public void testFileStorageGet() throws Exception {
         CMFile insertedFile = CMFile.CMFile(getObjectInputStream(), "theFileKey", CMFile.DEFAULT_CONTENT_TYPE);
-        CMResponse response = service.insert(
+        ResponseBase response = service.insert(
                 insertedFile);
 
         FileLoadResponse loadedFileResponse = service.loadFile("theFileKey");
@@ -432,7 +432,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     public void testAsyncLoadFile() throws Exception {
         InputStream input = getObjectInputStream();
         final CMFile file = CMFile.CMFile(input, "fileKey", null);
-        CMResponse response = service.insert(file);
+        ResponseBase response = service.insert(file);
         assertTrue(response.wasSuccess());
 
         service.asyncLoadFile("fileKey", TestServiceCallback.testCallback(new FileLoadCallback("fileKey") {

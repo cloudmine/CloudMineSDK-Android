@@ -4,11 +4,11 @@ import com.cloudmine.api.*;
 import com.cloudmine.api.rest.AndroidCMWebService;
 import com.cloudmine.api.rest.CMWebService;
 import com.cloudmine.api.rest.Savable;
-import com.cloudmine.api.rest.callbacks.CMResponseCallback;
 import com.cloudmine.api.rest.callbacks.ObjectModificationResponseCallback;
+import com.cloudmine.api.rest.callbacks.ResponseBaseCallback;
 import com.cloudmine.api.rest.callbacks.SimpleCMObjectResponseCallback;
-import com.cloudmine.api.rest.response.CMResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
+import com.cloudmine.api.rest.response.ResponseBase;
 import com.cloudmine.api.rest.response.SimpleCMObjectResponse;
 import com.xtremelabs.robolectric.Robolectric;
 import org.junit.Before;
@@ -30,8 +30,8 @@ public class ServiceTestBase {
     private static final String API_KEY = "3fc494b36d6d432d9afb051d819bdd72";
     private static final CMUser user = CMUser.CMUser("tfjghkdfgjkdf@gmail.com", "test");
 
-    public static final TestServiceCallback hasSuccess = testCallback(new CMResponseCallback() {
-        public void onCompletion(CMResponse response) {
+    public static final TestServiceCallback hasSuccess = testCallback(new ResponseBaseCallback() {
+        public void onCompletion(ResponseBase response) {
             assertTrue(response.wasSuccess());
         }
     });

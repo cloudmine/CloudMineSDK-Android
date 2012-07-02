@@ -2,9 +2,13 @@ package com.cloudmine.api.rest;
 
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.CMUser;
+import com.cloudmine.api.rest.callbacks.CMResponseCallback;
+import com.cloudmine.api.rest.response.CMResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
+import com.cloudmine.api.rest.response.code.CMResponseCode;
 import com.cloudmine.test.CloudMineTestRunner;
 import com.cloudmine.test.ServiceTestBase;
+import com.cloudmine.test.TestServiceCallback;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -13,8 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 /**
  * <br>Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
@@ -45,5 +48,23 @@ public class CMUserIntegrationTest extends ServiceTestBase {
         user.logout(hasSuccess);
         waitThenAssertTestResults();
         assertFalse(user.isLoggedIn());
+    }
+
+    @Test
+    public void testCreateUser() {
+        CMUser user = CMUser.CMUser("@.notanEm!l", "pw");
+        user.createUser(TestServiceCallback.testCallback(new CMResponseCallback() {
+            public void onCompletion(CMResponse response) {
+                assertEquals(CMResponseCode.INVALID_EMAIL_OR_MISSING_PASSWORD, response.getResponseCode());
+            }
+        }));
+        waitThenAssertTestResults();
+        user = CMUser.CMUser("vali@email.com", "");
+        user.createUser(TestServiceCallback.testCallback(new CMResponseCallback() {
+            public void onCompletion(CMResponse response) {
+                assertEquals(CMResponseCode.INVALID_EMAIL_OR_MISSING_PASSWORD, response.getResponseCode());
+            }
+        }));
+        waitThenAssertTestResults();
     }
 }

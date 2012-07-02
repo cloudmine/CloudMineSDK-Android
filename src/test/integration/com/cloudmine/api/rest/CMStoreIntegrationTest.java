@@ -6,6 +6,10 @@ import com.cloudmine.api.rest.response.FileLoadResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.cloudmine.api.rest.response.SimpleCMObjectResponse;
+import com.cloudmine.api.rest.response.code.FileLoadCode;
+import com.cloudmine.api.rest.response.code.LoginCode;
+import com.cloudmine.api.rest.response.code.ObjectLoadCode;
+import com.cloudmine.api.rest.response.code.ObjectModificationCode;
 import com.cloudmine.test.CloudMineTestRunner;
 import com.cloudmine.test.ServiceTestBase;
 import org.junit.Before;
@@ -111,9 +115,13 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
                 }));
             }
         }));
-
         waitThenAssertTestResults();
-
+        store.login(CMUser.CMUser("dontexist@nowhere.net", "sp"), testCallback(new LoginResponseCallback() {
+            public void onCompletion(LoginResponse response) {
+                assertEquals(LoginCode.MISSING_OR_INVALID_AUTHORIZATION, response.getResponseCode());
+            }
+        }));
+        waitThenAssertTestResults();
     }
 
     @Test
@@ -216,7 +224,16 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         }));
         waitThenAssertTestResults();
         assertEquals(0, store.getStoredObjects().size());
+    }
 
+    @Test
+    public void testInvalidCredentialsUserOperation() {
+        store.setUser(CMUser.CMUser("xnnxNOEXISTMANxnxnx@hotmail.com", "t"));
+        store.loadUserObjectsOfClass("whatever", new SimpleCMObjectResponseCallback() {
+            public void onCompletion(SimpleCMObjectResponse response) {
+                assertEquals(ObjectLoadCode.MISSING_OR_INVALID_CREDENTIALS, response.getResponseCode());
+            }
+        });
     }
 
     @Test
@@ -237,6 +254,12 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
             }
         }));
         waitThenAssertTestResults();
+        store.loadUserFile("thisFileDoesNotevenexistMAN", testCallback(new FileLoadCallback("thisFileDoesNotevenexistMan") {
+            public void onCompletion(FileLoadResponse response) {
+                assertEquals(FileLoadCode.APPLICATION_ID_OR_FILE_NOT_FOUND, response.getResponseCode());
+            }
+        }));
+        waitThenAssertTestResults();
     }
 
     @Test
@@ -252,6 +275,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
             public void onCompletion(ObjectModificationResponse response) {
                 assertTrue(response.wasSuccess());
                 assertTrue(response.wasDeleted(file.getFileName()));
+                assertEquals(ObjectModificationCode.SUCCESS, response.getResponseCode());
             }
         }));
         waitThenAssertTestResults();
@@ -278,8 +302,8 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         object.add("string", "name");
         object.setClass("testObject");
 
-        store.saveStoreApplicationObjects(hasSuccessAndHasModified(object));;
-
+        store.saveStoreApplicationObjects(hasSuccessAndHasModified(object));
+        waitThenAssertTestResults();
         Future<SimpleCMObjectResponse> loadFuture = store.loadAllApplicationObjects();
         SimpleCMObjectResponse loadResponse = loadFuture.get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
         assertTrue(loadResponse.wasSuccess());

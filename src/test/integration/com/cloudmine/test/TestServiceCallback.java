@@ -32,6 +32,7 @@ public class TestServiceCallback<T> extends CMCallback<T> {
         } catch(AssertionError t) {
             AsyncTestResultsCoordinator.add(t);
         } catch(Exception e){
+            AsyncTestResultsCoordinator.add(new AssertionError(e));
             e.printStackTrace();
         }
         finally {
