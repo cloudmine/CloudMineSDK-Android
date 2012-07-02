@@ -3,6 +3,7 @@ package com.cloudmine.api.rest;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.rest.callbacks.CMResponseCallback;
+import com.cloudmine.api.rest.callbacks.LoginResponseCallback;
 import com.cloudmine.api.rest.response.CMResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
 import com.cloudmine.api.rest.response.code.CMResponseCode;
@@ -13,10 +14,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
+import static com.cloudmine.test.TestServiceCallback.testCallback;
 import static junit.framework.Assert.*;
 
 /**
@@ -27,15 +28,18 @@ public class CMUserIntegrationTest extends ServiceTestBase {
 
     @Test
     public void testLogin() throws ExecutionException, TimeoutException, InterruptedException {
-        CMUser user = CMUser.CMUser("test13131313@test.com", "test");
+        final CMUser user = CMUser.CMUser("test13131313@test.com", "test");
         service.insert(user);
 
-        LoginResponse loginResponse = user.login().get(10, TimeUnit.SECONDS);
-        CMSessionToken token = loginResponse.getSessionToken();
-        assertTrue(loginResponse.wasSuccess());
-        assertTrue(user.isLoggedIn());
-        assertFalse(CMSessionToken.INVALID_TOKEN.equals(token));
-        user.login().get(50, TimeUnit.MILLISECONDS); //we're already logged in this should return FAST
+        user.login(testCallback(new LoginResponseCallback() {
+            public void onCompletion(LoginResponse loginResponse) {
+                CMSessionToken token = loginResponse.getSessionToken();
+                assertTrue(loginResponse.wasSuccess());
+                assertTrue(user.isLoggedIn());
+                assertFalse(CMSessionToken.INVALID_TOKEN.equals(token));
+            }
+        }));
+        waitThenAssertTestResults();
     }
 
     @Test

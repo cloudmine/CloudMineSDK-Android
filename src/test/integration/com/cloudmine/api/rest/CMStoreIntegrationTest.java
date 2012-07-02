@@ -1,7 +1,10 @@
 package com.cloudmine.api.rest;
 
 import com.cloudmine.api.*;
-import com.cloudmine.api.rest.callbacks.*;
+import com.cloudmine.api.rest.callbacks.FileLoadCallback;
+import com.cloudmine.api.rest.callbacks.LoginResponseCallback;
+import com.cloudmine.api.rest.callbacks.ObjectModificationResponseCallback;
+import com.cloudmine.api.rest.callbacks.SimpleCMObjectResponseCallback;
 import com.cloudmine.api.rest.response.FileLoadResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
@@ -21,14 +24,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.reset;
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
 import static com.cloudmine.test.TestServiceCallback.testCallback;
 import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
 
 /**
  * <br>Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
@@ -91,7 +93,9 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
             }
         }));
         waitThenAssertTestResults();
-        final CMSessionToken token = user.login().get().getSessionToken();
+        user.login(hasSuccess);
+        waitThenAssertTestResults();
+        CMSessionToken token = user.getSessionToken();
         SimpleCMObjectResponse response = CMWebService.getService().getUserWebService(token).loadObject(object.getObjectId());
         assertTrue(response.wasSuccess());
         assertEquals(response.getSimpleCMObject(object.getObjectId()), object);
@@ -294,7 +298,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
 
     @Test
     public void testStoreKeepValues() throws ExecutionException, TimeoutException, InterruptedException {
-        SimpleCMObject object = simpleObject();
+        final SimpleCMObject object = simpleObject();
 
         store.saveObject(object, testCallback());
         waitThenAssertTestResults();
@@ -304,12 +308,15 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
 
         store.saveStoreApplicationObjects(hasSuccessAndHasModified(object));
         waitThenAssertTestResults();
-        Future<SimpleCMObjectResponse> loadFuture = store.loadAllApplicationObjects();
-        SimpleCMObjectResponse loadResponse = loadFuture.get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
-        assertTrue(loadResponse.wasSuccess());
-        SimpleCMObject loadObject = loadResponse.getSimpleCMObject(object.getObjectId());
-        assertEquals(object, loadObject);
-        assertEquals(object, store.getStoredObject(object.getObjectId()));
+        store.loadAllApplicationObjects(testCallback(new SimpleCMObjectResponseCallback() {
+            public void onCompletion(SimpleCMObjectResponse loadResponse) {
+                assertTrue(loadResponse.wasSuccess());
+                SimpleCMObject loadObject = loadResponse.getSimpleCMObject(object.getObjectId());
+                assertEquals(object, loadObject);
+                assertEquals(object, store.getStoredObject(object.getObjectId()));
+            }
+        }));
+        waitThenAssertTestResults();
     }
 
     @Test
@@ -338,11 +345,14 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         store.saveStoreApplicationObjects(hasSuccess);
         waitThenAssertTestResults();
         CMRequestOptions options = CMRequestOptions.CMRequestOptions(CMPagingOptions.CMPagingOptions(2, 0, true));
-        SimpleCMObjectResponse loadResponse = store.loadAllApplicationObjects(Callback.DO_NOTHING, options).get(FUTURE_WAIT_TIME, TimeUnit.SECONDS);
-        assertTrue(loadResponse.wasSuccess());
+        store.loadAllApplicationObjects(testCallback(new SimpleCMObjectResponseCallback() {
+            public void onCompletion(SimpleCMObjectResponse loadResponse) {
+                assertTrue(loadResponse.wasSuccess());
 
-        assertEquals(2, loadResponse.getObjects().size());
-        assertEquals(5, loadResponse.getCount());
-
+                assertEquals(2, loadResponse.getObjects().size());
+                assertEquals(5, loadResponse.getCount());
+            }
+        }), options);
+        waitThenAssertTestResults();
     }
 }
