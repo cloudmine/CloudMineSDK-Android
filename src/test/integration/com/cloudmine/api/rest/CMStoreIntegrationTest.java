@@ -1,14 +1,14 @@
 package com.cloudmine.api.rest;
 
 import com.cloudmine.api.*;
+import com.cloudmine.api.rest.callbacks.CMObjectResponseCallback;
 import com.cloudmine.api.rest.callbacks.FileLoadCallback;
 import com.cloudmine.api.rest.callbacks.LoginResponseCallback;
 import com.cloudmine.api.rest.callbacks.ObjectModificationResponseCallback;
-import com.cloudmine.api.rest.callbacks.SimpleCMObjectResponseCallback;
+import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.FileLoadResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
-import com.cloudmine.api.rest.response.SimpleCMObjectResponse;
 import com.cloudmine.api.rest.response.code.FileLoadCode;
 import com.cloudmine.api.rest.response.code.LoginCode;
 import com.cloudmine.api.rest.response.code.ObjectLoadCode;
@@ -57,8 +57,8 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         store.saveObject(object, testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
 
-                SimpleCMObjectResponse loadResponse = CMWebService.getService().loadObject(object.getObjectId());
-                SimpleCMObject loadedObject = loadResponse.getSimpleCMObject(object.getObjectId());
+                CMObjectResponse loadResponse = CMWebService.getService().loadObject(object.getObjectId());
+                SimpleCMObject loadedObject = (SimpleCMObject)loadResponse.getCMObject(object.getObjectId());
                 assertNotNull(loadedObject);
 
                 assertEquals(object, loadedObject);
@@ -85,9 +85,9 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
             public void onCompletion(ObjectModificationResponse ignoredResponse) {
                 assertTrue(ignoredResponse.wasSuccess());
                 final CMSessionToken token = CMWebService.getService().login(user).getSessionToken();
-                SimpleCMObjectResponse response = CMWebService.getService().getUserWebService(token).loadObject(object.getObjectId());
+                CMObjectResponse response = CMWebService.getService().getUserWebService(token).loadObject(object.getObjectId());
                 assertTrue(response.wasSuccess());
-                SimpleCMObject loadedObject = response.getSimpleCMObject(object.getObjectId());
+                SimpleCMObject loadedObject = (SimpleCMObject)response.getCMObject(object.getObjectId());
                 assertNotNull(loadedObject);
                 assertEquals(object, loadedObject);
             }
@@ -96,9 +96,9 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         user.login(hasSuccess);
         waitThenAssertTestResults();
         CMSessionToken token = user.getSessionToken();
-        SimpleCMObjectResponse response = CMWebService.getService().getUserWebService(token).loadObject(object.getObjectId());
+        CMObjectResponse response = CMWebService.getService().getUserWebService(token).loadObject(object.getObjectId());
         assertTrue(response.wasSuccess());
-        assertEquals(response.getSimpleCMObject(object.getObjectId()), object);
+        assertEquals(response.getCMObject(object.getObjectId()), object);
     }
 
     @Test
@@ -111,10 +111,10 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         store.login(user, testCallback(new LoginResponseCallback() {
             public void onCompletion(LoginResponse response) {
                 assertTrue(response.wasSuccess());
-                store.loadAllUserObjects(testCallback(new SimpleCMObjectResponseCallback() {
-                    public void onCompletion(SimpleCMObjectResponse response) {
+                store.loadAllUserObjects(testCallback(new CMObjectResponseCallback() {
+                    public void onCompletion(CMObjectResponse response) {
                         assertTrue(response.wasSuccess());
-                        assertEquals("v", response.getSimpleCMObject("key").getString("k"));
+                        assertEquals("v", ((SimpleCMObject)response.getCMObject("key")).getString("k"));
                     }
                 }));
             }
@@ -149,12 +149,12 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
             userService.insert(userObject.asJson());
         }
         store.setUser(user);
-        store.loadAllUserObjects(testCallback(new SimpleCMObjectResponseCallback() {
-            public void onCompletion(SimpleCMObjectResponse response) {
+        store.loadAllUserObjects(testCallback(new CMObjectResponseCallback() {
+            public void onCompletion(CMObjectResponse response) {
                 assertTrue(response.wasSuccess());
                 assertEquals(userObjects.size(), response.getObjects().size());
                 for (SimpleCMObject object : userObjects) {
-                    SimpleCMObject responseObject = response.getSimpleCMObject(object.getObjectId());
+                    SimpleCMObject responseObject = (SimpleCMObject)response.getCMObject(object.getObjectId());
                     assertEquals(StoreIdentifier.StoreIdentifier(user), responseObject.getSavedWith());
                     assertEquals(object, responseObject);
                 }
@@ -233,8 +233,8 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
     @Test
     public void testInvalidCredentialsUserOperation() {
         store.setUser(CMUser.CMUser("xnnxNOEXISTMANxnxnx@hotmail.com", "t"));
-        store.loadUserObjectsOfClass("whatever", new SimpleCMObjectResponseCallback() {
-            public void onCompletion(SimpleCMObjectResponse response) {
+        store.loadUserObjectsOfClass("whatever", new CMObjectResponseCallback() {
+            public void onCompletion(CMObjectResponse response) {
                 assertEquals(ObjectLoadCode.MISSING_OR_INVALID_CREDENTIALS, response.getResponseCode());
             }
         });
@@ -308,10 +308,10 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
 
         store.saveStoreApplicationObjects(hasSuccessAndHasModified(object));
         waitThenAssertTestResults();
-        store.loadAllApplicationObjects(testCallback(new SimpleCMObjectResponseCallback() {
-            public void onCompletion(SimpleCMObjectResponse loadResponse) {
+        store.loadAllApplicationObjects(testCallback(new CMObjectResponseCallback() {
+            public void onCompletion(CMObjectResponse loadResponse) {
                 assertTrue(loadResponse.wasSuccess());
-                SimpleCMObject loadObject = loadResponse.getSimpleCMObject(object.getObjectId());
+                CMObject loadObject = loadResponse.getCMObject(object.getObjectId());
                 assertEquals(object, loadObject);
                 assertEquals(object, store.getStoredObject(object.getObjectId()));
             }
@@ -326,8 +326,8 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         store.saveObject(object, hasSuccess);
         waitThenAssertTestResults();
         CMServerFunction function = CMServerFunction.CMServerFunction("NewSnippet", false);
-        store.loadApplicationObjectWithObjectId(object.getObjectId(), new SimpleCMObjectResponseCallback() {
-            public void onCompletion(SimpleCMObjectResponse response) {
+        store.loadApplicationObjectWithObjectId(object.getObjectId(), new CMObjectResponseCallback() {
+            public void onCompletion(CMObjectResponse response) {
                 Object result = response.getObject("result");
                 assertNotNull(result);
             }
@@ -345,8 +345,8 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         store.saveStoreApplicationObjects(hasSuccess);
         waitThenAssertTestResults();
         CMRequestOptions options = CMRequestOptions.CMRequestOptions(CMPagingOptions.CMPagingOptions(2, 0, true));
-        store.loadAllApplicationObjects(testCallback(new SimpleCMObjectResponseCallback() {
-            public void onCompletion(SimpleCMObjectResponse loadResponse) {
+        store.loadAllApplicationObjects(testCallback(new CMObjectResponseCallback() {
+            public void onCompletion(CMObjectResponse loadResponse) {
                 assertTrue(loadResponse.wasSuccess());
 
                 assertEquals(2, loadResponse.getObjects().size());

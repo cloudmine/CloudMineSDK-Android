@@ -4,12 +4,12 @@ import com.cloudmine.api.*;
 import com.cloudmine.api.rest.AndroidCMWebService;
 import com.cloudmine.api.rest.CMWebService;
 import com.cloudmine.api.rest.Savable;
+import com.cloudmine.api.rest.callbacks.CMObjectResponseCallback;
 import com.cloudmine.api.rest.callbacks.ObjectModificationResponseCallback;
 import com.cloudmine.api.rest.callbacks.ResponseBaseCallback;
-import com.cloudmine.api.rest.callbacks.SimpleCMObjectResponseCallback;
+import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.cloudmine.api.rest.response.ResponseBase;
-import com.cloudmine.api.rest.response.SimpleCMObjectResponse;
 import com.xtremelabs.robolectric.Robolectric;
 import org.junit.Before;
 
@@ -48,11 +48,11 @@ public class ServiceTestBase {
     }
 
     public static TestServiceCallback hasSuccessAndHasLoaded(final Savable... savables) {
-        return testCallback(new SimpleCMObjectResponseCallback() {
-           public void onCompletion(SimpleCMObjectResponse response) {
+        return testCallback(new CMObjectResponseCallback() {
+           public void onCompletion(CMObjectResponse response) {
                assertTrue(response.wasSuccess());
                for(Savable loaded : savables) {
-                   assertEquals(loaded, response.getSimpleCMObject(loaded.getObjectId()));
+                   assertEquals(loaded, response.getCMObject(loaded.getObjectId()));
                }
            }
         });

@@ -6,8 +6,8 @@ import com.cloudmine.api.SimpleCMObject;
 import com.cloudmine.api.StoreIdentifier;
 import com.cloudmine.api.exceptions.CreationException;
 import com.cloudmine.api.rest.callbacks.ObjectModificationResponseCallback;
+import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
-import com.cloudmine.api.rest.response.SimpleCMObjectResponse;
 import com.cloudmine.test.CloudMineTestRunner;
 import com.cloudmine.test.ServiceTestBase;
 import com.cloudmine.test.TestServiceCallback;
@@ -32,9 +32,9 @@ public class SimpleCMObjectIntegrationTest extends ServiceTestBase {
         object.add("string", "value");
         object.save(TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
-                SimpleCMObjectResponse loadResponse = AndroidCMWebService.getService().loadObject(object.getObjectId());
+                CMObjectResponse loadResponse = AndroidCMWebService.getService().loadObject(object.getObjectId());
                 Assert.assertTrue(loadResponse.wasSuccess());
-                SimpleCMObject loadedObject = loadResponse.getSimpleCMObject(object.getObjectId());
+                SimpleCMObject loadedObject = (SimpleCMObject)loadResponse.getCMObject(object.getObjectId());
                 assertEquals(object, loadedObject);
             }
         }));
@@ -45,7 +45,7 @@ public class SimpleCMObjectIntegrationTest extends ServiceTestBase {
         assertFalse(object.setSaveWith(user));
 
         object.save();
-        SimpleCMObject loadedObject = service.getUserWebService(token).loadObject(object.getObjectId()).getSimpleCMObject(object.getObjectId());
+        SimpleCMObject loadedObject = (SimpleCMObject)service.getUserWebService(token).loadObject(object.getObjectId()).getCMObject(object.getObjectId());
         assertNull(loadedObject);
 
     }
@@ -58,8 +58,8 @@ public class SimpleCMObjectIntegrationTest extends ServiceTestBase {
         object.setSaveWith(user);
         object.save(TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
-                SimpleCMObjectResponse loadedObjectResponse = service.loadObject(object.getObjectId());
-                SimpleCMObject loadedObject = loadedObjectResponse.getSimpleCMObject(object.getObjectId());
+                CMObjectResponse loadedObjectResponse = service.loadObject(object.getObjectId());
+                SimpleCMObject loadedObject = (SimpleCMObject)loadedObjectResponse.getCMObject(object.getObjectId());
 
                 Assert.assertNull(loadedObject);
             }
