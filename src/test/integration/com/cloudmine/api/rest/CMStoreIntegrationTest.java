@@ -1,6 +1,7 @@
 package com.cloudmine.api.rest;
 
 import com.cloudmine.api.*;
+import com.cloudmine.api.CMObject;
 import com.cloudmine.api.rest.callbacks.CMObjectResponseCallback;
 import com.cloudmine.api.rest.callbacks.FileLoadCallback;
 import com.cloudmine.api.rest.callbacks.LoginResponseCallback;

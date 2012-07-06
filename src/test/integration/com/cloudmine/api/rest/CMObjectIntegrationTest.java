@@ -14,7 +14,7 @@ import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestR
  * See LICENSE file included with SDK for details.
  */
 @RunWith(CloudMineTestRunner.class)
-public class ExtendedCMObjectIntegrationTest extends ServiceTestBase{
+public class CMObjectIntegrationTest extends ServiceTestBase{
 
     @Test
     public void testSave() {

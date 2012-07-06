@@ -1,6 +1,7 @@
 package com.cloudmine.api.rest;
 
 import com.cloudmine.api.*;
+import com.cloudmine.api.CMObject;
 import com.cloudmine.api.rest.callbacks.*;
 import com.cloudmine.api.rest.response.*;
 import com.cloudmine.test.CloudMineTestRunner;
@@ -396,7 +397,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
 
         service.asyncDelete("oneKey", TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
-                List<CMObject> successObjects = response.getSuccessObjects();
+                List<SimpleCMObject> successObjects = response.getSuccessObjects();
                 assertTrue(response.wasSuccess());
                 assertTrue(response.wasDeleted("oneKey"));
                 assertEquals(1, successObjects.size());
@@ -405,7 +406,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         waitThenAssertTestResults();
         service.asyncDelete(Arrays.asList("deepKeyed", "oneKey"), TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
-                List<CMObject> successObjects = response.getSuccessObjects();
+                List<SimpleCMObject> successObjects = response.getSuccessObjects();
                 assertTrue(response.wasSuccess());
                 assertTrue(response.wasDeleted("deepKeyed"));
                 assertEquals(1, successObjects.size());
