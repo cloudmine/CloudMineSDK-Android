@@ -36,7 +36,7 @@ public class AsyncTestResultsCoordinator {
 
     public static void waitForTestResults() {
         try {
-            boolean timedOut = !latch.await(100, TimeUnit.SECONDS);
+            boolean timedOut = !latch.await(TIMEOUT, TimeUnit.SECONDS);
             if(timedOut) {
                 throw new RuntimeException("Timedout!");
             }
