@@ -1,7 +1,6 @@
 package com.cloudmine.api.rest;
 
 import com.cloudmine.api.*;
-import com.cloudmine.api.CMObject;
 import com.cloudmine.api.rest.callbacks.CMObjectResponseCallback;
 import com.cloudmine.api.rest.callbacks.FileLoadCallback;
 import com.cloudmine.api.rest.callbacks.LoginResponseCallback;
@@ -31,7 +30,6 @@ import static com.cloudmine.test.AsyncTestResultsCoordinator.reset;
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
 import static com.cloudmine.test.TestServiceCallback.testCallback;
 import static junit.framework.Assert.*;
-import static junit.framework.Assert.assertEquals;
 
 /**
  * <br>Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
@@ -41,7 +39,6 @@ import static junit.framework.Assert.assertEquals;
 @RunWith(CloudMineTestRunner.class)
 public class CMStoreIntegrationTest extends ServiceTestBase {
     private CMStore store;
-    private int FUTURE_WAIT_TIME = 10;
 
     @Before
     public void setUp() {
@@ -354,6 +351,41 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
                 assertEquals(5, loadResponse.getCount());
             }
         }), options);
+        waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testLoadAllUsers() {
+        final List<CMUser> users = new ArrayList<CMUser>();
+        for(String userName : new String[]{"fred", "liz", "sarah"}) {
+            CMUser user = CMUser.CMUser(userName + "@gmail.com", "password");
+            users.add(user);
+            CMWebService.getService().insert(user);
+        }
+        store.loadAllUserProfiles(testCallback(new CMObjectResponseCallback() {
+            @Override
+            public void onCompletion(CMObjectResponse response) {
+                assertTrue(response.wasSuccess());
+                assertTrue(response.getObjects().size() >= 3);
+            }
+        }));
+        waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testLoadLoggedInUser() {
+        final CMUser user = user();
+        service.insert(user);
+        user.login(hasSuccess);
+        waitThenAssertTestResults();
+        store.setUser(user);
+        store.loadLoggedInUserProfile(testCallback(new CMObjectResponseCallback() {
+            @Override
+            public void onCompletion(CMObjectResponse response) {
+                assertTrue(response.wasSuccess());
+//                assertEquals(user, response.getObjects().get(0)); //TODO once CMUsers work correctly with deserialization we can fix this
+            }
+        }));
         waitThenAssertTestResults();
     }
 }

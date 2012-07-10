@@ -26,8 +26,10 @@ import static junit.framework.Assert.assertTrue;
  * Date: 6/14/12, 11:13 AM
  */
 public class ServiceTestBase {
-    private static final String APP_ID = "c1a562ee1e6f4a478803e7b51babe287";
-    private static final String API_KEY = "3fc494b36d6d432d9afb051d819bdd72";
+//    private static final String APP_ID = "c1a562ee1e6f4a478803e7b51babe287";
+//    private static final String API_KEY = "3fc494b36d6d432d9afb051d819bdd72";
+    private static final String APP_ID = "77019ea11c064dcbb90a1478fbe56ed5";
+    private static final String API_KEY = "ef013fd4b95b41ddb70f172df83fe4b5";
     private static final CMUser user = CMUser.CMUser("tfjghkdfgjkdf@gmail.com", "test");
 
     public static final TestServiceCallback hasSuccess = testCallback(new ResponseBaseCallback() {
