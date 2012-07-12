@@ -2,14 +2,13 @@ package com.cloudmine.api.rest;
 
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.CMUser;
-import com.cloudmine.api.SimpleCMObject;
 import com.cloudmine.api.rest.callbacks.CreationResponseCallback;
 import com.cloudmine.api.rest.callbacks.LoginResponseCallback;
-import com.cloudmine.api.rest.response.CMResponse;
 import com.cloudmine.api.rest.response.CreationResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
 import com.cloudmine.api.rest.response.code.CMResponseCode;
 import com.cloudmine.test.CloudMineTestRunner;
+import com.cloudmine.test.ExtendedCMUser;
 import com.cloudmine.test.ServiceTestBase;
 import com.cloudmine.test.TestServiceCallback;
 import org.junit.Ignore;
@@ -76,14 +75,16 @@ public class CMUserIntegrationTest extends ServiceTestBase {
     public void testCreateUserErrors() {
         CMUser user = CMUser.CMUser("@.notanEm!l", "pw");
         user.createUser(TestServiceCallback.testCallback(new CreationResponseCallback() {
-            public void onCompletion(CMResponse response) {
+            @Override
+            public void onCompletion(CreationResponse response) {
                 assertEquals(CMResponseCode.INVALID_EMAIL_OR_MISSING_PASSWORD, response.getResponseCode());
             }
         }));
         waitThenAssertTestResults();
         user = CMUser.CMUser("vali@email.com", "");
         user.createUser(TestServiceCallback.testCallback(new CreationResponseCallback() {
-            public void onCompletion(CMResponse response) {
+            @Override
+            public void onCompletion(CreationResponse response) {
                 assertEquals(CMResponseCode.INVALID_EMAIL_OR_MISSING_PASSWORD, response.getResponseCode());
             }
         }));
@@ -92,6 +93,18 @@ public class CMUserIntegrationTest extends ServiceTestBase {
 
     @Test
     public void testUserProfile() {
-        SimpleCMObject.SimpleCMObject().add(null, null);
+        ExtendedCMUser user = new ExtendedCMUser("frexxd@francis.com", "pw");
+        user.save(testCallback());
+        waitThenAssertTestResults();
+        user.setAge(50);
+        user.save(hasSuccess);
+        waitThenAssertTestResults();
+
+        ExtendedCMUser reloadedUser = new ExtendedCMUser("frexxd@francis.com", "pw");
+        reloadedUser.login(hasSuccess);
+        waitThenAssertTestResults();
+        reloadedUser.loadProfile(hasSuccess);
+        waitThenAssertTestResults();
+        assertEquals(50, reloadedUser.getAge());
     }
 }
