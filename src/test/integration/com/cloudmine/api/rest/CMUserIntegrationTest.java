@@ -105,8 +105,6 @@ public class CMUserIntegrationTest extends ServiceTestBase {
         ExtendedCMUser reloadedUser = new ExtendedCMUser("frexxd@francis.com", "pw");
         reloadedUser.login(hasSuccess);
         waitThenAssertTestResults();
-        reloadedUser.loadProfile(hasSuccess);
-        waitThenAssertTestResults();
         assertEquals(50, reloadedUser.getAge());
     }
 }
