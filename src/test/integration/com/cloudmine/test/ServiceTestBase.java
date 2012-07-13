@@ -28,9 +28,10 @@ import static junit.framework.Assert.assertTrue;
 public class ServiceTestBase {
 //    private static final String APP_ID = "c1a562ee1e6f4a478803e7b51babe287";
 //    private static final String API_KEY = "3fc494b36d6d432d9afb051d819bdd72";
+    protected static final String USER_PASSWORD = "test";
     private static final String APP_ID = "77019ea11c064dcbb90a1478fbe56ed5";
     private static final String API_KEY = "ef013fd4b95b41ddb70f172df83fe4b5";
-    private static final CMUser user = CMUser.CMUser("tfjghkdfgjkdf@gmail.com", "test");
+    private static final CMUser user = CMUser.CMUser("tfjghkdfgjkdf@gmail.com", USER_PASSWORD);
 
     public static final TestServiceCallback hasSuccess = testCallback(new ResponseBaseCallback() {
         public void onCompletion(ResponseBase response) {
@@ -65,6 +66,7 @@ public class ServiceTestBase {
     public void setUp() {
         System.setProperty("org.slf4j.simplelogger.defaultlog", "debug");
         reset();
+        user().setPassword(USER_PASSWORD);
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         DeviceIdentifier.initialize(Robolectric.application.getApplicationContext());
         CMApiCredentials.initialize(APP_ID, API_KEY);

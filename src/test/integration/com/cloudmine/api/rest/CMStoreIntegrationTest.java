@@ -172,6 +172,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         user().logout(hasSuccess);
         waitThenAssertTestResults();
         store.setUser(user());
+        user().setPassword(USER_PASSWORD);
         store.loadUserObjectsOfClass("testObject", hasSuccessAndHasLoaded(object));
         waitThenAssertTestResults();
 
@@ -248,6 +249,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         store.saveFile(file, hasSuccess);
         waitThenAssertTestResults();
         user.logout(hasSuccess);
+        user.setPassword(USER_PASSWORD);
         waitThenAssertTestResults();
         store.loadUserFile(file.getFileName(), testCallback(new FileLoadCallback(file.getFileName()) {
             public void onCompletion(FileLoadResponse response) {
