@@ -14,6 +14,7 @@ import com.cloudmine.api.rest.response.code.LoginCode;
 import com.cloudmine.api.rest.response.code.ObjectLoadCode;
 import com.cloudmine.api.rest.response.code.ObjectModificationCode;
 import com.cloudmine.test.CloudMineTestRunner;
+import com.cloudmine.test.ExtendedCMUser;
 import com.cloudmine.test.ServiceTestBase;
 import org.junit.Before;
 import org.junit.Test;
@@ -176,6 +177,34 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         store.loadUserObjectsOfClass("testObject", hasSuccessAndHasLoaded(object));
         waitThenAssertTestResults();
 
+    }
+
+    @Test
+    public void testLoadUserProfilesSearch() {
+
+        int numberOfUsers = 5;
+        reset(numberOfUsers);
+        final List<ExtendedCMUser> expectedLoadedUsers = new ArrayList<ExtendedCMUser>();
+        for(int ageMultiplier = 0; ageMultiplier < numberOfUsers; ageMultiplier++) {
+            ExtendedCMUser user = new ExtendedCMUser(randomEmail(), randomString());
+            user.setAge(ageMultiplier * 10);
+            user.save(testCallback());
+            if(user.getAge() < 30) {
+                expectedLoadedUsers.add(user);
+            }
+        }
+        assertEquals(3, expectedLoadedUsers.size());
+        waitThenAssertTestResults();
+
+        store.loadUserProfilesSearch("[age < 30]", testCallback(new CMObjectResponseCallback() {
+            public void onCompletion(CMObjectResponse response) {
+                assertTrue(response.wasSuccess());
+                for(CMObject expectedUser : expectedLoadedUsers) {
+                    assertEquals(expectedUser, response.getCMObject(expectedUser.getObjectId()));
+                }
+            }
+        }));
+        waitThenAssertTestResults();
     }
 
     @Test

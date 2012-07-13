@@ -14,6 +14,7 @@ import com.xtremelabs.robolectric.Robolectric;
 import org.junit.Before;
 
 import java.io.*;
+import java.util.UUID;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.reset;
 import static com.cloudmine.test.TestServiceCallback.testCallback;
@@ -59,6 +60,14 @@ public class ServiceTestBase {
                }
            }
         });
+    }
+
+    public static String randomEmail() {
+        return randomString() + "@gmail.com";
+    }
+
+    public static String randomString() {
+        return UUID.randomUUID().toString();
     }
 
     protected CMWebService service;
