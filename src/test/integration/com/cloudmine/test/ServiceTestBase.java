@@ -1,6 +1,7 @@
 package com.cloudmine.test;
 
 import com.cloudmine.api.*;
+import com.cloudmine.api.persistance.ClassNameRegistry;
 import com.cloudmine.api.rest.AndroidCMWebService;
 import com.cloudmine.api.rest.CMWebService;
 import com.cloudmine.api.rest.Savable;
@@ -73,6 +74,8 @@ public class ServiceTestBase {
     protected CMWebService service;
     @Before
     public void setUp() {
+        ClassNameRegistry.register("govna", ExtendedCMObject.class);
+
         System.setProperty("org.slf4j.simplelogger.defaultlog", "debug");
         reset();
         user().setPassword(USER_PASSWORD);
