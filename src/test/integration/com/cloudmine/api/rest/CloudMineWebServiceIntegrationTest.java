@@ -258,12 +258,6 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         waitThenAssertTestResults();
     }
 
-    private CMUser randomUser() {
-        String userName = UUID.randomUUID().toString().replaceAll("-", "") + "@gmail.com";
-        String password = "the";
-        return CMUser.CMUser(userName,  password);
-    }
-
     @Test
     public void testAsyncLogin() {
         service.insert(USER);

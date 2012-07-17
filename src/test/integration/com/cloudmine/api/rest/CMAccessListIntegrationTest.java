@@ -4,9 +4,12 @@ import com.cloudmine.api.CMAccessList;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.SimpleCMObject;
+import com.cloudmine.api.rest.callbacks.CreationResponseCallback;
 import com.cloudmine.api.rest.response.CMObjectResponse;
+import com.cloudmine.api.rest.response.CreationResponse;
 import com.cloudmine.test.CloudMineTestRunner;
 import com.cloudmine.test.ServiceTestBase;
+import com.cloudmine.test.TestServiceCallback;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -27,22 +30,28 @@ public class CMAccessListIntegrationTest extends ServiceTestBase {
 
     @Test
     public void testStoreAccessList() {
-        CMUser anotherUser = CMUser.CMUser("francisfarmer@gmail.com", "revenge");
+        CMUser anotherUser = randomUser();
         anotherUser.save(hasSuccess);
         waitThenAssertTestResults();
-
 
         CMUser user = user();
         SimpleCMObject anObject = SimpleCMObject.SimpleCMObject();
         anObject.add("aSecret", true);
         anObject.saveWithUser(user, hasSuccessAndHasModified(anObject));
+        waitThenAssertTestResults();
 
 
-        CMAccessList list = CMAccessList.CMAccessList(user);
+        final CMAccessList list = CMAccessList.CMAccessList(user);
         List<String> userObjectIds = Arrays.asList("freddy", "teddy", "george", "puddin");
         list.grantAccessTo(userObjectIds);
         list.grantAccessTo(anotherUser);
-        list.save(hasSuccessAndHasModified(list));
+        list.save(TestServiceCallback.testCallback(new CreationResponseCallback() {
+            @Override
+            public void onCompletion(CreationResponse response) {
+                assertTrue(response.wasSuccess());
+                assertEquals(list.getObjectId(), response.getObjectId());
+            }
+        }));
         waitThenAssertTestResults();
 
         CMSessionToken token = user.getSessionToken();

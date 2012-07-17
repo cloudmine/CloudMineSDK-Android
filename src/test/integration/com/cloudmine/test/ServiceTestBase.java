@@ -71,6 +71,10 @@ public class ServiceTestBase {
         return UUID.randomUUID().toString();
     }
 
+    public static CMUser randomUser() {
+        return CMUser.CMUser(randomEmail(), randomString());
+    }
+
     protected CMWebService service;
     @Before
     public void setUp() {
