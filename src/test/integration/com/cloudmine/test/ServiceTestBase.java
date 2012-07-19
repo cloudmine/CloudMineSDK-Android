@@ -2,7 +2,6 @@ package com.cloudmine.test;
 
 import com.cloudmine.api.*;
 import com.cloudmine.api.persistance.ClassNameRegistry;
-import com.cloudmine.api.rest.AndroidCMWebService;
 import com.cloudmine.api.rest.CMWebService;
 import com.cloudmine.api.rest.Savable;
 import com.cloudmine.api.rest.callbacks.CMObjectResponseCallback;
@@ -86,7 +85,7 @@ public class ServiceTestBase {
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         DeviceIdentifier.initialize(Robolectric.application.getApplicationContext());
         CMApiCredentials.initialize(APP_ID, API_KEY);
-        service = AndroidCMWebService.getService();
+        service = CMWebService.getService();
         deleteAll();
     }
 
