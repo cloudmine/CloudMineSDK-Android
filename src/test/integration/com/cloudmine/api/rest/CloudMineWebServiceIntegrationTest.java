@@ -234,9 +234,9 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
         CMUser user = randomUser();
         service.insert(user);
         service.asyncChangePassword(user, "newPassword", TestServiceCallback.testCallback(new CMResponseCallback() {
-           public void onCompletion(CMResponse response) {
-               assertTrue(response.wasSuccess());
-           }
+            public void onCompletion(CMResponse response) {
+                assertTrue(response.wasSuccess());
+            }
         }));
         waitThenAssertTestResults();
         CMUser newPasswordUser = CMUser.CMUser(user.getEmail(), "newPassword");
@@ -479,7 +479,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     @Test
     public void testAsyncUpdate() {
         //These tests are the same as above EXCEPT when innerKey is deleted and then inserted, the value
-        //should still exist on the returned object. copy/paste code D:
+        //should still exist on the returned object. copy/paste code DELETE:
         SimpleCMObject deepObject = SimpleCMObject.SimpleCMObject(JsonUtilities.jsonCollection(DEEP_KEYED_JSON));
         SimpleCMObject simpleObject = SimpleCMObject.SimpleCMObject(JsonUtilities.jsonCollection(SIMPLE_JSON));
         service.asyncUpdate(Arrays.asList(deepObject, simpleObject),
