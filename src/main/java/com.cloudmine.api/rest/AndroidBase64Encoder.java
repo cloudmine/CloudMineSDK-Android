@@ -7,14 +7,10 @@ import android.util.Base64;
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class AndroidBase64Encoder extends Base64Encoder{
-
-    AndroidBase64Encoder() {
-        super();
-    }
+public class AndroidBase64Encoder implements Base64Encoder{
 
     @Override
-    protected String internalEncode(String toEncode) {
+    public String encode(String toEncode) {
         return Base64.encodeToString(toEncode.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
     }
 }
