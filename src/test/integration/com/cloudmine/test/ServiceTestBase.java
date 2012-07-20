@@ -1,6 +1,9 @@
 package com.cloudmine.test;
 
-import com.cloudmine.api.*;
+import com.cloudmine.api.CMApiCredentials;
+import com.cloudmine.api.CMSessionToken;
+import com.cloudmine.api.CMUser;
+import com.cloudmine.api.SimpleCMObject;
 import com.cloudmine.api.persistance.ClassNameRegistry;
 import com.cloudmine.api.rest.CMWebService;
 import com.cloudmine.api.rest.Savable;
@@ -10,7 +13,6 @@ import com.cloudmine.api.rest.callbacks.ResponseBaseCallback;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.cloudmine.api.rest.response.ResponseBase;
-import com.xtremelabs.robolectric.Robolectric;
 import org.junit.Before;
 
 import java.io.*;
@@ -82,8 +84,8 @@ public class ServiceTestBase {
         System.setProperty("org.slf4j.simplelogger.defaultlog", "debug");
         reset();
         user().setPassword(USER_PASSWORD);
-        Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
-        DeviceIdentifier.initialize(Robolectric.application.getApplicationContext());
+//        Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
+//        DeviceIdentifier.initialize(Robolectric.application.getApplicationContext());
         CMApiCredentials.initialize(APP_ID, API_KEY);
         service = CMWebService.getService();
         deleteAll();
