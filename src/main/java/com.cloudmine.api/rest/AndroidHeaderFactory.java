@@ -10,14 +10,17 @@ import java.util.Set;
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class AndroidHeaderFactory extends HeaderFactoryStandardImpl {
+public class AndroidHeaderFactory extends JavaHeaderFactory {
     public static final String CLOUD_MINE_AGENT = "Android/0.2";
 
     @Override
     public Set<Header> getCloudMineHeaders() {
         Set<Header> headers = super.getCloudMineHeaders();
-        headers.add(DeviceIdentifier.getDeviceIdentifierHeader());
         return headers;
+    }
+
+    protected String getDeviceIdentifier() {
+        return DeviceIdentifier.getUniqueId();
     }
 
     @Override
