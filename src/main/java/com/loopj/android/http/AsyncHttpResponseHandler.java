@@ -1,3 +1,4 @@
+
 /*
     Android Asynchronous Http Client
     Copyright (c) 2011 James Smith <james@loopj.com>
@@ -50,7 +51,7 @@ import org.apache.http.client.HttpResponseException;
  *     public void onSuccess(String response) {
  *         // Successfully got a response
  *     }
- * 
+ *
  *     &#064;Override
  *     public void onFailure(Throwable e, String response) {
  *         // Response failed :(
@@ -209,26 +210,27 @@ public class AsyncHttpResponseHandler<T> {
         return msg;
     }
 
-    private T completedThenConsume(HttpResponse response) {
-        T responseObject = responseConstructor.construct(response);
-        CMWebService.consumeEntityResponse(response);
-        sendCompletedMessage(responseObject);
-        return responseObject;
+    private void completedThenConsume(HttpResponse response) {
+        try {
+
+            T responseObject = responseConstructor.construct(response);
+            CMWebService.consumeEntityResponse(response);
+            sendCompletedMessage(responseObject);
+        } catch(Exception e) {
+            sendFailureMessage(e, "Unable to construct response object");
+        }
     }
 
 
     // Interface to AsyncHttpRequest
-    T sendResponseMessage(HttpResponse response) {
+    void sendResponseMessage(HttpResponse response) {
         StatusLine status = response.getStatusLine();
-        T responseObject = null;
         try {
-            responseObject = completedThenConsume(response);
-            String responseBody = "";
+            completedThenConsume(response);
         } finally {
             if(status.getStatusCode() >= 300) {
                 sendFailureMessage(new HttpResponseException(status.getStatusCode(), status.getReasonPhrase()), "");
             }
-            return responseObject;
         }
     }
 }

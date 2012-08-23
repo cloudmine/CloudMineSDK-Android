@@ -2,6 +2,10 @@ package com.cloudmine.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import com.cloudmine.api.rest.AndroidAsynchronousHttpClient;
+import com.cloudmine.api.rest.AndroidBase64Encoder;
+import com.cloudmine.api.rest.AndroidHeaderFactory;
+import com.cloudmine.api.rest.HeaderFactory;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 
@@ -18,7 +22,7 @@ public class DeviceIdentifier {
     public static final String UNIQUE_ID_KEY = "uniqueId";
 
     private static String uniqueId;
-    public static final String DEVICE_HEADER_KEY = "X-CloudMine-UT";
+
 
     /**
      * Retrieves the unique id for this application and device from the preferences. If this is the
@@ -27,6 +31,9 @@ public class DeviceIdentifier {
      * @param context the application context, accessable from an activity this.getApplicationContext()
      */
     public static void initialize(Context context) {
+        //Not related to BaseDeviceIdentifier but we need to do the DI somewhere and this is as good as any
+        LibrarySpecificClassCreator.setCreator(new LibrarySpecificClassCreator(new AndroidBase64Encoder(), new AndroidHeaderFactory(), new AndroidAsynchronousHttpClient()));
+
         SharedPreferences preferences = context.getSharedPreferences("CLOUDMINE_PREFERENCES", Context.MODE_PRIVATE);
         boolean isNotSet = !preferences.contains(UNIQUE_ID_KEY);
         if(isNotSet) {
@@ -48,7 +55,7 @@ public class DeviceIdentifier {
      */
     public static String getUniqueId() throws RuntimeException {
         if(uniqueId == null) {
-            throw new RuntimeException("You must call DeviceIdentifier.initialize before using the cloudmine api");
+            throw new RuntimeException("You must call BaseDeviceIdentifier.initialize before using the cloudmine api");
         }
         return uniqueId;
     }
@@ -59,7 +66,7 @@ public class DeviceIdentifier {
      * @throws RuntimeException if initialize has not been called
      */
     public static Header getDeviceIdentifierHeader() throws RuntimeException {
-        return new BasicHeader(DEVICE_HEADER_KEY, getUniqueId());
+        return new BasicHeader(HeaderFactory.DEVICE_HEADER_KEY, getUniqueId());
     }
 
     private static String generateUniqueDeviceIdentifier() {
