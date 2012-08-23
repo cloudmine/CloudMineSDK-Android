@@ -15,7 +15,7 @@ public class MainActivity extends Activity {
 
         //Now, lets do something useful. First lets create some application data. Application data can be accessed by any user.
 
-        SimpleCMObject wilbur = SimpleCMObject.SimpleCMObject(); //Create a new SimpleCMObject with a random objectId
+        SimpleCMObject wilbur = new SimpleCMObject(); //Create a new SimpleCMObject with a random objectId
         wilbur.setClass("animal");
         wilbur.add("name", "Wilbur");
         wilbur.add("birthday", new Date());
@@ -31,10 +31,10 @@ public class MainActivity extends Activity {
         CMStore.getStore().saveStoreApplicationObjects();
         //What about user's though? lets pretend we have two EditText fields, e-mail and password, and two methods
         //getEmail and getPassword, that we let our user populate. Our createAccount method might look like:
-        final CMUser user = CMUser.CMUser(getEmail(), getPassword());
+        final CMUser user = new CMUser(getEmail(), getPassword());
         user.createUser();
         //and our login method might look like:
-        final CMUser user = CMUser.CMUser(getEmail(), getPassword());
+        final CMUser user = new CMUser(getEmail(), getPassword());
         user.login(new LoginResponseCallback() {
             public void onCompletion(LoginResponse loginResponse) {
                 if(loginResponse.wasSuccess()) {
@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
             }
         });
        //Now lets create some user level data
-        SimpleCMObject favoriteAnimals = SimpleCMObject.SimpleCMObject();
+        SimpleCMObject favoriteAnimals = new SimpleCMObject();
         //You can specify where objects are saved - application level or for a specific user. If you don't, application level is assumed
         favoriteAnimals.setSaveWith(CMStore.getStore().getUserStoreIdentifier()); 
         favoriteAnimals.add("favoritePig", "Wilbur");

@@ -52,8 +52,8 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="cloudmine-javasdk" exported="" />
     <orderEntry type="library" name="httpcore-4.0-beta3" level="project" />
+    <orderEntry type="module" module-name="cloudmine-javasdk" exported="" />
   </component>
 </module>
 
