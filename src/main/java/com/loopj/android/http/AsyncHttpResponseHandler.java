@@ -191,10 +191,14 @@ public class AsyncHttpResponseHandler<T> {
     }
 
     protected void sendMessage(Message msg) {
-        if(handler != null){
-            handler.sendMessage(msg);
-        } else {
-            handleMessage(msg);
+        try {
+            if(handler != null){
+                handler.sendMessage(msg);
+            } else {
+                handleMessage(msg);
+            }
+        }catch(Throwable t) {
+            onFailure(t, "Failed sending message");
         }
     }
 
