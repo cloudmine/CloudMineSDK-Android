@@ -1,6 +1,6 @@
 package com.cloudmine.api.rest.callbacks;
 
-import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.cloudmine.api.loopj.AsyncHttpResponseHandler;
 import com.cloudmine.api.rest.response.ResponseConstructor;
 
 /**

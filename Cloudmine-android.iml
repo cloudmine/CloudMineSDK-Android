@@ -54,6 +54,17 @@
     </orderEntry>
     <orderEntry type="library" name="httpcore-4.0-beta3" level="project" />
     <orderEntry type="module" module-name="cloudmine-javasdk" exported="" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$USER_HOME$/Documents/workspace/Grassroots/AndroidApp/libs/singly-android/SinglySDK/bin/singlysdk.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$USER_HOME$/Documents/workspace/Grassroots/AndroidApp/libs/singly-android/SinglySDK/src" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>
 
