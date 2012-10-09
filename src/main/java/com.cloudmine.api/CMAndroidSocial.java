@@ -3,6 +3,8 @@ package com.cloudmine.api;
 import android.app.Activity;
 import com.cloudmine.api.rest.CMSocial;
 import com.cloudmine.api.rest.callbacks.Callback;
+import com.cloudmine.api.rest.response.CMObjectResponse;
+import com.singly.android.client.SinglyClient;
 
 /**
  * Social that requires an activity to authorize, so that the user can log in through a GUI
@@ -11,9 +13,10 @@ import com.cloudmine.api.rest.callbacks.Callback;
  * See LICENSE file included with SDK for details.
  */
 public class CMAndroidSocial extends CMSocial {
-    private final Singly singly = new Singly();
 
 
+
+    private final SinglyClient client = SinglyClient.getInstance();
 
     /**
      * Switch from the current Activity to the log in page for the given service. On completion, the current Activity
@@ -22,30 +25,9 @@ public class CMAndroidSocial extends CMSocial {
      * @param activity
      * @param callback
      */
-    public void authorize(final Service service, Activity activity, final Callback<String> callback) {
+    public void authorize(final Service service, Activity activity, final Callback<CMObjectResponse> callback) {
         try {
-            singly.authorize(activity,  service.asUrlString(), new Callback<String>() {
-                @Override
-                public void onCompletion(String response) {
-                    storeToken(service, response);
-                    callback.onCompletion(response);
-                }
-
-                @Override
-                public void onFailure(Throwable error, String message) {
-                    callback.onFailure(error, message);
-                }
-
-                @Override
-                public void setStartTime(long startTime) {
-                    callback.setStartTime(startTime);
-                }
-
-                @Override
-                public long getStartTime() {
-                    return callback.getStartTime();
-                }
-            });
+            client.authenticate(activity, service.asUrlString(), callback);
         }catch(Exception e) {
             callback.onFailure(e, "");
         }
