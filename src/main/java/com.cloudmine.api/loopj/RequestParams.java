@@ -16,7 +16,7 @@
     limitations under the License.
 */
 
-package com.loopj.android.http;
+package com.cloudmine.api.loopj;
 
 import java.io.InputStream;
 import java.io.File;

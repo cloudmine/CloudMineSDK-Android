@@ -10,6 +10,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import com.cloudmine.api.LibrarySpecificClassCreator;
@@ -17,8 +18,6 @@ import com.cloudmine.api.rest.AsynchronousHttpClient;
 import com.cloudmine.api.rest.callbacks.Callback;
 import com.cloudmine.api.rest.callbacks.StringCallback;
 import com.cloudmine.api.rest.response.CMObjectResponse;
-import com.singly.android.client.BaseAuthenticationWebViewClient;
-import com.singly.android.client.SinglyClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntity;
@@ -31,13 +30,9 @@ import java.io.UnsupportedEncodingException;
  * A Dialog class that performs the authentication to a service, such as
  * facebook, through a WebView.
  *
- * This is an internal class that
- * is used by the Singly client.  Any clients to the Singly API should use the
- * {@link SinglyClient} class for authentication.
- *
  * From: https://raw.github.com/Singly/singly-android/a4cd750ebb255c0cb2879fc69828955569f43cc5/sdk/src/com/singly/android/client/AuthenticationDialog.java
  */
-class AuthenticationDialog
+public class AuthenticationDialog
         extends Dialog {
 
     // components and layouts
@@ -53,7 +48,7 @@ class AuthenticationDialog
     private Context context;
 
     private class AuthenticationWebViewClient
-            extends BaseAuthenticationWebViewClient {
+             extends WebViewClient {
 
         protected void completeAuthentication(final Context context, final String url,
                                               final Callback callback) {

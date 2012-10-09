@@ -3,7 +3,7 @@ package com.cloudmine.api.rest;
 import com.cloudmine.api.rest.callbacks.AndroidCallback;
 import com.cloudmine.api.rest.callbacks.Callback;
 import com.cloudmine.api.rest.response.ResponseConstructor;
-import com.loopj.android.http.AsyncHttpClient;
+import com.cloudmine.api.loopj.AsyncHttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 
 /**

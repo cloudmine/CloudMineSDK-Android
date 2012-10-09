@@ -17,7 +17,7 @@
     ****This file has been modified from its original version by CloudMine LLC*****
 */
 
-package com.loopj.android.http;
+package com.cloudmine.api.loopj;
 
 import android.content.Context;
 import org.apache.http.*;
