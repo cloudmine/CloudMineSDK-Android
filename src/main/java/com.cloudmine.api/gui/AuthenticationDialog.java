@@ -17,7 +17,7 @@ import com.cloudmine.api.LibrarySpecificClassCreator;
 import com.cloudmine.api.rest.AsynchronousHttpClient;
 import com.cloudmine.api.rest.callbacks.Callback;
 import com.cloudmine.api.rest.callbacks.StringCallback;
-import com.cloudmine.api.rest.response.CMObjectResponse;
+import com.cloudmine.api.rest.response.CMSocialLoginResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntity;
@@ -43,15 +43,15 @@ public class AuthenticationDialog
 
     private ProgressDialog progressDialog;
     private String authUrl;
-    private Callback callback;
+    private Callback<CMSocialLoginResponse> callback;
     private WebView webView;
     private Context context;
 
     private class AuthenticationWebViewClient
              extends WebViewClient {
 
-        protected void completeAuthentication(final Context context, final String url,
-                                              final Callback callback) {
+        protected void completeAuthentication(final String url,
+                                              final Callback<CMSocialLoginResponse> callback) {
             final AsynchronousHttpClient client = LibrarySpecificClassCreator.getCreator().getAsynchronousHttpClient();
 
             HttpGet get = new HttpGet(url);
@@ -59,13 +59,12 @@ public class AuthenticationDialog
                 client.executeCommand(get, new StringCallback() {
                     @Override
                     public void onCompletion(String messageBody) {
-                        System.out.println("MB: " + messageBody);
                         String npRedirectUrl = npCreateRedirectUrl(messageBody);
                         if(npRedirectUrl == null) {
                             callback.onFailure(new IllegalStateException("Couldn't get redirect URL"), "Couldn't get redirect URL");
                         }
                         HttpPost post = createRedirectPost(npRedirectUrl);
-                        client.executeCommand(post, callback, CMObjectResponse.CONSTRUCTOR);
+                        client.executeCommand(post, callback, CMSocialLoginResponse.CONSTRUCTOR);
                     }
 
                     private HttpPost createRedirectPost(String npRedirectUrl) {
@@ -110,8 +109,7 @@ public class AuthenticationDialog
             // on successful authentication we should get the redirect url
             if (needsManualCompletion(url)) {
                 AuthenticationDialog.this.dismiss();
-                completeAuthentication(context, url,
-                        callback);
+                completeAuthentication(url, callback);
 
                 // we handled the url ourselves, don't load the page in the web view
                 return true;
@@ -142,7 +140,7 @@ public class AuthenticationDialog
 
             if (needsManualCompletion(url)) {
                 AuthenticationDialog.this.dismiss();
-                completeAuthentication(context, url, callback);
+                completeAuthentication(url, callback);
             }
         }
     }
@@ -160,8 +158,9 @@ public class AuthenticationDialog
 
 
     public AuthenticationDialog(Context context, String authUrl,
-                                Callback callback) {
+                                Callback<CMSocialLoginResponse> callback) {
         super(context, android.R.style.Theme_Translucent_NoTitleBar);
+
         this.context = context;
         this.authUrl = authUrl;
         this.callback = callback;
