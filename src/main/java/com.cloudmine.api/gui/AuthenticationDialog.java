@@ -109,7 +109,7 @@ public class AuthenticationDialog
             System.out.println("Hitting: " + url);
             // on successful authentication we should get the redirect url
             if (needsManualCompletion(url)) {
-
+                AuthenticationDialog.this.dismiss();
                 completeAuthentication(context, url,
                         callback);
 
@@ -130,8 +130,6 @@ public class AuthenticationDialog
 
             // dismiss any progress dialog
             progressDialog.dismiss();
-
-            AuthenticationDialog.this.dismiss();
         }
 
         @Override
@@ -143,6 +141,7 @@ public class AuthenticationDialog
             webView.setVisibility(View.VISIBLE);
 
             if (needsManualCompletion(url)) {
+                AuthenticationDialog.this.dismiss();
                 completeAuthentication(context, url, callback);
             }
         }
@@ -197,6 +196,7 @@ public class AuthenticationDialog
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setLayoutParams(FILL);
         webView.getSettings().setSavePassword(false);
+        System.out.println("Loading: " + authUrl);
         webView.loadUrl(authUrl);
 
         // add the web view to the main layout

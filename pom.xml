@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.cloudmine.api</groupId>
             <artifactId>cloudmine-javasdk</artifactId>
-            <version>0.3-SNAPSHOT</version>
+            <version>0.3.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.android</groupId>
@@ -63,7 +63,7 @@
         <dependency>
           <groupId>org.apache.httpcomponents</groupId>
           <artifactId>httpmime</artifactId>
-          <version>4.2.1</version>
+          <version>4.0.1</version>
         </dependency>
     </dependencies>
 </project>
