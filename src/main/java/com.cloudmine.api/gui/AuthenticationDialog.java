@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import com.cloudmine.api.LibrarySpecificClassCreator;
 import com.cloudmine.api.rest.AsynchronousHttpClient;
+import com.cloudmine.api.rest.CMSocial;
 import com.cloudmine.api.rest.callbacks.Callback;
 import com.cloudmine.api.rest.callbacks.StringCallback;
 import com.cloudmine.api.rest.response.CMSocialLoginResponse;
@@ -156,6 +157,13 @@ public class AuthenticationDialog
         }
     }
 
+    public AuthenticationDialog(Context context, CMSocial.Service service, String userSessionToken,
+                                Callback<CMSocialLoginResponse> callback) {
+        super(context, android.R.style.Theme_Translucent_NoTitleBar);
+        this.context = context;
+
+
+    }
 
     public AuthenticationDialog(Context context, String authUrl,
                                 Callback<CMSocialLoginResponse> callback) {
