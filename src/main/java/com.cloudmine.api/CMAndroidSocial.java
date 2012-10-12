@@ -18,7 +18,7 @@ import com.cloudmine.api.rest.response.CMSocialLoginResponse;
  */
 public class CMAndroidSocial extends CMSocial {
 
-    private static final String EXPIRES = "; Expires=Thu, 01-Jan-1970 00:00:01 GMT";
+    private static final String EXPIRES = "; expires=Thu, 01-Jan-1970 00:00:01 GMT";
     private static final String COOKIE_URL = "https://api.singly.com";
 
 
@@ -45,25 +45,25 @@ public class CMAndroidSocial extends CMSocial {
     public static void clearSocialCookie(Context context, Service... services) {
         CookieSyncManager syncManager = CookieSyncManager.createInstance(context);
         CookieManager cookieManager = CookieManager.getInstance();
-        cookieManager.removeAllCookie();
-
+//        cookieManager.removeAllCookie();
+//        cookieManager.removeSessionCookie();
         for(Service service : services) {
             String url = service.getAuthenticationUrl();
-            String cookie = cookieManager.getCookie(url);
-            if(hasCookie(cookie)) {
-                System.out.println("*****************" + service);
-            }
-            int isInfinite = 0;
-            while(hasCookie(cookie) && isInfinite < 30) {
-                System.out.println("OC: " + cookie);
-                cookie = "Set-Cookie: " + cookie + EXPIRES;
-                cookieManager.setCookie(url, cookie);
+            String allCookies = cookieManager.getCookie(url);
+            if(hasNoCookie(allCookies))
+                continue;
+            for(String cookie : allCookies.split(";")) {
+                String expiredCookie = cookie + EXPIRES;
+                cookieManager.setCookie(url, expiredCookie);
                 syncManager.sync();
                 cookieManager.removeExpiredCookie();
-                cookie = cookieManager.getCookie(url);
-                System.out.println("NC: " + cookie);
-                isInfinite++;
             }
+            cookieManager.setCookie(url, "");
+            cookieManager.setCookie(url, null);
+            syncManager.sync();
+            cookieManager.removeExpiredCookie();
+            syncManager.sync();
+            allCookies = cookieManager.getCookie(url);
         }
     }
 
@@ -71,8 +71,8 @@ public class CMAndroidSocial extends CMSocial {
         clearSocialCookie(context, Service.values());
     }
 
-    private static boolean hasCookie(String cookie) {
-        return !Strings.isEmpty(cookie);
+    private static boolean hasNoCookie(String cookie) {
+        return Strings.isEmpty(cookie);
     }
 
 
