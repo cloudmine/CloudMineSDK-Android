@@ -22,7 +22,7 @@ public class DeviceIdentifier {
     public static final String UNIQUE_ID_KEY = "uniqueId";
 
     private static String uniqueId;
-    protected static final Immutable<SharedPreferences> APPLICATION_PREFERENCES = new Immutable<SharedPreferences>();
+
 
     /**
      * Retrieves the unique id for this application and device from the preferences. If this is the
@@ -34,8 +34,7 @@ public class DeviceIdentifier {
         //Not related to BaseDeviceIdentifier but we need to do the DI somewhere and this is as good as any
         LibrarySpecificClassCreator.setCreator(new LibrarySpecificClassCreator(new AndroidBase64Encoder(), new AndroidHeaderFactory(), new AndroidAsynchronousHttpClient()));
 
-        APPLICATION_PREFERENCES.setValue(context.getSharedPreferences("CLOUDMINE_PREFERENCES", Context.MODE_PRIVATE));
-        SharedPreferences preferences = APPLICATION_PREFERENCES.valueOrThrow();
+        SharedPreferences preferences = context.getSharedPreferences("CLOUDMINE_PREFERENCES", Context.MODE_PRIVATE);
         boolean isNotSet = !preferences.contains(UNIQUE_ID_KEY);
         if(isNotSet) {
             String uniqueId = generateUniqueDeviceIdentifier();
