@@ -13,6 +13,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.CMSocial;
 import com.cloudmine.api.rest.CMURLBuilder;
 import com.cloudmine.api.rest.CMWebService;
@@ -116,11 +117,11 @@ public class AuthenticationDialog
         this.authUrl = authUrl;
         this.callback = callback;
     }
-    public AuthenticationDialog(Context context, CMSocial.Service service, String userSessionToken,
+    public AuthenticationDialog(Context context, CMSocial.Service service, CMSessionToken userSessionToken,
                                 Callback<CMSocialLoginResponse> callback) {
         super(context, android.R.style.Theme_Translucent_NoTitleBar);
         this.context = context;
-        this.authUrl = getAuthenticationUrl(service, userSessionToken);
+        this.authUrl = getAuthenticationUrl(service, userSessionToken.getSessionToken());
         this.callback = callback;
     }
     public AuthenticationDialog(Context context, CMSocial.Service service,

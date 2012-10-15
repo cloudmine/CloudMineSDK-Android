@@ -8,7 +8,9 @@ import com.cloudmine.api.gui.AuthenticationDialog;
 import com.cloudmine.api.rest.CMSocial;
 import com.cloudmine.api.rest.callbacks.CMCallback;
 import com.cloudmine.api.rest.callbacks.Callback;
+import com.cloudmine.api.rest.callbacks.LoginResponseCallback;
 import com.cloudmine.api.rest.response.CMSocialLoginResponse;
+import com.cloudmine.api.rest.response.LoginResponse;
 
 /**
  * Social that requires an activity to authorize, so that the user can log in through a GUI
@@ -18,22 +20,25 @@ import com.cloudmine.api.rest.response.CMSocialLoginResponse;
  */
 public class CMAndroidSocial extends CMSocial {
 
-    private static final String EXPIRES = "; expires=Thu, 01-Jan-1970 00:00:01 GMT";
-    private static final String COOKIE_URL = "https://api.singly.com";
-
-
-    public static void createNewUserThroughSocial(final Service service, Activity activity) {
-        createNewUserThroughSocial(service, activity, CMCallback.<CMSocialLoginResponse>doNothing());
+    /**
+     * See {@link #loginThroughSocial(com.cloudmine.api.rest.CMSocial.Service, android.app.Activity, com.cloudmine.api.rest.callbacks.Callback)}
+     * @param service
+     * @param activity
+     */
+    public static void loginThroughSocial(final Service service, Activity activity) {
+        loginThroughSocial(service, activity, CMCallback.<CMSocialLoginResponse>doNothing());
     }
 
     /**
      * Switch from the current Activity to the log in page for the given service. On completion, the current Activity
-     * will be shown. The newly created user and their session token will be passed into the given callback
+     * will be shown. If the user has already logged into this application with the specified service, their user profile
+     * and a session token is passed into the given callback. If they have not, a new user is created. The newly created
+     * user and their session token will be passed into the given callback
      * @param service
      * @param activity
      * @param callback expects a CMSocialLoginResponse
      */
-    public static void createNewUserThroughSocial(final Service service, Activity activity, final Callback<CMSocialLoginResponse> callback) {
+    public static void loginThroughSocial(final Service service, Activity activity, final Callback<CMSocialLoginResponse> callback) {
         try {
             AuthenticationDialog dialog = new AuthenticationDialog(activity, service, callback);
             dialog.show();
@@ -42,46 +47,47 @@ public class CMAndroidSocial extends CMSocial {
         }
     }
 
-    public static void clearSocialCookie(Context context, Service... services) {
+    /**
+     * Clear the session cookies. This is necessary if the user wishes to log in as a different user through a previously
+     * authed social account. Clears all the session cookies, even if they are not social related
+     * @param context
+     */
+    public static void clearSessionCookies(Context context) {
         CookieSyncManager syncManager = CookieSyncManager.createInstance(context);
         CookieManager cookieManager = CookieManager.getInstance();
-//        cookieManager.removeAllCookie();
-//        cookieManager.removeSessionCookie();
-        for(Service service : services) {
-            String url = service.getAuthenticationUrl();
-            String allCookies = cookieManager.getCookie(url);
-            if(hasNoCookie(allCookies))
-                continue;
-            for(String cookie : allCookies.split(";")) {
-                String expiredCookie = cookie + EXPIRES;
-                cookieManager.setCookie(url, expiredCookie);
-                syncManager.sync();
-                cookieManager.removeExpiredCookie();
-            }
-            cookieManager.setCookie(url, "");
-            cookieManager.setCookie(url, null);
-            syncManager.sync();
-            cookieManager.removeExpiredCookie();
-            syncManager.sync();
-            allCookies = cookieManager.getCookie(url);
-        }
+        cookieManager.removeSessionCookie();
+        syncManager.sync();
     }
 
-    public static void clearAllSocialCookies(Context context) {
-        clearSocialCookie(context, Service.values());
-    }
-
-    private static boolean hasNoCookie(String cookie) {
-        return Strings.isEmpty(cookie);
-    }
-
-
-    public static void linkToUser(final Service service, final Activity activity, final String userObjectId, final Callback<CMSocialLoginResponse> callback) {
-        AuthenticationDialog dialog = new AuthenticationDialog(activity, service, userObjectId, callback);
+    public static void linkToUser(final Service service, final Activity activity, final CMSessionToken sessionToken, final Callback<CMSocialLoginResponse> callback) {
+        AuthenticationDialog dialog = new AuthenticationDialog(activity, service, sessionToken, callback);
         dialog.show();
     }
 
+    /**
+     * Link a social account to the given user. If the given user is not logged in, this first attempts to log them in.
+     * Requires that the given user exists and that no user has already been linked to the given service
+     * @param service
+     * @param activity
+     * @param user
+     * @param callback
+     */
     public static void linkToUser(final Service service, final Activity activity, final CMUser user, final Callback<CMSocialLoginResponse> callback) {
-//        linkToUser(service, activity, user.getObjectId(), callback);
+        CMSessionToken sessionToken = user.getSessionToken();
+        if(sessionToken.isValid())
+            linkToUser(service, activity, sessionToken, callback);
+        else
+            user.login(new LoginResponseCallback() {
+                public void onCompletion(LoginResponse response) {
+                    if(response.wasSuccess())
+                        linkToUser(service, activity, response.getSessionToken(), callback);
+                    else
+                        callback.onFailure(new IllegalStateException("Couldn't log in to CloudMine to link to user"), "LogIn failed");
+                }
+
+                public void onFailure(Throwable t, String msg) {
+                    callback.onFailure(t, msg);
+                }
+            });
     }
 }
