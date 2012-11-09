@@ -32,8 +32,6 @@ public class AuthenticationDialog
         extends Dialog {
 
     // components and layouts
-
-    protected static final String SUCCESS_REDIRECT = "https://api.singly.com/oauth/authorize";
     private static final FrameLayout.LayoutParams FILL = new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
@@ -42,7 +40,6 @@ public class AuthenticationDialog
     private Callback<CMSocialLoginResponse> callback;
     private WebView webView;
     private Context context;
-    private String token;
     private String challenge;
 
     private class AuthenticationWebViewClient
@@ -50,7 +47,7 @@ public class AuthenticationDialog
 
         protected void completeAuthentication() {
             try {
-                CMWebService.getService().asyncCompleteSocialLogin(token, challenge, callback);
+                CMWebService.getService().asyncCompleteSocialLogin(challenge, callback);
             } catch(Throwable t) {
                 callback.onFailure(t, "Trouble making auth redirect");
             }
@@ -98,7 +95,7 @@ public class AuthenticationDialog
     }
 
     private boolean needsManualCompletion(String url) {
-        return url.startsWith(CMURLBuilder.CLOUD_MINE_URL) && url.contains("token=");
+        return url.startsWith(CMURLBuilder.CLOUD_MINE_URL) && url.contains("challenge=");
     }
 
     private class AuthenticationWebChromeClient
@@ -138,9 +135,8 @@ public class AuthenticationDialog
     }
 
     private String getAuthenticationUrl(CMSocial.Service service, String userSessionToken) {
-        token = UUID.randomUUID().toString();
         challenge = UUID.randomUUID().toString();
-        String authenticationUrl = new CMURLBuilder().account().social().login().token(token).service(service).apikey().challenge(challenge).sessionToken(userSessionToken).asUrlString();
+        String authenticationUrl = new CMURLBuilder().account().social().login().service(service).apikey().challenge(challenge).sessionToken(userSessionToken).asUrlString();
         return authenticationUrl;
     }
 
