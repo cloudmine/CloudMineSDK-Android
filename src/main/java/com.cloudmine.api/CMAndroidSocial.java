@@ -32,13 +32,20 @@ public class CMAndroidSocial extends CMSocial {
     }
 
     /**
-     * Switch from the current Activity to the log in page for the given service. On completion, the current Activity
-     * will be shown. If the user has already logged into this application with the specified service, their user profile
-     * and a session token is passed into the given callback. If they have not, a new user is created. The newly created
-     * user and their session token will be passed into the given callback
+     * See {@link #loginThroughSocial(com.cloudmine.api.rest.CMSocial.Service, android.app.Activity, com.cloudmine.api.rest.callbacks.Callback)}
      * @param service
      * @param activity
-     * @param callback expects a CMSocialLoginResponse
+     * @param params
+     */
+    public static void loginThroughSocial(final Service service, Activity activity, HashMap<String, Object> params) {
+        loginThroughSocial(service, activity, params, CMCallback.<CMSocialLoginResponse>doNothing());
+    }
+
+    /**
+     * See {@link #loginThroughSocial(com.cloudmine.api.rest.CMSocial.Service, android.app.Activity, com.cloudmine.api.rest.callbacks.Callback)}
+     * @param service
+     * @param activity
+     * @param callback
      */
     public static void loginThroughSocial(final Service service, Activity activity, final Callback<CMSocialLoginResponse> callback) {
         loginThroughSocial(service, activity, null, callback);
@@ -51,7 +58,7 @@ public class CMAndroidSocial extends CMSocial {
      * user and their session token will be passed into the given callback
      * @param service
      * @param activity
-     * @param params paramters to pass into the authentication call, such as scope.∂
+     * @param params paramters to pass into the authentication call, such as scope.
      * @param callback expects a CMSocialLoginResponse
      */
     public static void loginThroughSocial(final Service service, Activity activity, HashMap<String, Object> params, final Callback<CMSocialLoginResponse> callback) {
@@ -78,8 +85,23 @@ public class CMAndroidSocial extends CMSocial {
     }
 
     public static void linkToUser(final Service service, final Activity activity, final CMSessionToken sessionToken, final Callback<CMSocialLoginResponse> callback) {
-        AuthenticationDialog dialog = new AuthenticationDialog(activity, service, sessionToken, callback);
+        linkToUser(service, activity, sessionToken, null, callback);
+    }
+
+    public static void linkToUser(final Service service, final Activity activity, final CMSessionToken sessionToken, HashMap<String, Object> params, final Callback<CMSocialLoginResponse> callback) {
+        AuthenticationDialog dialog = new AuthenticationDialog(activity, service, sessionToken, params, callback);
         dialog.show();
+    }
+
+    /**
+     * See {@link #linkToUser(com.cloudmine.api.rest.CMSocial.Service, android.app.Activity, com.cloudmine.api.CMUser, java.util.HashMap, com.cloudmine.api.rest.callbacks.Callback)}
+     * @param service
+     * @param activity
+     * @param user
+     * @param callback
+     */
+    public static void linkToUser(final Service service, final Activity activity, final CMUser user, final Callback<CMSocialLoginResponse> callback) {
+        linkToUser(service, activity, user, null, callback);
     }
 
     /**
@@ -88,9 +110,10 @@ public class CMAndroidSocial extends CMSocial {
      * @param service
      * @param activity
      * @param user
+     * @param params The Parameters for the auth call, such as scope.
      * @param callback
      */
-    public static void linkToUser(final Service service, final Activity activity, final CMUser user, final Callback<CMSocialLoginResponse> callback) {
+    public static void linkToUser(final Service service, final Activity activity, final CMUser user, HashMap<String, Object> params, final Callback<CMSocialLoginResponse> callback) {
         CMSessionToken sessionToken = user.getSessionToken();
         if(sessionToken.isValid())
             linkToUser(service, activity, sessionToken, callback);
