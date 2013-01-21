@@ -12,6 +12,8 @@ import com.cloudmine.api.rest.callbacks.LoginResponseCallback;
 import com.cloudmine.api.rest.response.CMSocialLoginResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
 
+import java.util.HashMap;
+
 /**
  * Social that requires an activity to authorize, so that the user can log in through a GUI
  * <br>
@@ -39,13 +41,29 @@ public class CMAndroidSocial extends CMSocial {
      * @param callback expects a CMSocialLoginResponse
      */
     public static void loginThroughSocial(final Service service, Activity activity, final Callback<CMSocialLoginResponse> callback) {
+        loginThroughSocial(service, activity, null, callback);
+    }
+
+    /**
+     * Switch from the current Activity to the log in page for the given service. On completion, the current Activity
+     * will be shown. If the user has already logged into this application with the specified service, their user profile
+     * and a session token is passed into the given callback. If they have not, a new user is created. The newly created
+     * user and their session token will be passed into the given callback
+     * @param service
+     * @param activity
+     * @param params paramters to pass into the authentication call, such as scope.
+     * @param callback expects a CMSocialLoginResponse
+     */
+    public static void loginThroughSocial(final Service service, Activity activity, HashMap<String, Object> params, final Callback<CMSocialLoginResponse> callback) {
         try {
-            AuthenticationDialog dialog = new AuthenticationDialog(activity, service, callback);
+            AuthenticationDialog dialog = new AuthenticationDialog(activity, service, params, callback);
             dialog.show();
         }catch(Exception e) {
             callback.onFailure(e, "");
         }
     }
+
+
 
     /**
      * Clear the session cookies. This is necessary if the user wishes to log in as a different user through a previously
