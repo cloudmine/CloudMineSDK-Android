@@ -44,7 +44,6 @@ public class AuthenticationDialog
     private WebView webView;
     private Context context;
     private String challenge;
-    private HashMap<String, Object> params;
 
     private class AuthenticationWebViewClient
              extends WebViewClient {
