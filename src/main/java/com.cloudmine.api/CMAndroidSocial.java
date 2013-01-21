@@ -51,7 +51,7 @@ public class CMAndroidSocial extends CMSocial {
      * user and their session token will be passed into the given callback
      * @param service
      * @param activity
-     * @param params paramters to pass into the authentication call, such as scope.
+     * @param params paramters to pass into the authentication call, such as scope.∂
      * @param callback expects a CMSocialLoginResponse
      */
     public static void loginThroughSocial(final Service service, Activity activity, HashMap<String, Object> params, final Callback<CMSocialLoginResponse> callback) {
