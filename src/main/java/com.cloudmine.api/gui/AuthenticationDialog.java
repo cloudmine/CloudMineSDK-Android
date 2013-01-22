@@ -19,9 +19,6 @@ import com.cloudmine.api.rest.CMURLBuilder;
 import com.cloudmine.api.rest.CMWebService;
 import com.cloudmine.api.rest.callbacks.Callback;
 import com.cloudmine.api.rest.response.CMSocialLoginResponse;
-
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -131,14 +128,14 @@ public class AuthenticationDialog
         this.callback = callback;
     }
 
-    public AuthenticationDialog(Context context, CMSocial.Service service, HashMap<String, Object> params, Callback<CMSocialLoginResponse> callback) {
+    public AuthenticationDialog(Context context, CMSocial.Service service, Map<String, Object> params, Callback<CMSocialLoginResponse> callback) {
         super(context, android.R.style.Theme_Translucent_NoTitleBar);
         this.context = context;
         this.authUrl = getAuthenticationUrl(service, null, params);
         this.callback = callback;
     }
 
-    public AuthenticationDialog(Context context, CMSocial.Service service, CMSessionToken userSessionToken, HashMap<String, Object> params, Callback<CMSocialLoginResponse> callback) {
+    public AuthenticationDialog(Context context, CMSocial.Service service, CMSessionToken userSessionToken, Map<String, Object> params, Callback<CMSocialLoginResponse> callback) {
         super(context, android.R.style.Theme_Translucent_NoTitleBar);
         this.context = context;
         this.authUrl = getAuthenticationUrl(service, userSessionToken.getSessionToken(), params);
@@ -154,11 +151,11 @@ public class AuthenticationDialog
         return getAuthenticationUrl(service, userSessionToken, null);
     }
 
-    private String getAuthenticationUrl(CMSocial.Service service, String userSessionToken, HashMap<String, Object> params) {
+    private String getAuthenticationUrl(CMSocial.Service service, String userSessionToken, Map<String, Object> params) {
         challenge = UUID.randomUUID().toString();
         CMURLBuilder url = new CMURLBuilder().account().social().login().service(service).apikey().challenge(challenge).sessionToken(userSessionToken);
         if (params != null && !params.isEmpty()) {
-            url = url.hashMapToQuery(params);
+            url = url.mapToQuery(params);
         }
         return url.asUrlString();
     }
