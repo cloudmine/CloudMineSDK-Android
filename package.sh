@@ -17,16 +17,20 @@ echo "Rebuilding Java Library..."
 mvn assembly:assembly -DdescriptorId=jar-with-dependencies -DbuildFor=android -DskipTests=true -f $JAVA_SDK_HOME/pom.xml
 
 echo "Building Java docs..."
-cd $JAVA_SDK_HOME
-mvn javadoc:jar
+ANDROID_DOCS=android-javadocs
+DOCS_ARCHIVE="$ANDROID_DOCS-$CLOUDMINE_ANDROID_VERSION.tgz"
+rm -rf $ANDROID_HOME/target/$ANDROID_DOCS
+mkdir $ANDROID_HOME/target/$ANDROID_DOCS
+
+javadoc $ANDROID_HOME/src/main/java/com.cloudmine.api/*.java $ANDROID_HOME/src/main/java/com.cloudmine.api/gui/*.java $ANDROID_HOME/src/main/java/com.cloudmine.api/loopj/*.java $ANDROID_HOME/src/main/java/com.cloudmine.api/rest/*.java $ANDROID_HOME/src/main/java/com.cloudmine.api/rest/callbacks/*.java $JAVA_SDK_HOME/src/main/java/com/cloudmine/api/*.java $JAVA_SDK_HOME/src/main/java/com/cloudmine/api/rest/*.java $JAVA_SDK_HOME/src/main/java/com/cloudmine/api/rest/callbacks/*.java $JAVA_SDK_HOME/src/main/java/com/cloudmine/api/rest/options/*.java $JAVA_SDK_HOME/src/main/java/com/cloudmine/api/rest/response/*.java $JAVA_SDK_HOME/src/main/java/com/cloudmine/api/rest/response/code/*.java $JAVA_SDK_HOME/src/main/java/com/cloudmine/api/persistance/*.java $JAVA_SDK_HOME/src/main/java/com/cloudmine/api/exceptions/*.java -d $ANDROID_HOME/target/$ANDROID_DOCS -doctitle "CloudMine Android $CLOUDMINE_ANDROID_VERSION API" -windowtitle "CloudMine Android API" -use -classpath $JAVA_SDK_HOME/target/lib/jackson-annotations-2.0.0-RC2.jar:$JAVA_SDK_HOME/target/lib/jackson-core-2.0.0-RC2.jar:$JAVA_SDK_HOME/target/lib/jackson-databind-2.0.0-RC2.jar
+cd "$ANDROID_HOME/target"
+tar -cvf "../$DOCS_ARCHIVE" $ANDROID_DOCS 
 cd ..
 
 echo "Copying files to deploy..."
 mkdir $DEPLOY_DIR
-cp "$JAVA_SDK_HOME/target/cloudmine-javasdk-$CLOUDMINE_JAVASDK_VERSION-jar-with-dependencies.jar" $DEPLOY_DIR
-mv "$DEPLOY_DIR/cloudmine-javasdk-$CLOUDMINE_JAVASDK_VERSION-jar-with-dependencies.jar" "$DEPLOY_DIR/cloudmine-android-v$CLOUDMINE_ANDROID_VERSION.jar"
-cp "$JAVA_SDK_HOME/target/cloudmine-javasdk-$CLOUDMINE_JAVASDK_VERSION-javadoc.jar" $DEPLOY_DIR
-mv "$DEPLOY_DIR/cloudmine-javasdk-$CLOUDMINE_JAVASDK_VERSION-javadoc.jar" "$DEPLOY_DIR/cloudmine-android-v$CLOUDMINE_ANDROID_VERSION-javadoc.jar"
+cp "$JAVA_SDK_HOME/target/cloudmine-javasdk-$CLOUDMINE_JAVASDK_VERSION-jar-with-dependencies.jar" "$DEPLOY_DIR/cloudmine-android-v$CLOUDMINE_ANDROID_VERSION.jar"
+cp $DOCS_ARCHIVE $DEPLOY_DIR
 cp "$JAVA_SDK_HOME/CHANGELOG.md" $DEPLOY_DIR
 cp "$JAVA_SDK_HOME/LICENSE" $DEPLOY_DIR
 
@@ -37,3 +41,4 @@ fi
 
 tar -cvf $ARCHIVE_NAME $DEPLOY_DIR
 rm -rf $DEPLOY_DIR
+rm $DOCS_ARCHIVE
