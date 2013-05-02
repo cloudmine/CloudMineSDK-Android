@@ -1,11 +1,15 @@
 package com.cloudmine.api.rest;
 
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.integration.SimpleCMObjectIntegrationTest;
 import com.cloudmine.test.CloudMineTestRunner;
 import com.xtremelabs.robolectric.Robolectric;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static junit.framework.Assert.assertEquals;
 
 /**
  * <br>
@@ -15,11 +19,17 @@ import org.junit.runner.RunWith;
 @RunWith(CloudMineTestRunner.class)
 public class AndroidSimpleCMObjectIntegrationTest extends SimpleCMObjectIntegrationTest{
 
-
     @Before
     public void setUp() {
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         DeviceIdentifier.initialize(Robolectric.application.getApplicationContext());
         super.setUp();
+    }
+
+    @Test
+    public void testAndroidInitialize() {
+        CMApiCredentials.initialize("aId", "aKey", Robolectric.application);
+        assertEquals("aId", CMApiCredentials.getApplicationIdentifier());
+        assertEquals("aKey", CMApiCredentials.getApplicationApiKey());
     }
 }
