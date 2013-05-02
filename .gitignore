@@ -1,6 +1,7 @@
 .#*
 *.class
-
+.idea/
+*.iml
 .history
 
 reports

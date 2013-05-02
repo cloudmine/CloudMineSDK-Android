@@ -1,0 +1,11 @@
+* Check out projects:
+** git clone git@github.com:cloudmine/Android-SDK-Private.git
+** git submodule init
+** git config -l
+** git submodule update
+* Import into IntelliJ
+** File -> Import Project -> Select Android-SDK-Private -> Import Project From Maven -> Next till select Project SDK, select 2.2
+** Expand the cloudmine-javasdk directory in IntelliJ and mark src/main/java as Source Root, mark cloudmine-javasdk/test/java as Test Source Root, mark src/test/integration as Test Source Root
+** For working unit tests: Follow instructions here from "Configure the IntelliJ project" http://pivotal.github.io/robolectric/intellij-quick-start.html
+*** You may have to manually add the Android Facet to the cloudmine-android project for the step "Configure generated source directories", and there may not be an AAPT compiler listed, if so modify the "R.java and Manifest.java files" to "Generate by IDE" to point to src/gen
+*** The src module needs to depend on cloudmine-android. Ignore the error about circular dependency.
