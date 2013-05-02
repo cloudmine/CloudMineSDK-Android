@@ -18,7 +18,7 @@
     ****This file has been modified from its original version by CloudMine LLC*****
 */
 
-package com.loopj.android.http;
+package com.cloudmine.api.loopj;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -191,10 +191,14 @@ public class AsyncHttpResponseHandler<T> {
     }
 
     protected void sendMessage(Message msg) {
-        if(handler != null){
-            handler.sendMessage(msg);
-        } else {
-            handleMessage(msg);
+        try {
+            if(handler != null){
+                handler.sendMessage(msg);
+            } else {
+                handleMessage(msg);
+            }
+        }catch(Throwable t) {
+            onFailure(t, "Failed sending message");
         }
     }
 
@@ -227,7 +231,9 @@ public class AsyncHttpResponseHandler<T> {
         StatusLine status = response.getStatusLine();
         try {
             completedThenConsume(response);
-        } finally {
+        } catch(Exception e) {
+            sendFailureMessage(e, "Failed constructed response");
+        }finally {
             if(status.getStatusCode() >= 300) {
                 sendFailureMessage(new HttpResponseException(status.getStatusCode(), status.getReasonPhrase()), "");
             }
