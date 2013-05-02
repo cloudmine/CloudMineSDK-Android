@@ -3,7 +3,8 @@
 .idea/
 *.iml
 .history
-
+TestGrounds/
+out/
 reports
 javadocs
 
