@@ -12,7 +12,7 @@ import com.cloudmine.api.rest.callbacks.LoginResponseCallback;
 import com.cloudmine.api.rest.response.CMSocialLoginResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Social that requires an activity to authorize, so that the user can log in through a GUI
@@ -37,7 +37,7 @@ public class CMAndroidSocial extends CMSocial {
      * @param activity
      * @param params
      */
-    public static void loginThroughSocial(final Service service, Activity activity, HashMap<String, Object> params) {
+    public static void loginThroughSocial(final Service service, Activity activity, Map<String, Object> params) {
         loginThroughSocial(service, activity, params, CMCallback.<CMSocialLoginResponse>doNothing());
     }
 
@@ -61,7 +61,7 @@ public class CMAndroidSocial extends CMSocial {
      * @param params paramters to pass into the authentication call, such as scope.
      * @param callback expects a CMSocialLoginResponse
      */
-    public static void loginThroughSocial(final Service service, Activity activity, HashMap<String, Object> params, final Callback<CMSocialLoginResponse> callback) {
+    public static void loginThroughSocial(final Service service, Activity activity, Map<String, Object> params, final Callback<CMSocialLoginResponse> callback) {
         try {
             AuthenticationDialog dialog = new AuthenticationDialog(activity, service, params, callback);
             dialog.show();
@@ -88,13 +88,13 @@ public class CMAndroidSocial extends CMSocial {
         linkToUser(service, activity, sessionToken, null, callback);
     }
 
-    public static void linkToUser(final Service service, final Activity activity, final CMSessionToken sessionToken, HashMap<String, Object> params, final Callback<CMSocialLoginResponse> callback) {
+    public static void linkToUser(final Service service, final Activity activity, final CMSessionToken sessionToken, Map<String, Object> params, final Callback<CMSocialLoginResponse> callback) {
         AuthenticationDialog dialog = new AuthenticationDialog(activity, service, sessionToken, params, callback);
         dialog.show();
     }
 
     /**
-     * See {@link #linkToUser(com.cloudmine.api.rest.CMSocial.Service, android.app.Activity, com.cloudmine.api.CMUser, java.util.HashMap, com.cloudmine.api.rest.callbacks.Callback)}
+     * See {@link #linkToUser(com.cloudmine.api.rest.CMSocial.Service, android.app.Activity, com.cloudmine.api.CMUser, java.util.Map, com.cloudmine.api.rest.callbacks.Callback)}
      * @param service
      * @param activity
      * @param user
@@ -113,15 +113,15 @@ public class CMAndroidSocial extends CMSocial {
      * @param params The Parameters for the auth call, such as scope.
      * @param callback
      */
-    public static void linkToUser(final Service service, final Activity activity, final CMUser user, HashMap<String, Object> params, final Callback<CMSocialLoginResponse> callback) {
+    public static void linkToUser(final Service service, final Activity activity, final CMUser user, final Map<String, Object> params, final Callback<CMSocialLoginResponse> callback) {
         CMSessionToken sessionToken = user.getSessionToken();
-        if(sessionToken.isValid())
+        if(Strings.isEmpty(user.getPassword())) //assume user has been logged in, we can't log them in anyway at this point
             linkToUser(service, activity, sessionToken, callback);
         else
             user.login(new LoginResponseCallback() {
                 public void onCompletion(LoginResponse response) {
                     if(response.wasSuccess())
-                        linkToUser(service, activity, response.getSessionToken(), callback);
+                        linkToUser(service, activity, response.getSessionToken(), params, callback);
                     else
                         callback.onFailure(new IllegalStateException("Couldn't log in to CloudMine to link to user"), "LogIn failed");
                 }
