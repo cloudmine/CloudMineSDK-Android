@@ -4,11 +4,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.LocallySavableCMObject;
 import com.cloudmine.api.Strings;
 import com.cloudmine.api.rest.JsonUtilities;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,6 +38,7 @@ public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
             SYNCED_DATE_COLUMN + " integer" +
             ")";
     private static final String OBJECT_ID_WHERE = OBJECT_ID_COLUMN + "=?";
+    private static final String MULTI_OBJECT_ID_WHERE = OBJECT_ID_COLUMN + " in (?)";
     private static final String UPDATE_OBJECT_WHERE = OBJECT_ID_WHERE + " AND " + SAVED_DATE_COLUMN + "<?";
 
     public CMObjectDBOpenHelper(Context context) {
@@ -77,6 +81,35 @@ public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
         return fromCursor(cursor);
     }
 
+    public Map<String, String> loadObjectJsonById(Collection<String> objectIds) {
+        Map<String, String> objectIdsToJson = new HashMap<String, String>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(CM_OBJECT_TABLE, new String[] {JSON_COLUMN, OBJECT_ID_COLUMN}, MULTI_OBJECT_ID_WHERE, new String[]{collectionToCsv(objectIds)}, null, null, null);
+
+        int jsonIndex = cursor.getColumnIndex(JSON_COLUMN);
+        int objectIdIndex = cursor.getColumnIndex(OBJECT_ID_COLUMN);
+        while (cursor.moveToNext()) {
+            String json = cursor.getString(jsonIndex);
+            String objectId = cursor.getString(objectIdIndex);
+            objectIdsToJson.put(objectId, json);
+        }
+
+        return objectIdsToJson;
+    }
+
+
+    private String collectionToCsv(Collection<? extends Object> collection) {
+        if(collection == null || collection.isEmpty())
+            return "";
+        StringBuilder csvBuilder = new StringBuilder();
+        String separator = "";
+        for(Object element : collection) {
+            csvBuilder.append(separator).append(element);
+            separator = ", ";
+        }
+        return csvBuilder.toString();
+    }
 
     private static <OBJECT_TYPE extends LocallySavableCMObject> OBJECT_TYPE fromCursor(Cursor cursor) {
         if(!cursor.moveToNext()) return null;

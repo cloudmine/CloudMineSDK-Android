@@ -2,7 +2,13 @@ package com.cloudmine.api;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import com.cloudmine.api.db.CMObjectDBOpenHelper;
+import com.cloudmine.api.db.Request;
+import com.cloudmine.api.db.RequestDBOpenHelper;
+import com.cloudmine.api.rest.RequestPerformerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -14,24 +20,53 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 public class LocallySavableCMObject extends CMObject {
-
-    private static CMObjectDBOpenHelper openHelper;
-    private static synchronized CMObjectDBOpenHelper getDBHelper(Context context) {
-        if(openHelper == null) {
-            openHelper = new CMObjectDBOpenHelper(context.getApplicationContext());
+    private static final Logger LOG = LoggerFactory.getLogger(LocallySavableCMObject.class);
+    private static CMObjectDBOpenHelper cmObjectDBOpenHelper;
+    private static RequestDBOpenHelper requestDBOpenHelper;
+    public static synchronized CMObjectDBOpenHelper getCMObjectDBHelper(Context context) {
+        if(cmObjectDBOpenHelper == null) {
+            cmObjectDBOpenHelper = new CMObjectDBOpenHelper(context.getApplicationContext());
         }
-        return openHelper;
+        return cmObjectDBOpenHelper;
+    }
+
+    public static synchronized RequestDBOpenHelper getRequestDBOpenHelper(Context context) {
+        if(requestDBOpenHelper == null) {
+            requestDBOpenHelper = new RequestDBOpenHelper(context.getApplicationContext());
+        }
+        return requestDBOpenHelper;
     }
 
     public static <OBJECT_TYPE extends LocallySavableCMObject> OBJECT_TYPE loadObject(Context context, String objectId) {
-        return getDBHelper(context).loadObjectById(objectId);
+        return getCMObjectDBHelper(context).loadObjectById(objectId);
     }
 
     private Date lastSaveDate;
 
     public boolean saveLocally(Context context) {
         lastSaveDate = new Date();
-        return getDBHelper(context).insertCMObjectIfNewer(this);
+        return getCMObjectDBHelper(context).insertCMObjectIfNewer(this);
+    }
+
+    public boolean saveEventually(Context context) {
+        boolean wasCreated = saveLocally(context);
+        LOG.debug("Was saved locally? " + wasCreated);
+
+        if(wasCreated) {
+            Request request = Request.createApplicationObjectRequest(getObjectId());
+            try {
+                getRequestDBOpenHelper(context).insertRequest(request);
+                wasCreated = true;
+                LOG.debug("Request was inserted");
+            } catch (Exception e) {
+                wasCreated = false;
+                LOG.error("Failed", e);
+            }
+            if(wasCreated) {
+                context.startService(new Intent(context, RequestPerformerService.class));
+            }
+        }
+        return wasCreated;
     }
 
     public int getLastSavedDateAsSeconds() {
