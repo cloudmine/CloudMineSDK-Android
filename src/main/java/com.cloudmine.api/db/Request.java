@@ -20,6 +20,10 @@ import static com.cloudmine.api.db.RequestDBOpenHelper.*;
 
 /**
  * Encapsulates all of the information needed to perform a request.
+ *
+ * <br>
+ * Copyright CloudMine LLC. All rights reserved<br>
+ * See LICENSE file included with SDK for details.
  */
 public class Request {
 

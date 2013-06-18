@@ -34,6 +34,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * sets their status to 1, and performs all the requests. On a successful request, sets the status to 2; on failure,
  * sets the status back to 0. This is done in a separate thread; if the service is started while an old thread is
  * already running, it waits 5 seconds and retries. If it is still running after 5 seconds, it gives up.
+ * To force the service to run, start with the FORCE_RUN_KEY boolean set to true
+ *
+ * <br>
+ * Copyright CloudMine LLC. All rights reserved<br>
+ * See LICENSE file included with SDK for details.
  */
 public class RequestPerformerService extends Service {
     private static final Logger LOG = LoggerFactory.getLogger(RequestPerformerService.class);

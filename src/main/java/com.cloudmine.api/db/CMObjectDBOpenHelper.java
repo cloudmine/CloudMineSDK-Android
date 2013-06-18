@@ -16,11 +16,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: johnmccarthy
- * Date: 6/6/13
- * Time: 4:21 PM
- * To change this template use File | Settings | File Templates.
+ * Stores CMObjects in a relational database
+ *
+ * <br>
+ * Copyright CloudMine LLC. All rights reserved<br>
+ * See LICENSE file included with SDK for details.
  */
 public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "cmobjects.db";

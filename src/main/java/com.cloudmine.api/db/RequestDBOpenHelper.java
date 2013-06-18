@@ -17,11 +17,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: johnmccarthy
- * Date: 6/10/13
- * Time: 12:21 PM
- * To change this template use File | Settings | File Templates.
+ * Open Helper for requests that must eventually be synced. Requests can either have their JSON set explicitly, or set
+ * to an object id that will be loaded when the request is run.
+ *
+ * <br>
+ * Copyright CloudMine LLC. All rights reserved<br>
+ * See LICENSE file included with SDK for details.
  */
 public class RequestDBOpenHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "requests.db";
