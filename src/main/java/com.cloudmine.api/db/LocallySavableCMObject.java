@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * A {@link CMObject} that can be stored locally. Note that local storage happens on the calling thread.
@@ -48,6 +49,7 @@ public class LocallySavableCMObject extends CMObject {
         return getCMObjectDBHelper(context).loadObjectById(objectId);
     }
 
+
     /**
      * Delete the specified object, if it exists
      * @param context activity context
@@ -56,6 +58,17 @@ public class LocallySavableCMObject extends CMObject {
      */
     public static int deleteObject(Context context, String objectId) {
         return getCMObjectDBHelper(context).deleteObjectById(objectId);
+    }
+
+    /**
+     * Load all of the objects of the specified class that are stored locally
+     * @param context activity context
+     * @param klass
+     * @param <OBJECT_TYPE>
+     * @return
+     */
+    public static <OBJECT_TYPE extends LocallySavableCMObject> List<OBJECT_TYPE> loadObjectsByClass(Context context, Class<OBJECT_TYPE> klass) {
+        return getCMObjectDBHelper(context).loadObjectsByClass(klass);
     }
 
     private Date lastSaveDate;
