@@ -5,8 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-import com.cloudmine.api.LocallySavableCMObject;
 import com.cloudmine.api.Strings;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
@@ -235,6 +233,7 @@ public class RequestDBOpenHelper extends SQLiteOpenHelper {
         Map<String, Request> objectIdsToRequests = new HashMap<String, Request>();
         for(Request request : requestMapping.values()) {
             String objectId = request.getObjectId();
+
             if(Strings.isNotEmpty(objectId)) {
                 objectIds.add(objectId);
                 objectIdsToRequests.put(objectId, request);

@@ -1,6 +1,6 @@
 package com.cloudmine.test;
 
-import com.cloudmine.api.LocallySavableCMObject;
+import com.cloudmine.api.db.LocallySavableCMObject;
 
 /**
  * Created with IntelliJ IDEA.

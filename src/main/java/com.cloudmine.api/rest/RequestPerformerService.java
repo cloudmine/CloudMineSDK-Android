@@ -114,7 +114,6 @@ public class RequestPerformerService extends Service {
                             androidClient.close();
 
                         int statusCode = getStatusCode(response);
-
                         if(wasSuccess(statusCode)) {
                             LOG.debug("Successfully performed request " + id);
                             openHelper.setSynchronized(id);
@@ -255,7 +254,6 @@ public class RequestPerformerService extends Service {
         catchUncaughtExceptions();
 
         LOG.debug("onCreate");
-
 
         connectivityManager = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
         openHelper = new RequestDBOpenHelper(getApplicationContext());

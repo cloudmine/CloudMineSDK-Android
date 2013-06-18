@@ -1,11 +1,11 @@
-package com.cloudmine.api;
+package com.cloudmine.api.db;
 
 import android.content.Context;
+import com.cloudmine.api.DeviceIdentifier;
+import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.db.Request;
 import com.cloudmine.api.db.RequestDBOpenHelper;
-import com.cloudmine.api.rest.CMWebService;
 import com.cloudmine.api.rest.JsonUtilities;
-import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.test.CloudMineTestRunner;
 import com.cloudmine.test.ExtendedCMObject;
 import com.cloudmine.test.ExtendedLocallySavableCMObject;
@@ -18,9 +18,7 @@ import org.junit.runner.RunWith;
 import java.util.Date;
 import java.util.Map;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 @RunWith(CloudMineTestRunner.class)
 public class LocallySavableCMObjectTest extends ServiceTestBase {
@@ -43,6 +41,25 @@ public class LocallySavableCMObjectTest extends ServiceTestBase {
 
         ExtendedLocallySavableCMObject loadedObject = LocallySavableCMObject.loadObject(context, savableCMObject.getObjectId());
         assertEquals(savableCMObject,  loadedObject);
+
+        savableCMObject.setAwesome(false);
+        savableCMObject.saveLocally(context);
+        loadedObject = LocallySavableCMObject.loadObject(context, savableCMObject.getObjectId());
+        assertFalse(loadedObject.isAwesome());
+    }
+
+    @Test
+    public void testDelete() {
+
+        Context context = Robolectric.application.getApplicationContext();
+        ExtendedCMObject subobject = new ExtendedCMObject("bob", new Date(), 55);
+        ExtendedLocallySavableCMObject savableCMObject = new ExtendedLocallySavableCMObject("Francis", true, subobject, 1000);
+        boolean wasSaved = savableCMObject.saveLocally(context);
+        assertTrue(wasSaved);
+
+        LocallySavableCMObject.deleteObject(context, savableCMObject.getObjectId());
+        ExtendedLocallySavableCMObject loadedObject = LocallySavableCMObject.loadObject(context, savableCMObject.getObjectId());
+        assertNull(loadedObject);
     }
 
     @Test

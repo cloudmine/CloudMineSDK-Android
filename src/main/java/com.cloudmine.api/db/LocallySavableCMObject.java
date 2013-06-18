@@ -1,11 +1,9 @@
-package com.cloudmine.api;
+package com.cloudmine.api.db;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import com.cloudmine.api.db.CMObjectDBOpenHelper;
-import com.cloudmine.api.db.Request;
-import com.cloudmine.api.db.RequestDBOpenHelper;
+import com.cloudmine.api.CMObject;
 import com.cloudmine.api.rest.RequestPerformerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +21,14 @@ public class LocallySavableCMObject extends CMObject {
     private static final Logger LOG = LoggerFactory.getLogger(LocallySavableCMObject.class);
     private static CMObjectDBOpenHelper cmObjectDBOpenHelper;
     private static RequestDBOpenHelper requestDBOpenHelper;
-    public static synchronized CMObjectDBOpenHelper getCMObjectDBHelper(Context context) {
+    static synchronized CMObjectDBOpenHelper getCMObjectDBHelper(Context context) {
         if(cmObjectDBOpenHelper == null) {
             cmObjectDBOpenHelper = new CMObjectDBOpenHelper(context.getApplicationContext());
         }
         return cmObjectDBOpenHelper;
     }
 
-    public static synchronized RequestDBOpenHelper getRequestDBOpenHelper(Context context) {
+    static synchronized RequestDBOpenHelper getRequestDBOpenHelper(Context context) {
         if(requestDBOpenHelper == null) {
             requestDBOpenHelper = new RequestDBOpenHelper(context.getApplicationContext());
         }
@@ -39,6 +37,10 @@ public class LocallySavableCMObject extends CMObject {
 
     public static <OBJECT_TYPE extends LocallySavableCMObject> OBJECT_TYPE loadObject(Context context, String objectId) {
         return getCMObjectDBHelper(context).loadObjectById(objectId);
+    }
+
+    public static void deleteObject(Context context, String objectId) {
+        getCMObjectDBHelper(context).deleteObjectById(objectId);
     }
 
     private Date lastSaveDate;
@@ -87,6 +89,7 @@ public class LocallySavableCMObject extends CMObject {
         values.put(CMObjectDBOpenHelper.OBJECT_ID_COLUMN, getObjectId());
         values.put(CMObjectDBOpenHelper.JSON_COLUMN, transportableRepresentation());
         values.put(CMObjectDBOpenHelper.SAVED_DATE_COLUMN, getLastSavedDateAsSeconds());
+        values.put(CMObjectDBOpenHelper.CLASS_NAME_COLUMN, getClassName());
         return values;
     }
 }
