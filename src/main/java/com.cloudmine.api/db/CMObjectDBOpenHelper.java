@@ -1,5 +1,6 @@
 package com.cloudmine.api.db;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -67,14 +68,16 @@ public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         try {
             boolean wasInsertedOrUpdated;
-            long insertResult = db.insert(CM_OBJECT_TABLE, null, cmObject.toContentValues());
-            if(insertResult < 0) {
-                int numUpdated = db.update(CM_OBJECT_TABLE, cmObject.toContentValues(), UPDATE_OBJECT_WHERE,
-                        new String[]{cmObject.getObjectId(), String.valueOf(cmObject.getLastSavedDateAsSeconds())});
-                wasInsertedOrUpdated = numUpdated > 0;
-            } else {
-                wasInsertedOrUpdated = true;
+            ContentValues contentValues = cmObject.toContentValues();
+
+            int numUpdated = db.update(CM_OBJECT_TABLE, contentValues, UPDATE_OBJECT_WHERE,
+                    new String[]{cmObject.getObjectId(), String.valueOf(cmObject.getLastSavedDateAsSeconds())});
+            wasInsertedOrUpdated = numUpdated > 0;
+            if(!wasInsertedOrUpdated) {
+                long insertResult = db.insert(CM_OBJECT_TABLE, null, contentValues);
+                wasInsertedOrUpdated = insertResult > 0;
             }
+
             return wasInsertedOrUpdated;
         } finally {
             db.close();
@@ -92,6 +95,21 @@ public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
         }finally {
             db.close();
         }
+    }
+
+    public List<LocallySavableCMObject> loadAllObjects() {
+        SQLiteDatabase db = getReadableDatabase();
+        List<LocallySavableCMObject> allObjects = new ArrayList<LocallySavableCMObject>();
+        try {
+            Cursor cursor = db.query(CM_OBJECT_TABLE, new String[] {JSON_COLUMN}, null, null, null, null, null);
+            while (cursor.moveToNext()) {
+                LocallySavableCMObject object = fromCursor(cursor);
+                allObjects.add(object);
+            }
+        } finally {
+            db.close();
+        }
+        return allObjects;
     }
 
     public int deleteObjectById(String objectId) {

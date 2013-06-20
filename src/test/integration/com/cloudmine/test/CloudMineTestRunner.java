@@ -21,5 +21,6 @@ public class CloudMineTestRunner extends RobolectricTestRunner {
     @Override
     protected void bindShadowClasses() {
         Robolectric.bindShadowClass(ShadowBase64.class);
+        Robolectric.bindShadowClass(ShadowSQLiteDatabaseUnclosable.class);
     }
 }

@@ -19,8 +19,8 @@ import java.util.List;
  */
 public class LocallySavableCMObject extends CMObject {
     private static final Logger LOG = LoggerFactory.getLogger(LocallySavableCMObject.class);
-    private static CMObjectDBOpenHelper cmObjectDBOpenHelper;
-    private static RequestDBOpenHelper requestDBOpenHelper;
+    static CMObjectDBOpenHelper cmObjectDBOpenHelper;
+    static RequestDBOpenHelper requestDBOpenHelper;
 
 
     static synchronized CMObjectDBOpenHelper getCMObjectDBHelper(Context context) {
@@ -69,6 +69,10 @@ public class LocallySavableCMObject extends CMObject {
      */
     public static <OBJECT_TYPE extends LocallySavableCMObject> List<OBJECT_TYPE> loadObjectsByClass(Context context, Class<OBJECT_TYPE> klass) {
         return getCMObjectDBHelper(context).loadObjectsByClass(klass);
+    }
+
+    public static List<LocallySavableCMObject> loadAllObjects(Context context) {
+        return getCMObjectDBHelper(context).loadAllObjects();
     }
 
     private Date lastSaveDate;
