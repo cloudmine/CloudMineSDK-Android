@@ -128,7 +128,7 @@ public class LocallySavableCMObject extends CMObject {
         return lastSaveDate;
     }
 
-    public void setLastSaveDate(Date lastSaveDate) {
+    void setLastSaveDate(Date lastSaveDate) {
         this.lastSaveDate = lastSaveDate;
     }
 
@@ -136,7 +136,7 @@ public class LocallySavableCMObject extends CMObject {
      * Used by the CMObjectDBOpenHelper to insert this object into the database
      * @return
      */
-    public ContentValues toContentValues() {
+    ContentValues toContentValues() {
         ContentValues values = new ContentValues();
         values.put(CMObjectDBOpenHelper.OBJECT_ID_COLUMN, getObjectId());
         values.put(CMObjectDBOpenHelper.JSON_COLUMN, transportableRepresentation());
