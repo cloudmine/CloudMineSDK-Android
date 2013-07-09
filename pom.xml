@@ -87,6 +87,19 @@
             <scope>system</scope>
             <systemPath>${basedir}/libs/gcm.jar</systemPath>
         </dependency>
-
+        <dependency>
+        	<groupId>junit</groupId>
+        	<artifactId>junit</artifactId>
+        	<version>4.10</version>
+          <scope>test</scope>
+        </dependency>
+       <dependency>
+       	<groupId>com.pivotallabs</groupId>
+       	<artifactId>robolectric</artifactId>
+       	<version>1.2</version>
+        <scope>test</scope>
+       </dependency>
+                   
+                    
     </dependencies>
 </project>
