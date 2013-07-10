@@ -67,21 +67,26 @@ class AsyncHttpRequest implements Runnable {
     }
     
     private void makeRequest() throws IOException {
-    	if(!Thread.currentThread().isInterrupted()) {
-    		HttpResponse response = client.execute(request, context);
-    		if(!Thread.currentThread().isInterrupted()) {
-    			if(responseHandler != null) {
-                    if(responseHandler instanceof Callback) {
-                        ResponseTimeDataStore.extractAndStoreResponseTimeInformation((Callback) responseHandler, response);
-                    } else {
-                        LOG.error("We have a non callback responseHandler; this should never happen. Not storing response time information");
+        try {
+    	    if(!Thread.currentThread().isInterrupted()) {
+                HttpResponse response = client.execute(request, context);
+                if(!Thread.currentThread().isInterrupted()) {
+                    if(responseHandler != null) {
+                        if(responseHandler instanceof Callback) {
+                            ResponseTimeDataStore.extractAndStoreResponseTimeInformation((Callback) responseHandler, response);
+                        } else {
+                            LOG.error("We have a non callback responseHandler; this should never happen. Not storing response time information");
+                        }
+                        responseHandler.sendResponseMessage(response);
                     }
-    				responseHandler.sendResponseMessage(response);
-    			}
-    		} else{
-    			//TODO: should raise InterruptedException? this block is reached whenever the request is cancelled before its response is received
-    		}
-    	}
+                } else{
+                    //TODO: should raise InterruptedException? this block is reached whenever the request is cancelled before its response is received
+                }
+    	    }
+        }catch (Throwable t) {
+            if(t instanceof IOException) throw (IOException)t;
+            else responseHandler.handleFailureMessage(t, "Error while making request");
+        }
     }
 
     private void makeRequestWithRetries() throws ConnectException {

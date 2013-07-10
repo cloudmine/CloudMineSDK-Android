@@ -4,12 +4,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import com.cloudmine.api.CMObject;
-import com.cloudmine.api.rest.RequestPerformerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.List;
+
 
 /**
  * A {@link CMObject} that can be stored locally. Note that local storage happens on the calling thread.

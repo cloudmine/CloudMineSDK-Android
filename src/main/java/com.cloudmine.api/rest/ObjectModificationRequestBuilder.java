@@ -47,8 +47,8 @@ public class ObjectModificationRequestBuilder {
         if(transportable == null) throw new CreationException("You must set a non null Transportable in setSavable before calling build");
         int operationCode = operation == null ? Request.Method.POST : operation.requestMethod;
         String url = sessionToken == null ?
-                "/text" :
-                "/user/text";
-        return new ObjectModificationRequest(operationCode, url, transportable.transportableRepresentation(), sessionToken, errorListener, responseListener);
+                ObjectModificationRequest.ENDPOINT :
+                ObjectModificationRequest.user(ObjectModificationRequest.ENDPOINT);
+        return new ObjectModificationRequest(operationCode, url, transportable.transportableRepresentation(), sessionToken, responseListener, errorListener);
     }
 }

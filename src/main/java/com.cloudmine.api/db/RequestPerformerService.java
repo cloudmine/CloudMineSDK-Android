@@ -1,4 +1,4 @@
-package com.cloudmine.api.rest;
+package com.cloudmine.api.db;
 
 import android.app.Service;
 import android.content.Context;
@@ -7,8 +7,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.http.AndroidHttpClient;
 import android.os.IBinder;
-import com.cloudmine.api.db.Request;
-import com.cloudmine.api.db.RequestDBOpenHelper;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NoHttpResponseException;

@@ -4,13 +4,12 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.Strings;
-import com.cloudmine.api.rest.AndroidHeaderFactory;
-import com.cloudmine.api.rest.HeaderFactory;
-import com.cloudmine.api.rest.ResponseTimeDataStore;
+import com.cloudmine.api.rest.callbacks.Callback;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -22,9 +21,31 @@ import java.util.Map;
  * See LICENSE file included with SDK for details.
  */
 public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE> {
-
     protected static String BASE_URL = "https://api.cloudmine.me/v1/app/";
-    private static AndroidHeaderFactory HEADER_FACTORY = new AndroidHeaderFactory();
+    protected static String USER = "/user";
+
+    protected static String user(String url) {
+        return USER + url;
+    }
+
+    protected static Response.ErrorListener errorFromCallback(final Callback callback) {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                callback.onFailure(volleyError, "VolleyError");
+            }
+        };
+    }
+
+    protected static <T> Response.Listener<T> successFromCallback(final Callback<T> callback) {
+        return new Response.Listener<T>() {
+            @Override
+            public void onResponse(T t) {
+                callback.onCompletion(t);
+            }
+        };
+    }
+
     private static Map<String, String> DEFAULT_HEADERS = new HashMap<String, String>();
     static {
         DEFAULT_HEADERS.put(HeaderFactory.AGENT_HEADER_KEY, AndroidHeaderFactory.CLOUD_MINE_AGENT);
@@ -34,20 +55,19 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE> {
     private String sessionTokenString;
 
     private static String getUrl(String url) {
-        return new StringBuilder(BASE_URL).append(CMApiCredentials.getApplicationIdentifier()).append("/").append(url).toString();
+        return new StringBuilder(BASE_URL).append(CMApiCredentials.getApplicationIdentifier()).append(url).toString();
     }
 
-    public CloudMineRequest(int method, String url, Response.ErrorListener errorListener, Response.Listener<RESPONSE> successListener) {
-        this(method, url, null, null, errorListener, successListener);
+    public CloudMineRequest(int method, String url, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
+        this(method, url, null, null, successListener, errorListener);
     }
 
-    public CloudMineRequest(int method, String url, String body, CMSessionToken sessionToken, Response.ErrorListener errorListener, Response.Listener<RESPONSE> successListener) {
+    public CloudMineRequest(int method, String url, String body, CMSessionToken sessionToken, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
         super(method, getUrl(url), errorListener);
         this.body = body;
         responseListener = successListener;
-        boolean isValidSessionToken = sessionToken != null && !CMSessionToken.FAILED.equals(sessionToken);
+        boolean isValidSessionToken = !(sessionToken == null || CMSessionToken.FAILED.equals(sessionToken));
         if(isValidSessionToken) sessionTokenString = sessionToken.getSessionToken();
-
     }
 
     @Override
@@ -74,7 +94,7 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE> {
     public Map<String, String> getHeaders() throws AuthFailureError {
         Map<String, String> headerMap = new HashMap<String, String>(DEFAULT_HEADERS);
         headerMap.put(HeaderFactory.DEVICE_HEADER_KEY, getDeviceHeaderValue());
-        headerMap.put(HeaderFactory.HEADER_KEY, CMApiCredentials.getApplicationApiKey()); //worry about sync issues? not now but could be an issue
+        headerMap.put(HeaderFactory.API_HEADER_KEY, CMApiCredentials.getApplicationApiKey()); //worry about sync issues? not now but could be an issue
         if(Strings.isNotEmpty(sessionTokenString)) headerMap.put(HeaderFactory.SESSION_TOKEN_HEADER_KEY, sessionTokenString);
         return headerMap;
     }

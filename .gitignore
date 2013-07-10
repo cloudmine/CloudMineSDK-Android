@@ -7,7 +7,7 @@ TestGrounds/
 out/
 reports
 javadocs
-
+*.trace
 
 # Package Files #
 *.jar

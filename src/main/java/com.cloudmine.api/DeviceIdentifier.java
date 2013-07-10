@@ -2,6 +2,7 @@ package com.cloudmine.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import com.cloudmine.api.db.LocallySavableCMGeoPoint;
 import com.cloudmine.api.persistance.ClassNameRegistry;
 import com.cloudmine.api.rest.AndroidAsynchronousHttpClient;
@@ -34,7 +35,9 @@ public class DeviceIdentifier {
      */
     public static void initialize(Context context) {
         //Not related to BaseDeviceIdentifier but we need to do the DI somewhere and this is as good as any
-        LibrarySpecificClassCreator.setCreator(new LibrarySpecificClassCreator(new AndroidBase64Encoder(), new AndroidHeaderFactory(), new AndroidAsynchronousHttpClient()));
+        LibrarySpecificClassCreator.setCreator(new LibrarySpecificClassCreator(new AndroidBase64Encoder(), new AndroidHeaderFactory(),
+                new AndroidAsynchronousHttpClient()));
+//                new VolleyAsynchronousHttpClient(context.getApplicationContext())));
         //Deserialize all geopoints as locally savable objects
         ClassNameRegistry.register(CMGeoPointInterface.GEOPOINT_CLASS, LocallySavableCMGeoPoint.class);
 
@@ -49,6 +52,8 @@ public class DeviceIdentifier {
         uniqueId = preferences.getString(UNIQUE_ID_KEY, null); //null here so if we aren't getting the unique key, we fail hard
         if(uniqueId == null) {
             throw new RuntimeException("Unable to get unique id");
+        } else {
+            Log.e("CloudMine", "set unique id to " + uniqueId);
         }
     }
 
