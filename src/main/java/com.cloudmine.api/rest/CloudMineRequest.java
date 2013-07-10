@@ -62,12 +62,17 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE> {
         this(method, url, null, null, successListener, errorListener);
     }
 
+    public CloudMineRequest(int method, String url, CMSessionToken sessionToken, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
+        this(method, url, null, sessionToken, successListener, errorListener);
+    }
+
     public CloudMineRequest(int method, String url, String body, CMSessionToken sessionToken, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
         super(method, getUrl(url), errorListener);
         this.body = body;
         responseListener = successListener;
         boolean isValidSessionToken = !(sessionToken == null || CMSessionToken.FAILED.equals(sessionToken));
         if(isValidSessionToken) sessionTokenString = sessionToken.getSessionToken();
+        System.out.println("url=" + getUrl(url) + " valid session? " + isValidSessionToken + " with body: " + body);
     }
 
     @Override

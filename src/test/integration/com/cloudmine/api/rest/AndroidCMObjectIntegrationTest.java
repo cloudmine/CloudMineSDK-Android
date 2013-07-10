@@ -8,7 +8,7 @@ import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.integration.CMObjectIntegrationTest;
-import com.cloudmine.api.rest.callbacks.ObjectModificationResponseCallback;
+import com.cloudmine.api.persistance.ClassNameRegistry;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.cloudmine.test.CloudMineTestRunner;
@@ -17,13 +17,14 @@ import com.cloudmine.test.ExtendedLocallySavableCMObject;
 import com.cloudmine.test.ResponseCallbackTuple;
 import com.xtremelabs.robolectric.Robolectric;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
+
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
-import static com.cloudmine.test.ResponseCallbackTuple.hasSuccess;
-import static com.cloudmine.test.TestServiceCallback.testCallback;
+import static com.cloudmine.test.ResponseCallbackTuple.defaultFailureListener;
+import static com.cloudmine.test.ResponseCallbackTuple.wasLoaded;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -50,7 +51,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
     public void testObjectModificationRequest() {
         final ExtendedLocallySavableCMObject object = new ExtendedLocallySavableCMObject("Fred", true, 55);
 
-        queue.add(new ObjectModificationRequest(object, ResponseCallbackTuple.wasCreated(object.getObjectId()), ResponseCallbackTuple.hasSuccess));
+        queue.add(new ObjectModificationRequest(object, ResponseCallbackTuple.wasCreated(object.getObjectId()), defaultFailureListener));
         waitThenAssertTestResults();
 
         CMUser user = user();
@@ -66,7 +67,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
                 assertTrue(modificationResponse.wasCreated(userObject.getObjectId()));
             }
         });
-        queue.add(new ObjectModificationRequest(userObject, user.getSessionToken(), objectModificationResponseResponseCallbackTuple, ResponseCallbackTuple.hasSuccess));
+        queue.add(new ObjectModificationRequest(userObject, user.getSessionToken(), objectModificationResponseResponseCallbackTuple, defaultFailureListener));
         waitThenAssertTestResults();
 
         assertUserHasObject(userObject, user);
@@ -78,16 +79,45 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
         ExtendedCMObject object = new ExtendedCMObject("John", 26);
         insertAndAssert(object);
 
-        queue.add(new ObjectLoadRequest(ResponseCallbackTuple.wasLoaded(object), ResponseCallbackTuple.hasSuccess));
+        queue.add(new ObjectLoadRequest(wasLoaded(object), defaultFailureListener));
         waitThenAssertTestResults();
 
         ExtendedCMObject fredObject = new ExtendedCMObject("Fred", 3);
         insertAndAssert(fredObject);
 
-        queue.add(new ObjectLoadRequest(fredObject.getObjectId(), ResponseCallbackTuple.wasLoaded(fredObject), ResponseCallbackTuple.hasSuccess));
+        queue.add(new ObjectLoadRequest(fredObject.getObjectId(), wasLoaded(fredObject), defaultFailureListener));
         waitThenAssertTestResults();
 
+        queue.add(new ObjectLoadRequestBuilder(wasLoaded(fredObject), defaultFailureListener).search("[number < 10]").build());
+        waitThenAssertTestResults();
+    }
 
+    @Test
+    public void testUserObjectLoadRequest() {
+        CMUser user = loggedInUser();
+        ExtendedCMObject object = new ExtendedCMObject("Francis Farmer", 55);
+        UserCMWebService userService = service.getUserWebService(user.getSessionToken());
+        ObjectModificationResponse insertResponse = userService.insert(object.transportableRepresentation());
+        assertTrue(insertResponse.wasSuccess());
+
+        queue.add(new ObjectLoadRequest(user.getSessionToken(), wasLoaded(object), defaultFailureListener));
+        waitThenAssertTestResults();
+
+        ExtendedLocallySavableCMObject anotherObject = new ExtendedLocallySavableCMObject("Kurt", false, 27);
+        userService.insert(anotherObject.transportableRepresentation());
+        insertResponse = userService.insert(object.transportableRepresentation());
+        assertTrue(insertResponse.wasSuccess());
+
+
+        queue.add(new ObjectLoadRequest(anotherObject.getObjectId(), user.getSessionToken(), wasLoaded(anotherObject), defaultFailureListener));
+        waitThenAssertTestResults();
+
+        String searchString = "[__class__=\"" + ClassNameRegistry.forClass(ExtendedLocallySavableCMObject.class) + "\"]";
+        queue.add(new ObjectLoadRequestBuilder(user.getSessionToken(), wasLoaded(anotherObject), defaultFailureListener).search(searchString).build());
+        waitThenAssertTestResults();
+
+        queue.add(new ObjectLoadRequest(Arrays.asList(object.getObjectId(), anotherObject.getObjectId()), user.getSessionToken(), wasLoaded(object, anotherObject), defaultFailureListener));
+        waitThenAssertTestResults();
     }
 
     private void insertAndAssert(CMObject object) {

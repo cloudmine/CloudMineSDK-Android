@@ -12,7 +12,7 @@ import com.cloudmine.api.rest.response.ObjectModificationResponse;
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class ObjectModificationRequestBuilder {
+public class ObjectModificationRequestBuilder extends RequestBuilder<ObjectModificationRequestBuilder, ObjectModificationRequest, ObjectModificationResponse>{
 
     public enum Operation {
         UPDATE(Request.Method.POST), REPLACE(Request.Method.PUT);
@@ -24,9 +24,11 @@ public class ObjectModificationRequestBuilder {
 
     private Transportable transportable;
     private Operation operation;
-    private CMSessionToken sessionToken;
-    private Response.Listener<ObjectModificationResponse> responseListener;
-    private Response.ErrorListener errorListener;
+
+
+    public ObjectModificationRequestBuilder(Response.Listener<ObjectModificationResponse> responseListener, Response.ErrorListener errorListener) {
+        super(responseListener, errorListener);
+    }
 
     public ObjectModificationRequestBuilder setSavable(Transportable transportable) {
         this.transportable = transportable;
@@ -49,6 +51,6 @@ public class ObjectModificationRequestBuilder {
         String url = sessionToken == null ?
                 ObjectModificationRequest.ENDPOINT :
                 ObjectModificationRequest.user(ObjectModificationRequest.ENDPOINT);
-        return new ObjectModificationRequest(operationCode, url, transportable.transportableRepresentation(), sessionToken, responseListener, errorListener);
+        return new ObjectModificationRequest(operationCode, url, transportable.transportableRepresentation(), sessionToken, successListener, errorListener);
     }
 }

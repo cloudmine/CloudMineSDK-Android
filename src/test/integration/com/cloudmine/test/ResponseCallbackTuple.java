@@ -17,6 +17,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class ResponseCallbackTuple<SUCCESS_RESPONSE> implements Response.Listener<SUCCESS_RESPONSE>, Response.ErrorListener{
 
+    public static final ResponseCallbackTuple<ResponseBase> defaultFailureListener = new ResponseCallbackTuple<ResponseBase>(null, null);
+
     public static final ResponseCallbackTuple<ResponseBase> hasSuccess = new ResponseCallbackTuple(new Response.Listener<ResponseBase>() {
         @Override
         public void onResponse(ResponseBase o) {
@@ -69,7 +71,7 @@ public class ResponseCallbackTuple<SUCCESS_RESPONSE> implements Response.Listene
             @Override
             public void onResponse(SUCCESS_RESPONSE success_response) {
                 try {
-                    successResponseListener.onResponse(success_response);
+                    if(successResponseListener != null) successResponseListener.onResponse(success_response);
                 }catch(AssertionError t) {
                     AsyncTestResultsCoordinator.add(t);
                 } catch(Exception e){
