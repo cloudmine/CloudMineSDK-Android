@@ -3,12 +3,25 @@ package com.cloudmine.api.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
 import com.cloudmine.api.CMObject;
+import com.cloudmine.api.CMSessionToken;
+import com.cloudmine.api.rest.ObjectLoadRequest;
+import com.cloudmine.api.rest.ObjectLoadRequestBuilder;
+import com.cloudmine.api.rest.ObjectModificationRequest;
+import com.cloudmine.api.rest.response.CMObjectResponse;
+import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 
 /**
@@ -18,6 +31,10 @@ import java.util.List;
  * See LICENSE file included with SDK for details.
  */
 public class LocallySavableCMObject extends CMObject {
+
+    //We can use this as the RequestQueue/DiskBasedCache do not keep a reference to the context. If that changes in the future rework will be needed
+    private static Map<Context, RequestQueue> queueMap = new WeakHashMap<Context, RequestQueue>();
+
     private static final Logger LOG = LoggerFactory.getLogger(LocallySavableCMObject.class);
     static CMObjectDBOpenHelper cmObjectDBOpenHelper;
     static RequestDBOpenHelper requestDBOpenHelper;
@@ -37,6 +54,26 @@ public class LocallySavableCMObject extends CMObject {
         return requestDBOpenHelper;
     }
 
+    public static RequestQueue loadObjects(Context context, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
+        return loadObjects(context, (Collection<String>) null, listener, errorListener);
+    }
+
+    public static RequestQueue loadObjects(Context context, String objectId, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
+        return loadObjects(context, Collections.singleton(objectId), listener, errorListener);
+    }
+
+    public static RequestQueue loadObjects(Context context, Collection <String> objectIds, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
+        RequestQueue queue = getRequestQueue(context);
+        queue.add(new ObjectLoadRequest(objectIds, listener, errorListener));
+        return queue;
+    }
+
+    public static RequestQueue searchObjects(Context context, String searchString, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
+        RequestQueue queue = getRequestQueue(context);
+        queue.add(new ObjectLoadRequestBuilder(listener, errorListener).search(searchString).build());
+        return queue;
+    }
+
     /**
      * Load the locally stored copy of the object with the given id. Will throw a {@link ClassCastException} if an object
      * exists with the given ID but is of a different type.
@@ -45,10 +82,9 @@ public class LocallySavableCMObject extends CMObject {
      * @param <OBJECT_TYPE> the type of the object to load. May be a superclass of the actual type
      * @return the object if it was found, or null
      */
-    public static <OBJECT_TYPE extends LocallySavableCMObject> OBJECT_TYPE loadObject(Context context, String objectId) {
+    public static <OBJECT_TYPE extends LocallySavableCMObject> OBJECT_TYPE loadLocalObject(Context context, String objectId) {
         return getCMObjectDBHelper(context).loadObjectById(objectId);
     }
-
 
     /**
      * Delete the specified object, if it exists
@@ -56,7 +92,7 @@ public class LocallySavableCMObject extends CMObject {
      * @param objectId object id of object to delete
      * @return negative number if operation failed, 0 if succeeded but nothing was deleted, 1 if the object was deleted
      */
-    public static int deleteObject(Context context, String objectId) {
+    public static int deleteLocalObject(Context context, String objectId) {
         return getCMObjectDBHelper(context).deleteObjectById(objectId);
     }
 
@@ -67,11 +103,11 @@ public class LocallySavableCMObject extends CMObject {
      * @param <OBJECT_TYPE>
      * @return
      */
-    public static <OBJECT_TYPE extends LocallySavableCMObject> List<OBJECT_TYPE> loadObjectsByClass(Context context, Class<OBJECT_TYPE> klass) {
+    public static <OBJECT_TYPE extends LocallySavableCMObject> List<OBJECT_TYPE> loadLocalObjectsByClass(Context context, Class<OBJECT_TYPE> klass) {
         return getCMObjectDBHelper(context).loadObjectsByClass(klass);
     }
 
-    public static List<LocallySavableCMObject> loadAllObjects(Context context) {
+    public static List<LocallySavableCMObject> loadLocalObjects(Context context) {
         return getCMObjectDBHelper(context).loadAllObjects();
     }
 
@@ -113,6 +149,35 @@ public class LocallySavableCMObject extends CMObject {
             }
         }
         return wasCreated;
+    }
+
+    public RequestQueue save(Context context, Response.Listener<ObjectModificationResponse> successListener) {
+        return save(context, successListener, null);
+    }
+
+    public RequestQueue save(Context context, Response.Listener< ObjectModificationResponse > successListener, Response.ErrorListener errorListener) {
+        RequestQueue queue = getRequestQueue(context);
+        queue.add(new ObjectModificationRequest(this, successListener, errorListener));
+        return queue;
+    }
+
+    private static RequestQueue getRequestQueue(Context context) {
+        RequestQueue queue = queueMap.get(context);
+        if(queue == null) {
+            queue = Volley.newRequestQueue(context);
+            queueMap.put(context, queue);
+        }
+        return queue;
+    }
+
+    public RequestQueue save(Context context, CMSessionToken sessionToken, Response.Listener<ObjectModificationResponse> successListener) {
+        return save(context, sessionToken, successListener, null);
+    }
+
+    public RequestQueue save(Context context, CMSessionToken sessionToken, Response.Listener< ObjectModificationResponse > successListener, Response.ErrorListener errorListener) {
+        RequestQueue queue = getRequestQueue(context);
+        queue.add(new ObjectModificationRequest(this, sessionToken,  successListener, errorListener));
+        return queue;
     }
 
     /**

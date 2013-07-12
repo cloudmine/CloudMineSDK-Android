@@ -14,9 +14,18 @@ public class ObjectLoadRequestBuilder extends RequestBuilder<ObjectLoadRequestBu
 
     private CMURLBuilder urlBuilder = ObjectLoadRequest.BASE_URL.copy();
 
+    public ObjectLoadRequestBuilder(CMSessionToken sessionToken, Response.Listener<CMObjectResponse> success) {
+        this(sessionToken, success, null);
+    }
+
     public ObjectLoadRequestBuilder(CMSessionToken sessionToken, Response.Listener<CMObjectResponse> success, Response.ErrorListener error) {
         super(sessionToken, success, error);
     }
+
+    public ObjectLoadRequestBuilder(Response.Listener< CMObjectResponse > success) {
+        this(success, null);
+    }
+
     public ObjectLoadRequestBuilder(Response.Listener< CMObjectResponse > success, Response.ErrorListener error) {
         super(success, error);
     }

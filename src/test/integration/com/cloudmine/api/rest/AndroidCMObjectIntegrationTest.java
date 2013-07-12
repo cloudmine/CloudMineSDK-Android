@@ -37,14 +37,26 @@ import static org.junit.Assert.assertTrue;
 public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
 
     RequestQueue queue;
+    Context applicationContext;
 
     @Before
     public void setUp() {
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
-        Context applicationContext = Robolectric.application.getApplicationContext();
+        applicationContext = Robolectric.application.getApplicationContext();
         DeviceIdentifier.initialize(applicationContext);
         queue = Volley.newRequestQueue(applicationContext);
         super.setUp();
+    }
+
+    public void testCMObjectSaving() {
+        ExtendedLocallySavableCMObject object = new ExtendedLocallySavableCMObject("John", true, 55);
+        object.save(applicationContext, ResponseCallbackTuple.wasCreated(object.getObjectId()), ResponseCallbackTuple.defaultFailureListener);
+        waitThenAssertTestResults();
+
+        CMUser user = loggedInUser();
+        object = new ExtendedLocallySavableCMObject("FFF", false, 1);
+        object.save(applicationContext, user.getSessionToken(), ResponseCallbackTuple.wasCreated(object.getObjectId()), ResponseCallbackTuple.defaultFailureListener);
+        waitThenAssertTestResults();
     }
 
     @Test
@@ -107,7 +119,6 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
         userService.insert(anotherObject.transportableRepresentation());
         insertResponse = userService.insert(object.transportableRepresentation());
         assertTrue(insertResponse.wasSuccess());
-
 
         queue.add(new ObjectLoadRequest(anotherObject.getObjectId(), user.getSessionToken(), wasLoaded(anotherObject), defaultFailureListener));
         waitThenAssertTestResults();
