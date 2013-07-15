@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.toolbox.Volley;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.ObjectLoadRequest;
@@ -20,8 +19,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+
+import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
 
 
 /**
@@ -31,9 +30,6 @@ import java.util.WeakHashMap;
  * See LICENSE file included with SDK for details.
  */
 public class LocallySavableCMObject extends CMObject {
-
-    //We can use this as the RequestQueue/DiskBasedCache do not keep a reference to the context. If that changes in the future rework will be needed
-    private static Map<Context, RequestQueue> queueMap = new WeakHashMap<Context, RequestQueue>();
 
     private static final Logger LOG = LoggerFactory.getLogger(LocallySavableCMObject.class);
     static CMObjectDBOpenHelper cmObjectDBOpenHelper;
@@ -158,15 +154,6 @@ public class LocallySavableCMObject extends CMObject {
     public RequestQueue save(Context context, Response.Listener< ObjectModificationResponse > successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
         queue.add(new ObjectModificationRequest(this, successListener, errorListener));
-        return queue;
-    }
-
-    private static RequestQueue getRequestQueue(Context context) {
-        RequestQueue queue = queueMap.get(context);
-        if(queue == null) {
-            queue = Volley.newRequestQueue(context);
-            queueMap.put(context, queue);
-        }
         return queue;
     }
 
