@@ -6,6 +6,8 @@ import com.cloudmine.api.CMFile;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.response.FileLoadResponse;
 
+import java.util.Map;
+
 /**
  * <br>
  * Copyright CloudMine LLC. All rights reserved<br>
@@ -17,18 +19,22 @@ public class FileLoadRequest extends CloudMineRequest<FileLoadResponse> {
     static final CMURLBuilder BASE_URL = new CMURLBuilder(BASE_ENDPOINT, true);
 
     private final String fileName;
-    private final String fileType;
 
-    public FileLoadRequest(String fileName, String fileType, CMSessionToken sessionToken, Response.Listener<FileLoadResponse> successListener, Response.ErrorListener errorListener) {
+    public FileLoadRequest(String fileName, CMSessionToken sessionToken, Response.Listener<FileLoadResponse> successListener, Response.ErrorListener errorListener) {
         super(Method.GET, BASE_URL.copy().user(sessionToken).addKey(fileName).asUrlString(), sessionToken, successListener, errorListener);
         this.fileName = fileName;
-        this.fileType = fileType;
     }
 
     @Override
     protected Response<FileLoadResponse> parseNetworkResponse(NetworkResponse networkResponse) {
+        Map<String, String> headers = networkResponse.headers;
+        String fileType = (headers == null) ?
+                null :
+                headers.get("Content-Type");
+        CMFile file = new CMFile(networkResponse.data, fileName, fileType);
+
         return Response.success(
                 new FileLoadResponse(
-                        new CMFile(networkResponse.data, fileName, fileType), networkResponse.statusCode), getCacheEntry());
+                        file, networkResponse.statusCode), getCacheEntry());
     }
 }
