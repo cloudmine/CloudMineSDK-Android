@@ -66,6 +66,10 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE> {
         this(method, url, null, sessionToken, successListener, errorListener);
     }
 
+    public CloudMineRequest(int method, String url, String body, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
+        this(method, url, body, null, successListener, errorListener);
+    }
+
     public CloudMineRequest(int method, String url, String body, CMSessionToken sessionToken, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
         super(method, getUrl(url), errorListener);
         this.body = body;

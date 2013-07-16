@@ -26,6 +26,15 @@ public class ResponseCallbackTuple<SUCCESS_RESPONSE> implements Response.Listene
         }
     });
 
+    public static final <RT extends ResponseBase> ResponseCallbackTuple<RT> hasSuccess() {
+        return new ResponseCallbackTuple<RT>(new Response.Listener<RT>() {
+            @Override
+            public void onResponse(RT rt) {
+                assertTrue(rt.wasSuccess());
+            }
+        });
+    }
+
     public static ResponseCallbackTuple<ObjectModificationResponse> wasCreated(final String... objectIds) {
         return new ResponseCallbackTuple<ObjectModificationResponse>(new Response.Listener<ObjectModificationResponse>() {
             @Override
