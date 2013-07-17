@@ -52,25 +52,67 @@ public class LocallySavableCMObject extends CMObject {
         return requestDBOpenHelper;
     }
 
-    public static CloudMineRequest loadObjects(Context context, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
-        return loadObjects(context, (Collection<String>) null, listener, errorListener);
+    public static CloudMineRequest loadAllObjects(Context context, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
+        return loadAllObjects(context, null, listener, errorListener);
     }
 
-    public static CloudMineRequest loadObjects(Context context, String objectId, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
-        return loadObjects(context, Collections.singleton(objectId), listener, errorListener);
+    public static CloudMineRequest loadAllObjects(Context context, CMSessionToken token, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
+        return loadObjects(context, (Collection<String>) null, token, listener, errorListener);
+    }
+
+    public static CloudMineRequest loadObject(Context context, String objectId, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
+        return loadObject(context, objectId, null, listener, errorListener);
+    }
+
+    public static CloudMineRequest loadObject(Context context, String objectId, CMSessionToken token, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
+        return loadObjects(context, Collections.singleton(objectId), token, listener, errorListener);
+    }
+
+    public static CloudMineRequest loadObject(Context context, String objectId, CMSessionToken token, Handler handler) {
+        return loadObjects(context, Collections.singleton(objectId), token, handler);
     }
 
     public static CloudMineRequest loadObjects(Context context, Collection <String> objectIds, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
+        return loadObjects(context, objectIds, null, listener, errorListener);
+    }
+
+    public static CloudMineRequest loadObjects(Context context, Collection <String> objectIds, CMSessionToken token, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        ObjectLoadRequest request = new ObjectLoadRequest(objectIds, listener, errorListener);
+        ObjectLoadRequest request = new ObjectLoadRequest(objectIds, token, listener, errorListener);
         queue.add(request);
         return request;
     }
 
+    public static CloudMineRequest loadObjects(Context context, Collection <String> objectIds, Handler handler) {
+        return loadObjects(context,  objectIds, null, handler);
+    }
+
+    public static CloudMineRequest loadObjects(Context context, Collection <String> objectIds, CMSessionToken token, Handler handler) {
+        ObjectLoadRequest request = new ObjectLoadRequest(objectIds, token, null, null);
+        request.setHandler(handler);
+        getRequestQueue(context).add(request);
+        return request;
+    }
+
     public static CloudMineRequest searchObjects(Context context, String searchString, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
+        return searchObjects(context, searchString, null, listener, errorListener);
+    }
+
+    public static CloudMineRequest searchObjects(Context context, String searchString, CMSessionToken token, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        ObjectLoadRequest request = new ObjectLoadRequestBuilder(listener, errorListener).search(searchString).build();
+        ObjectLoadRequest request = new ObjectLoadRequestBuilder(token, listener, errorListener).search(searchString).build();
         queue.add(request);
+        return request;
+    }
+
+    public static CloudMineRequest searchObjects(Context context, String searchString, Handler handler) {
+        return searchObjects(context, searchString, null, handler);
+    }
+
+    public static CloudMineRequest searchObjects(Context context, String searchString, CMSessionToken token, Handler handler) {
+        ObjectLoadRequest request = new ObjectLoadRequestBuilder(token, null, null).search(searchString).build();
+        request.setHandler(handler);
+        getRequestQueue(context).add(request);
         return request;
     }
 
