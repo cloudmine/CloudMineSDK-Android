@@ -11,7 +11,7 @@ import com.cloudmine.api.rest.response.CreationResponse;
  * See LICENSE file included with SDK for details.
  */
 public class ProfileUpdateRequest extends CloudMineRequest<CreationResponse> {
-
+    public static final int REQUEST_TYPE = 405;
     public ProfileUpdateRequest(String userProfile, CMSessionToken sessionToken, Response.Listener<CreationResponse> successListener, Response.ErrorListener errorListener) {
         super(Method.POST, "/account", userProfile, sessionToken, successListener,  errorListener);
     }
@@ -19,5 +19,10 @@ public class ProfileUpdateRequest extends CloudMineRequest<CreationResponse> {
     @Override
     protected Response<CreationResponse> parseNetworkResponse(NetworkResponse networkResponse) {
         return Response.success(new CreationResponse(new String(networkResponse.data), networkResponse.statusCode), getCacheEntry());
+    }
+
+    @Override
+    public int getRequestType() {
+        return REQUEST_TYPE;
     }
 }

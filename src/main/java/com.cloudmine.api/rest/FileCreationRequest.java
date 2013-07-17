@@ -13,6 +13,7 @@ import com.cloudmine.api.rest.response.FileCreationResponse;
  */
 public class FileCreationRequest extends CloudMineRequest<FileCreationResponse> {
 
+    public static final int REQUEST_TYPE = 400;
     static final String BASE_ENDPOINT = "";
     static final CMURLBuilder BASE_URL = new CMURLBuilder(BASE_ENDPOINT, true);
 
@@ -36,6 +37,11 @@ public class FileCreationRequest extends CloudMineRequest<FileCreationResponse> 
 
     public String getBodyContentType() {
         return contentType;
+    }
+
+    @Override
+    public int getRequestType() {
+        return REQUEST_TYPE;
     }
 
     public byte[] getBody() {

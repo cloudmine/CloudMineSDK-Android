@@ -14,6 +14,7 @@ import java.util.Collections;
  * See LICENSE file included with SDK for details.
  */
 public class ObjectLoadRequest extends CloudMineRequest<CMObjectResponse> {
+    public static final int REQUEST_TYPE = 402;
     static final String BASE_ENDPOINT = "/text";
     static final CMURLBuilder BASE_URL = new CMURLBuilder(BASE_ENDPOINT, true);
 
@@ -52,5 +53,10 @@ public class ObjectLoadRequest extends CloudMineRequest<CMObjectResponse> {
     @Override
     protected Response<CMObjectResponse> parseNetworkResponse(NetworkResponse networkResponse) {
         return Response.success(new CMObjectResponse(new String(networkResponse.data), networkResponse.statusCode), getCacheEntry());
+    }
+
+    @Override
+    public int getRequestType() {
+        return REQUEST_TYPE;
     }
 }

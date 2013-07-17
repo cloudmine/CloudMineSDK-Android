@@ -14,7 +14,7 @@ import java.util.Map;
  * See LICENSE file included with SDK for details.
  */
 public class FileLoadRequest extends CloudMineRequest<FileLoadResponse> {
-
+    public static final int REQUEST_TYPE = 401;
     static final String BASE_ENDPOINT = "/binary";
     static final CMURLBuilder BASE_URL = new CMURLBuilder(BASE_ENDPOINT, true);
 
@@ -36,5 +36,10 @@ public class FileLoadRequest extends CloudMineRequest<FileLoadResponse> {
         return Response.success(
                 new FileLoadResponse(
                         file, networkResponse.statusCode), getCacheEntry());
+    }
+
+    @Override
+    public int getRequestType() {
+        return REQUEST_TYPE;
     }
 }

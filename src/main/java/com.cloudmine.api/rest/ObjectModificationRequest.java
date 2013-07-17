@@ -12,6 +12,7 @@ import com.cloudmine.api.rest.response.ObjectModificationResponse;
  * See LICENSE file included with SDK for details.
  */
 public class ObjectModificationRequest extends CloudMineRequest<ObjectModificationResponse> {
+    public static final int REQUEST_TYPE = 403;
     protected static final String ENDPOINT = "/text";
 
     public ObjectModificationRequest(Transportable savable, final Callback<ObjectModificationResponse> callback) {
@@ -49,5 +50,10 @@ public class ObjectModificationRequest extends CloudMineRequest<ObjectModificati
     @Override
     protected Response<ObjectModificationResponse> parseNetworkResponse(NetworkResponse networkResponse) {
         return Response.success(new ObjectModificationResponse(new String(networkResponse.data), networkResponse.statusCode), getCacheEntry());
+    }
+
+    @Override
+    public int getRequestType() {
+        return REQUEST_TYPE;
     }
 }

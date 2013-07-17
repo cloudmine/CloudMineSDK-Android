@@ -11,7 +11,7 @@ import com.cloudmine.api.rest.response.CMObjectResponse;
  * See LICENSE file included with SDK for details.
  */
 public class ProfileLoadRequest extends CloudMineRequest<CMObjectResponse> {
-
+    public static final int REQUEST_TYPE = 404;
     public ProfileLoadRequest(CMSessionToken sessionToken, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
         super(Method.GET, "/account/mine", sessionToken, successListener,  errorListener);
     }
@@ -19,5 +19,10 @@ public class ProfileLoadRequest extends CloudMineRequest<CMObjectResponse> {
     @Override
     protected Response<CMObjectResponse> parseNetworkResponse(NetworkResponse networkResponse) {
         return Response.success(new CMObjectResponse(new String(networkResponse.data), networkResponse.statusCode), getCacheEntry());
+    }
+
+    @Override
+    public int getRequestType() {
+        return REQUEST_TYPE;
     }
 }

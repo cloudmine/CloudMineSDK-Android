@@ -1,5 +1,7 @@
 package com.cloudmine.api.rest;
 
+import android.os.Handler;
+import android.os.Message;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -8,8 +10,10 @@ import com.android.volley.VolleyError;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.DeviceIdentifier;
+import com.cloudmine.api.HasHandler;
 import com.cloudmine.api.Strings;
 import com.cloudmine.api.rest.callbacks.Callback;
+import com.cloudmine.api.rest.response.ResponseBase;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -20,7 +24,7 @@ import java.util.Map;
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE> {
+public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  implements HasHandler{
     protected static String BASE_URL = "https://api.cloudmine.me/v1/app/";
     protected static String USER = "/user";
 
@@ -53,6 +57,7 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE> {
     private Response.Listener<RESPONSE> responseListener;
     private String body;
     private String sessionTokenString;
+    private Handler handler;
 
     private static String getUrl(String url) {
         return new StringBuilder(BASE_URL).append(CMApiCredentials.getApplicationIdentifier()).append(url).toString();
@@ -97,7 +102,48 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE> {
 
     @Override
     protected void deliverResponse(RESPONSE response) {
+        if(handler != null) {
+            synchronized (handler) { //see deliver error for why we check this twice
+                if(handler != null) {
+                    Message msg = Message.obtain(handler);
+                    msg.obj = response;
+                    msg.arg1 = getRequestType();
+                    if(response instanceof ResponseBase) msg.arg2 = ((ResponseBase)response).getStatusCode();
+                    handler.dispatchMessage(msg);
+                } else {
+                    deliverResponseNoHandler(response);
+                }
+            }
+        } else {
+            deliverResponseNoHandler(response);
+        }
+    }
+
+    private void deliverResponseNoHandler(RESPONSE response) {
         if(responseListener != null) responseListener.onResponse(response);
+    }
+
+    public void deliverError(VolleyError error) {
+        if(handler != null) {
+            synchronized (handler) {//only waste the time synchronizing if we have a handler
+                if(handler != null) {   //so we need to recheck that no one has messed with our handler
+                    Message msg = Message.obtain(handler);
+                    msg.obj = error;
+                    msg.arg1 = getRequestType();
+                    NetworkResponse networkResponse = error.networkResponse;
+                    if(networkResponse != null) msg.arg2 = networkResponse.statusCode;
+                    handler.dispatchMessage(msg);
+                } else {
+                    deliverErrorForNoHandler(error);
+                }
+            }
+        }else {
+            deliverErrorForNoHandler(error);
+        }
+    }
+
+    private void deliverErrorForNoHandler(VolleyError error) {
+        super.deliverError(error);
     }
 
     public Map<String, String> getHeaders() throws AuthFailureError {
@@ -114,5 +160,13 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE> {
         String deviceHeaderValue = deviceId;
         if(Strings.isNotEmpty(timingHeaders)) deviceHeaderValue += "; " + timingHeaders;
         return deviceHeaderValue;
+    }
+
+    public abstract int getRequestType();
+
+    public void setHandler(Handler handler) {
+        synchronized (handler) {
+            this.handler = handler;
+        }
     }
 }

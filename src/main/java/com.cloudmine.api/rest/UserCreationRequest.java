@@ -11,7 +11,7 @@ import com.cloudmine.api.rest.response.CreationResponse;
  * See LICENSE file included with SDK for details.
  */
 public class UserCreationRequest extends CloudMineRequest<CreationResponse> {
-
+    public static final int REQUEST_TYPE = 406;
     public static final String CREATE_URL = "/account/create";
 
     public UserCreationRequest(CMUser user, Response.Listener<CreationResponse> successListener, Response.ErrorListener errorListener) {
@@ -21,5 +21,10 @@ public class UserCreationRequest extends CloudMineRequest<CreationResponse> {
     @Override
     protected Response<CreationResponse> parseNetworkResponse(NetworkResponse networkResponse) {
         return Response.success(new CreationResponse(new String(networkResponse.data), networkResponse.statusCode), getCacheEntry());
+    }
+
+    @Override
+    public int getRequestType() {
+        return REQUEST_TYPE;
     }
 }

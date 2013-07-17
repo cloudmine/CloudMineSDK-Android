@@ -3,10 +3,12 @@ package com.cloudmine.api.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
+import com.cloudmine.api.rest.CloudMineRequest;
 import com.cloudmine.api.rest.ObjectLoadRequest;
 import com.cloudmine.api.rest.ObjectLoadRequestBuilder;
 import com.cloudmine.api.rest.ObjectModificationRequest;
@@ -165,6 +167,14 @@ public class LocallySavableCMObject extends CMObject {
         RequestQueue queue = getRequestQueue(context);
         queue.add(new ObjectModificationRequest(this, sessionToken,  successListener, errorListener));
         return queue;
+    }
+
+    public CloudMineRequest save(Context context, Handler handler) {
+        RequestQueue queue = getRequestQueue(context);
+        ObjectModificationRequest request = new ObjectModificationRequest(this, null, null, null);
+        request.setHandler(handler);
+        queue.add(request);
+        return request;
     }
 
     /**

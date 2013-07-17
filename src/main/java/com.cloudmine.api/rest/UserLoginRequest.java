@@ -14,7 +14,7 @@ import java.util.Map;
  * See LICENSE file included with SDK for details.
  */
 public class UserLoginRequest extends CloudMineRequest<LoginResponse> {
-
+    public static final int REQUEST_TYPE = 407;
     private static final String ENDPOINT = "/account/login";
 
     private final String credentials;
@@ -33,5 +33,10 @@ public class UserLoginRequest extends CloudMineRequest<LoginResponse> {
         Map<String, String> headers = super.getHeaders();
         headers.put(CMWebService.AUTHORIZATION_KEY, credentials);
         return headers;
+    }
+
+    @Override
+    public int getRequestType() {
+        return REQUEST_TYPE;
     }
 }
