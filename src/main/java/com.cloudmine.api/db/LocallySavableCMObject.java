@@ -52,24 +52,26 @@ public class LocallySavableCMObject extends CMObject {
         return requestDBOpenHelper;
     }
 
-    public static RequestQueue loadObjects(Context context, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
+    public static CloudMineRequest loadObjects(Context context, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
         return loadObjects(context, (Collection<String>) null, listener, errorListener);
     }
 
-    public static RequestQueue loadObjects(Context context, String objectId, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
+    public static CloudMineRequest loadObjects(Context context, String objectId, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
         return loadObjects(context, Collections.singleton(objectId), listener, errorListener);
     }
 
-    public static RequestQueue loadObjects(Context context, Collection <String> objectIds, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
+    public static CloudMineRequest loadObjects(Context context, Collection <String> objectIds, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        queue.add(new ObjectLoadRequest(objectIds, listener, errorListener));
-        return queue;
+        ObjectLoadRequest request = new ObjectLoadRequest(objectIds, listener, errorListener);
+        queue.add(request);
+        return request;
     }
 
-    public static RequestQueue searchObjects(Context context, String searchString, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
+    public static CloudMineRequest searchObjects(Context context, String searchString, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        queue.add(new ObjectLoadRequestBuilder(listener, errorListener).search(searchString).build());
-        return queue;
+        ObjectLoadRequest request = new ObjectLoadRequestBuilder(listener, errorListener).search(searchString).build();
+        queue.add(request);
+        return request;
     }
 
     /**
@@ -149,24 +151,26 @@ public class LocallySavableCMObject extends CMObject {
         return wasCreated;
     }
 
-    public RequestQueue save(Context context, Response.Listener<ObjectModificationResponse> successListener) {
+    public CloudMineRequest save(Context context, Response.Listener<ObjectModificationResponse> successListener) {
         return save(context, successListener, null);
     }
 
-    public RequestQueue save(Context context, Response.Listener< ObjectModificationResponse > successListener, Response.ErrorListener errorListener) {
+    public CloudMineRequest save(Context context, Response.Listener< ObjectModificationResponse > successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        queue.add(new ObjectModificationRequest(this, successListener, errorListener));
-        return queue;
+        ObjectModificationRequest request = new ObjectModificationRequest(this, successListener, errorListener);
+        queue.add(request);
+        return request;
     }
 
-    public RequestQueue save(Context context, CMSessionToken sessionToken, Response.Listener<ObjectModificationResponse> successListener) {
+    public CloudMineRequest save(Context context, CMSessionToken sessionToken, Response.Listener<ObjectModificationResponse> successListener) {
         return save(context, sessionToken, successListener, null);
     }
 
-    public RequestQueue save(Context context, CMSessionToken sessionToken, Response.Listener< ObjectModificationResponse > successListener, Response.ErrorListener errorListener) {
+    public CloudMineRequest save(Context context, CMSessionToken sessionToken, Response.Listener< ObjectModificationResponse > successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        queue.add(new ObjectModificationRequest(this, sessionToken,  successListener, errorListener));
-        return queue;
+        ObjectModificationRequest request = new ObjectModificationRequest(this, sessionToken, successListener, errorListener);
+        queue.add(request);
+        return request;
     }
 
     public CloudMineRequest save(Context context, Handler handler) {

@@ -1,9 +1,9 @@
 package com.cloudmine.api;
 
 import android.content.Context;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.cloudmine.api.rest.CloudMineRequest;
 import com.cloudmine.api.rest.ProfileLoadRequest;
 import com.cloudmine.api.rest.ProfileUpdateRequest;
 import com.cloudmine.api.rest.SharedRequestQueueHolders;
@@ -30,21 +30,23 @@ public class ACMUser extends CMUser {
         super(email, password);
     }
 
-    public Request create(Context context, Response.Listener<CreationResponse> successListener, Response.ErrorListener errorListener) {
+    public CloudMineRequest create(Context context, Response.Listener<CreationResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = SharedRequestQueueHolders.getRequestQueue(context);
-        Request request = new UserCreationRequest(this, successListener,  errorListener);
+        CloudMineRequest request = new UserCreationRequest(this, successListener,  errorListener);
         queue.add(request);
         return request;
     }
 
-    public Request login(Context context, Response.Listener<LoginResponse> successListener, Response.ErrorListener errorListener) {
+
+
+    public CloudMineRequest login(Context context, Response.Listener<LoginResponse> successListener, Response.ErrorListener errorListener) {
         return login(context, getPassword(), successListener, errorListener);
     }
 
-    public Request login(Context context, String password, final Response.Listener<LoginResponse> successListener, Response.ErrorListener errorListener) {
+    public CloudMineRequest login(Context context, String password, final Response.Listener<LoginResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = SharedRequestQueueHolders.getRequestQueue(context);
 
-        Request request = new UserLoginRequest(getUserIdentifier(), password, new Response.Listener<LoginResponse>() {
+        CloudMineRequest request = new UserLoginRequest(getUserIdentifier(), password, new Response.Listener<LoginResponse>() {
             @Override
             public void onResponse(LoginResponse response) {
                 try {
@@ -58,16 +60,16 @@ public class ACMUser extends CMUser {
         return request;
     }
 
-    public Request saveProfile(Context context, Response.Listener<CreationResponse> successListener, Response.ErrorListener errorListener) {
+    public CloudMineRequest saveProfile(Context context, Response.Listener<CreationResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = SharedRequestQueueHolders.getRequestQueue(context);
-        Request request = new ProfileUpdateRequest(profileTransportRepresentation(), getSessionToken(), successListener, errorListener);
+        CloudMineRequest request = new ProfileUpdateRequest(profileTransportRepresentation(), getSessionToken(), successListener, errorListener);
         queue.add(request);
         return request;
     }
 
-    public Request loadProfile(Context context, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
+    public CloudMineRequest loadProfile(Context context, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = SharedRequestQueueHolders.getRequestQueue(context);
-        Request request = new ProfileLoadRequest(getSessionToken(), successListener, errorListener);
+        CloudMineRequest request = new ProfileLoadRequest(getSessionToken(), successListener, errorListener);
         queue.add(request);
         return request;
     }
