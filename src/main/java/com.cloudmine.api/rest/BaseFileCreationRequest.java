@@ -5,13 +5,15 @@ import com.android.volley.Response;
 import com.cloudmine.api.CMFile;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.response.FileCreationResponse;
+import me.cloudmine.annotations.Expand;
+import me.cloudmine.annotations.Optional;
 
 /**
  * <br>
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class FileCreationRequest extends CloudMineRequest<FileCreationResponse> {
+public class BaseFileCreationRequest extends CloudMineRequest<FileCreationResponse> {
 
     public static final int REQUEST_TYPE = 400;
     static final String BASE_ENDPOINT = "";
@@ -20,11 +22,8 @@ public class FileCreationRequest extends CloudMineRequest<FileCreationResponse> 
     private final byte[] body;
     private final String contentType;
 
-    public FileCreationRequest(CMFile file, Response.Listener<FileCreationResponse> successListener, Response.ErrorListener errorListener) {
-        this(file, null, successListener, errorListener);
-    }
-
-    public FileCreationRequest(CMFile file, CMSessionToken sessionToken, Response.Listener<FileCreationResponse> successListener, Response.ErrorListener errorListener) {
+    @Expand
+    public BaseFileCreationRequest(CMFile file, @Optional CMSessionToken sessionToken, @Optional Response.Listener<FileCreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
         super(Method.PUT, BASE_URL.copy().user(sessionToken).binary(file.getFileId()).asUrlString(), sessionToken, successListener, errorListener);
         body = file.getFileContents();
         contentType = file.getMimeType();

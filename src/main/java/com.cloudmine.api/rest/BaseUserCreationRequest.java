@@ -4,17 +4,20 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.rest.response.CreationResponse;
+import me.cloudmine.annotations.Expand;
+import me.cloudmine.annotations.Optional;
 
 /**
  * <br>
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class UserCreationRequest extends CloudMineRequest<CreationResponse> {
+public class BaseUserCreationRequest extends CloudMineRequest<CreationResponse> {
     public static final int REQUEST_TYPE = 406;
     public static final String CREATE_URL = "/account/create";
 
-    public UserCreationRequest(CMUser user, Response.Listener<CreationResponse> successListener, Response.ErrorListener errorListener) {
+    @Expand
+    public BaseUserCreationRequest(CMUser user, @Optional Response.Listener<CreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
         super(Method.PUT, CREATE_URL, user.transportableRepresentation(), null, successListener, errorListener);
     }
 

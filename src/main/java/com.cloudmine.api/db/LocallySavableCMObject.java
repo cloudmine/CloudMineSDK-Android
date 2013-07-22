@@ -9,9 +9,9 @@ import com.android.volley.Response;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.BaseObjectLoadRequest;
+import com.cloudmine.api.rest.BaseObjectModificationRequest;
 import com.cloudmine.api.rest.CloudMineRequest;
 import com.cloudmine.api.rest.ObjectLoadRequestBuilder;
-import com.cloudmine.api.rest.ObjectModificationRequest;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import org.slf4j.Logger;
@@ -58,7 +58,7 @@ public class LocallySavableCMObject extends CMObject {
 
     public static CloudMineRequest saveObjects(Context context, Collection <CMObject> objects, CMSessionToken token, Response.Listener<ObjectModificationResponse> listener, Response.ErrorListener errorListener) {
 
-        CloudMineRequest request = new ObjectModificationRequest(CMObject.massTransportable(objects), token, listener, errorListener);
+        CloudMineRequest request = new BaseObjectModificationRequest(CMObject.massTransportable(objects), token, listener, errorListener);
         getRequestQueue(context).add(request);
         return request;
     }
@@ -210,7 +210,7 @@ public class LocallySavableCMObject extends CMObject {
 
     public CloudMineRequest save(Context context, Response.Listener< ObjectModificationResponse > successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        ObjectModificationRequest request = new ObjectModificationRequest(this, successListener, errorListener);
+        BaseObjectModificationRequest request = new BaseObjectModificationRequest(this, null, successListener, errorListener);
         queue.add(request);
         return request;
     }
@@ -221,14 +221,14 @@ public class LocallySavableCMObject extends CMObject {
 
     public CloudMineRequest save(Context context, CMSessionToken sessionToken, Response.Listener< ObjectModificationResponse > successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        ObjectModificationRequest request = new ObjectModificationRequest(this, sessionToken, successListener, errorListener);
+        BaseObjectModificationRequest request = new BaseObjectModificationRequest(this, sessionToken, successListener, errorListener);
         queue.add(request);
         return request;
     }
 
     public CloudMineRequest save(Context context, Handler handler) {
         RequestQueue queue = getRequestQueue(context);
-        ObjectModificationRequest request = new ObjectModificationRequest(this, null, null, null);
+        BaseObjectModificationRequest request = new BaseObjectModificationRequest(this, null, null, null);
         request.setHandler(handler);
         queue.add(request);
         return request;

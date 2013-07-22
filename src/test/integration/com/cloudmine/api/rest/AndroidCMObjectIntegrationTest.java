@@ -52,6 +52,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
         super.setUp();
     }
 
+    @Test
     public void testCMObjectSaving() {
         ExtendedLocallySavableCMObject object = new ExtendedLocallySavableCMObject("John", true, 55);
         object.save(applicationContext, ResponseCallbackTuple.wasCreated(object.getObjectId()), ResponseCallbackTuple.defaultFailureListener);
@@ -83,7 +84,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
                 assertTrue(modificationResponse.wasCreated(userObject.getObjectId()));
             }
         });
-        queue.add(new ObjectModificationRequest(userObject, user.getSessionToken(), objectModificationResponseResponseCallbackTuple, defaultFailureListener));
+        queue.add(new BaseObjectModificationRequest(userObject, user.getSessionToken(), objectModificationResponseResponseCallbackTuple, defaultFailureListener));
         waitThenAssertTestResults();
 
         assertUserHasObject(userObject, user);

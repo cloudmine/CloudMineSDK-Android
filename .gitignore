@@ -8,6 +8,7 @@ out/
 reports
 javadocs
 *.trace
+*.html
 
 # Package Files #
 *.jar

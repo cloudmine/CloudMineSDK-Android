@@ -4,9 +4,9 @@ import android.content.Context;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.cloudmine.api.exceptions.CreationException;
+import com.cloudmine.api.rest.BaseFileCreationRequest;
+import com.cloudmine.api.rest.BaseFileLoadRequest;
 import com.cloudmine.api.rest.CloudMineRequest;
-import com.cloudmine.api.rest.FileCreationRequest;
-import com.cloudmine.api.rest.FileLoadRequest;
 import com.cloudmine.api.rest.SharedRequestQueueHolders;
 import com.cloudmine.api.rest.response.FileCreationResponse;
 import com.cloudmine.api.rest.response.FileLoadResponse;
@@ -29,7 +29,7 @@ public class CacheableCMFile extends CMFile {
 
     public static CloudMineRequest loadFile(Context context, String fileName, CMSessionToken sessionToken, Response.Listener<FileLoadResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        FileLoadRequest request = new FileLoadRequest(fileName, sessionToken, successListener, errorListener);
+        BaseFileLoadRequest request = new BaseFileLoadRequest(fileName, sessionToken, successListener, errorListener);
         queue.add(request);
         return request;
     }
@@ -56,7 +56,7 @@ public class CacheableCMFile extends CMFile {
 
     public CloudMineRequest save(Context context, CMSessionToken token, Response.Listener<FileCreationResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = SharedRequestQueueHolders.getRequestQueue(context);
-        FileCreationRequest request = new FileCreationRequest(this, token, successListener, errorListener);
+        BaseFileCreationRequest request = new BaseFileCreationRequest(this, token, successListener, errorListener);
         queue.add(request);
         return request;
     }

@@ -4,15 +4,19 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.response.CMObjectResponse;
+import me.cloudmine.annotations.Expand;
+import me.cloudmine.annotations.Optional;
 
 /**
  * <br>
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class ProfileLoadRequest extends CloudMineRequest<CMObjectResponse> {
+public class BaseProfileLoadRequest extends CloudMineRequest<CMObjectResponse> {
     public static final int REQUEST_TYPE = 404;
-    public ProfileLoadRequest(CMSessionToken sessionToken, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
+
+    @Expand
+    public BaseProfileLoadRequest(CMSessionToken sessionToken, Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener) {
         super(Method.GET, "/account/mine", sessionToken, successListener,  errorListener);
     }
 

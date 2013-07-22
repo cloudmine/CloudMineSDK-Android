@@ -4,11 +4,11 @@ import android.content.Context;
 import android.os.Handler;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.cloudmine.api.rest.BaseProfileLoadRequest;
+import com.cloudmine.api.rest.BaseProfileUpdateRequest;
+import com.cloudmine.api.rest.BaseUserCreationRequest;
+import com.cloudmine.api.rest.BaseUserLoginRequest;
 import com.cloudmine.api.rest.CloudMineRequest;
-import com.cloudmine.api.rest.ProfileLoadRequest;
-import com.cloudmine.api.rest.ProfileUpdateRequest;
-import com.cloudmine.api.rest.UserCreationRequest;
-import com.cloudmine.api.rest.UserLoginRequest;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.CreationResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
@@ -34,7 +34,7 @@ public class ACMUser extends CMUser {
 
     public CloudMineRequest create(Context context, Response.Listener<CreationResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        CloudMineRequest request = new UserCreationRequest(this, successListener,  errorListener);
+        CloudMineRequest request = new BaseUserCreationRequest(this, successListener,  errorListener);
         queue.add(request);
         return request;
     }
@@ -46,7 +46,7 @@ public class ACMUser extends CMUser {
     public CloudMineRequest login(Context context, String password, final Response.Listener<LoginResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
 
-        CloudMineRequest request = new UserLoginRequest(getUserIdentifier(), password, new Response.Listener<LoginResponse>() {
+        CloudMineRequest request = new BaseUserLoginRequest(getUserIdentifier(), password, new Response.Listener<LoginResponse>() {
             @Override
             public void onResponse(LoginResponse response) {
                 try {
@@ -61,7 +61,7 @@ public class ACMUser extends CMUser {
     }
 
     public CloudMineRequest login(Context context, String password, Handler handler) {
-        UserLoginRequest request = new UserLoginRequest(getUserIdentifier(), password, null, null);
+        BaseUserLoginRequest request = new BaseUserLoginRequest(getUserIdentifier(), password, null, null);
         request.setHandler(handler);
         getRequestQueue(context).add(request);
         return request;
@@ -69,14 +69,14 @@ public class ACMUser extends CMUser {
 
     public CloudMineRequest saveProfile(Context context, Response.Listener<CreationResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        CloudMineRequest request = new ProfileUpdateRequest(profileTransportRepresentation(), getSessionToken(), successListener, errorListener);
+        CloudMineRequest request = new BaseProfileUpdateRequest(profileTransportRepresentation(), getSessionToken(), successListener, errorListener);
         queue.add(request);
         return request;
     }
 
     public CloudMineRequest loadProfile(Context context, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        CloudMineRequest request = new ProfileLoadRequest(getSessionToken(), successListener, errorListener);
+        CloudMineRequest request = new BaseProfileLoadRequest(getSessionToken(), successListener, errorListener);
         queue.add(request);
         return request;
     }

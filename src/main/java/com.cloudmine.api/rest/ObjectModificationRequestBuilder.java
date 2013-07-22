@@ -12,7 +12,7 @@ import com.cloudmine.api.rest.response.ObjectModificationResponse;
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class ObjectModificationRequestBuilder extends RequestBuilder<ObjectModificationRequestBuilder, ObjectModificationRequest, ObjectModificationResponse>{
+public class ObjectModificationRequestBuilder extends RequestBuilder<ObjectModificationRequestBuilder, BaseObjectModificationRequest, ObjectModificationResponse>{
 
     public enum Operation {
         UPDATE(Request.Method.POST), REPLACE(Request.Method.PUT);
@@ -45,12 +45,12 @@ public class ObjectModificationRequestBuilder extends RequestBuilder<ObjectModif
         return this;
     }
 
-    public ObjectModificationRequest build() throws CreationException{
+    public BaseObjectModificationRequest build() throws CreationException{
         if(transportable == null) throw new CreationException("You must set a non null Transportable in setSavable before calling build");
         int operationCode = operation == null ? Request.Method.POST : operation.requestMethod;
         String url = sessionToken == null ?
-                ObjectModificationRequest.ENDPOINT :
-                ObjectModificationRequest.user(ObjectModificationRequest.ENDPOINT);
-        return new ObjectModificationRequest(operationCode, url, transportable.transportableRepresentation(), sessionToken, successListener, errorListener);
+                BaseObjectModificationRequest.ENDPOINT :
+                BaseObjectModificationRequest.user(BaseObjectModificationRequest.ENDPOINT);
+        return new BaseObjectModificationRequest(operationCode, url, transportable.transportableRepresentation(), sessionToken, successListener, errorListener);
     }
 }

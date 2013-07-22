@@ -5,6 +5,8 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.rest.response.LoginResponse;
+import me.cloudmine.annotations.Expand;
+import me.cloudmine.annotations.Optional;
 
 import java.util.Map;
 
@@ -13,13 +15,14 @@ import java.util.Map;
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class UserLoginRequest extends CloudMineRequest<LoginResponse> {
+public class BaseUserLoginRequest extends CloudMineRequest<LoginResponse> {
     public static final int REQUEST_TYPE = 407;
     private static final String ENDPOINT = "/account/login";
 
     private final String credentials;
 
-    public UserLoginRequest(String userIdentifier, String password, Response.Listener<LoginResponse> successListener, Response.ErrorListener errorListener) {
+    @Expand
+    public BaseUserLoginRequest(String userIdentifier, String password, Response.Listener<LoginResponse> successListener, @Optional Response.ErrorListener errorListener) {
         super(Method.POST, ENDPOINT, successListener, errorListener);
         credentials = "Basic " + CMUser.encode(userIdentifier, password);
     }
