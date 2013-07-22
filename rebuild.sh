@@ -19,7 +19,6 @@ mvn assembly:assembly -DdescriptorId=jar-with-dependencies -DbuildFor=android -D
 
 echo "Copying files"
 
+
 cp "$JAVA_SDK_HOME/target/cloudmine-javasdk-$CLOUDMINE_JAVASDK_VERSION-jar-with-dependencies.jar" "../cloudmine-android-v$CLOUDMINE_ANDROID_VERSION.jar"
-
-
-
+cp target/classes/*.java "./src/gen"

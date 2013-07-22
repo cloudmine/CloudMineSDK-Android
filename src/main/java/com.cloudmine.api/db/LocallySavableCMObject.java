@@ -8,8 +8,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
+import com.cloudmine.api.rest.BaseObjectLoadRequest;
 import com.cloudmine.api.rest.CloudMineRequest;
-import com.cloudmine.api.rest.ObjectLoadRequest;
 import com.cloudmine.api.rest.ObjectLoadRequestBuilder;
 import com.cloudmine.api.rest.ObjectModificationRequest;
 import com.cloudmine.api.rest.response.CMObjectResponse;
@@ -52,6 +52,17 @@ public class LocallySavableCMObject extends CMObject {
         return requestDBOpenHelper;
     }
 
+    public static CloudMineRequest saveObjects(Context context, Collection<CMObject> objects, Response.Listener<ObjectModificationResponse> listener, Response.ErrorListener errorListener) {
+        return saveObjects(context, objects, null, listener, errorListener);
+    }
+
+    public static CloudMineRequest saveObjects(Context context, Collection <CMObject> objects, CMSessionToken token, Response.Listener<ObjectModificationResponse> listener, Response.ErrorListener errorListener) {
+
+        CloudMineRequest request = new ObjectModificationRequest(CMObject.massTransportable(objects), token, listener, errorListener);
+        getRequestQueue(context).add(request);
+        return request;
+    }
+
     public static CloudMineRequest loadAllObjects(Context context, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
         return loadAllObjects(context, null, listener, errorListener);
     }
@@ -78,7 +89,7 @@ public class LocallySavableCMObject extends CMObject {
 
     public static CloudMineRequest loadObjects(Context context, Collection <String> objectIds, CMSessionToken token, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        ObjectLoadRequest request = new ObjectLoadRequest(objectIds, token, listener, errorListener);
+        BaseObjectLoadRequest request = new BaseObjectLoadRequest(objectIds, token, listener, errorListener);
         queue.add(request);
         return request;
     }
@@ -88,7 +99,7 @@ public class LocallySavableCMObject extends CMObject {
     }
 
     public static CloudMineRequest loadObjects(Context context, Collection <String> objectIds, CMSessionToken token, Handler handler) {
-        ObjectLoadRequest request = new ObjectLoadRequest(objectIds, token, null, null);
+        BaseObjectLoadRequest request = new BaseObjectLoadRequest(objectIds, token, null, null);
         request.setHandler(handler);
         getRequestQueue(context).add(request);
         return request;
@@ -100,7 +111,7 @@ public class LocallySavableCMObject extends CMObject {
 
     public static CloudMineRequest searchObjects(Context context, String searchString, CMSessionToken token, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        ObjectLoadRequest request = new ObjectLoadRequestBuilder(token, listener, errorListener).search(searchString).build();
+        BaseObjectLoadRequest request = new ObjectLoadRequestBuilder(token, listener, errorListener).search(searchString).build();
         queue.add(request);
         return request;
     }
@@ -110,7 +121,7 @@ public class LocallySavableCMObject extends CMObject {
     }
 
     public static CloudMineRequest searchObjects(Context context, String searchString, CMSessionToken token, Handler handler) {
-        ObjectLoadRequest request = new ObjectLoadRequestBuilder(token, null, null).search(searchString).build();
+        BaseObjectLoadRequest request = new ObjectLoadRequestBuilder(token, null, null).search(searchString).build();
         request.setHandler(handler);
         getRequestQueue(context).add(request);
         return request;

@@ -10,9 +10,9 @@ import com.cloudmine.api.rest.response.CMObjectResponse;
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class ObjectLoadRequestBuilder extends RequestBuilder<ObjectLoadRequestBuilder, ObjectLoadRequest, CMObjectResponse>{
+public class ObjectLoadRequestBuilder extends RequestBuilder<ObjectLoadRequestBuilder, BaseObjectLoadRequest, CMObjectResponse>{
 
-    private CMURLBuilder urlBuilder = ObjectLoadRequest.BASE_URL.copy();
+    private CMURLBuilder urlBuilder = BaseObjectLoadRequest.BASE_URL.copy();
 
     public ObjectLoadRequestBuilder(CMSessionToken sessionToken, Response.Listener<CMObjectResponse> success) {
         this(sessionToken, success, null);
@@ -31,13 +31,28 @@ public class ObjectLoadRequestBuilder extends RequestBuilder<ObjectLoadRequestBu
     }
 
     @Override
-    public ObjectLoadRequest build() {
-        return new ObjectLoadRequest(urlBuilder, sessionToken, successListener, errorListener);
+    public BaseObjectLoadRequest build() {
+        return new BaseObjectLoadRequest(urlBuilder, sessionToken, successListener, errorListener);
     }
 
     public ObjectLoadRequestBuilder search(String searchQuery) {
-        urlBuilder.removeAction(ObjectLoadRequest.BASE_ENDPOINT);
+        urlBuilder.removeAction(BaseObjectLoadRequest.BASE_ENDPOINT);
         urlBuilder.search(searchQuery);
+        return this;
+    }
+
+    public ObjectLoadRequestBuilder startAt(int skip) {
+        urlBuilder.addQuery("skip", skip);
+        return this;
+    }
+
+    public ObjectLoadRequestBuilder limit(int limit) {
+        urlBuilder.addQuery("limit", limit);
+        return this;
+    }
+
+    public ObjectLoadRequestBuilder getCount() {
+        urlBuilder.addQuery("count", "true");
         return this;
     }
 
