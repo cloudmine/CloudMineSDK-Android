@@ -3,6 +3,7 @@ package com.cloudmine.api.rest;
 import com.android.volley.Response;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
+import com.cloudmine.api.rest.options.CMSortOptions;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 
 /**
@@ -46,6 +47,16 @@ public class ObjectLoadRequestBuilder extends RequestBuilder<ObjectLoadRequestBu
         return this;
     }
 
+    public ObjectLoadRequestBuilder sortBy(String sortField) {
+        urlBuilder.addQuery("sort", sortField);
+        return this;
+    }
+
+    public ObjectLoadRequestBuilder sortBy(String sortField, CMSortOptions.SortDirection sortDirection) {
+        urlBuilder.addQuery("sort", sortField + ":" + sortDirection.toString());
+        return this;
+    }
+
     public ObjectLoadRequestBuilder limit(int limit) {
         urlBuilder.addQuery("limit", limit);
         return this;
@@ -53,6 +64,16 @@ public class ObjectLoadRequestBuilder extends RequestBuilder<ObjectLoadRequestBu
 
     public ObjectLoadRequestBuilder getCount() {
         urlBuilder.addQuery("count", "true");
+        return this;
+    }
+
+    public ObjectLoadRequestBuilder getShared() {
+        urlBuilder.addQuery("shared", "true");
+        return this;
+    }
+
+    public ObjectLoadRequestBuilder getSharedOnly() {
+        urlBuilder.addQuery("shared_only", "true");
         return this;
     }
 

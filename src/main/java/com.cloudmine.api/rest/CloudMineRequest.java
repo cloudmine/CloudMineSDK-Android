@@ -25,8 +25,26 @@ import java.util.Map;
  * See LICENSE file included with SDK for details.
  */
 public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  implements HasHandler{
+
     protected static String BASE_URL = "https://api.cloudmine.me/v1/app/";
     protected static String USER = "/user";
+    public static final CloudMineRequest FAKE_REQUEST = new CloudMineRequest(Method.DEPRECATED_GET_OR_POST, "", null, null) {
+        public static final int FAKE_REQUEST_TYPE = -1;
+        @Override
+        protected Response parseNetworkResponse(NetworkResponse networkResponse) {
+            return null;
+        }
+
+        @Override
+        public int getRequestType() {
+            return FAKE_REQUEST_TYPE;
+        }
+
+        @Override
+        public int compareTo(Object another) {
+            return 0;
+        }
+    };
 
     protected static String user(String url) {
         return USER + url;
@@ -81,7 +99,7 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
         responseListener = successListener;
         boolean isValidSessionToken = !(sessionToken == null || CMSessionToken.FAILED.equals(sessionToken));
         if(isValidSessionToken) sessionTokenString = sessionToken.getSessionToken();
-        System.out.println("url=" + getUrl(url) + " valid session? " + isValidSessionToken + " with body: " + body);
+        System.out.println("url=" + getUrl(url) + " valid session? " + isValidSessionToken + (isValidSessionToken ? ", sessionToken: " + sessionToken : "") + " with body: " + body);
     }
 
     @Override

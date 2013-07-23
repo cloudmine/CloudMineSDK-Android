@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.os.Handler;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
+import com.cloudmine.api.CMUser;
 import com.cloudmine.api.rest.BaseObjectLoadRequest;
 import com.cloudmine.api.rest.BaseObjectModificationRequest;
 import com.cloudmine.api.rest.CloudMineRequest;
@@ -210,7 +212,19 @@ public class LocallySavableCMObject extends CMObject {
 
     public CloudMineRequest save(Context context, Response.Listener< ObjectModificationResponse > successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        BaseObjectModificationRequest request = new BaseObjectModificationRequest(this, null, successListener, errorListener);
+        BaseObjectModificationRequest request;
+        if(isUserLevel()) {
+            CMUser user = getUser();
+            if(user != null && user.getSessionToken() != null) {
+                request = new BaseObjectModificationRequest(this, user.getSessionToken(), successListener, errorListener);
+            } else {
+                if(errorListener != null) errorListener.onErrorResponse(new VolleyError("Can't save user level object when the associated user is not logged in"));
+                return CloudMineRequest.FAKE_REQUEST;
+            }
+        } else {
+            request = new BaseObjectModificationRequest(this, null, successListener, errorListener);
+        }
+
         queue.add(request);
         return request;
     }

@@ -5,18 +5,23 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
+import com.cloudmine.api.CMAccessList;
+import com.cloudmine.api.CMAccessPermission;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.integration.CMObjectIntegrationTest;
 import com.cloudmine.api.persistance.ClassNameRegistry;
+import com.cloudmine.api.rest.callbacks.CreationResponseCallback;
 import com.cloudmine.api.rest.response.CMObjectResponse;
+import com.cloudmine.api.rest.response.CreationResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.cloudmine.test.CloudMineTestRunner;
 import com.cloudmine.test.ExtendedCMObject;
 import com.cloudmine.test.ExtendedLocallySavableCMObject;
 import com.cloudmine.test.ResponseCallbackTuple;
+import com.cloudmine.test.TestServiceCallback;
 import com.xtremelabs.robolectric.Robolectric;
 import org.junit.Before;
 import org.junit.Test;
@@ -169,7 +174,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
                     assertEquals((10+i), ((ExtendedLocallySavableCMObject)objects.get(i)).getNumberOfHighFives());
                 }
             }
-        }), ResponseCallbackTuple.defaultFailureListener).startAt(10).limit(10).build();
+        }), ResponseCallbackTuple.defaultFailureListener).startAt(10).limit(10).sortBy("numberOfHighFives").build();
         queue.add(objectLoadRequest);
         waitThenAssertTestResults();
 
@@ -183,8 +188,38 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
                     assertEquals((20+i), ((ExtendedLocallySavableCMObject)objects.get(i)).getNumberOfHighFives());
                 }
             }
-        }), ResponseCallbackTuple.defaultFailureListener).limit(10).getCount().startAt(20).build();
+        }), ResponseCallbackTuple.defaultFailureListener).limit(10).getCount().sortBy("numberOfHighFives").startAt(20).build();
         queue.add(objectLoadRequest);
+        waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testLoadSharedSupport() {
+        CMUser owner = loggedInUser();
+        CMUser notOwner = randomLoggedInUser();
+        ExtendedLocallySavableCMObject sharableObject = new ExtendedLocallySavableCMObject("Bill", false, 0);
+
+        CMAccessList accessList = new CMAccessList(owner, CMAccessPermission.READ);
+        accessList.grantAccessTo(notOwner);
+        sharableObject.grantAccess(accessList);
+
+        accessList.save(TestServiceCallback.testCallback(new CreationResponseCallback() {
+            public void onCompletion(CreationResponse response) {
+                assertTrue(response.wasSuccess());
+            }
+        }));
+        waitThenAssertTestResults();
+        sharableObject.setSaveWith(owner);
+        sharableObject.save(applicationContext, ResponseCallbackTuple.testCallback(new Response.Listener<ObjectModificationResponse>() {
+            @Override
+            public void onResponse(ObjectModificationResponse o) {
+                assertTrue(o.wasSuccess());
+            }
+        }), ResponseCallbackTuple.defaultFailureListener);
+        waitThenAssertTestResults();
+
+        BaseObjectLoadRequest request = new ObjectLoadRequestBuilder(notOwner.getSessionToken(), ResponseCallbackTuple.wasLoaded(sharableObject), ResponseCallbackTuple.defaultFailureListener).getShared().build();
+        queue.add(request);
         waitThenAssertTestResults();
     }
 
