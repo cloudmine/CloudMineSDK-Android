@@ -91,7 +91,7 @@ public class LocallySavableCMObject extends CMObject {
 
     public static CloudMineRequest loadObjects(Context context, Collection <String> objectIds, CMSessionToken token, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        BaseObjectLoadRequest request = new BaseObjectLoadRequest(objectIds, token, listener, errorListener);
+        BaseObjectLoadRequest request = new BaseObjectLoadRequest(objectIds, token, null, listener, errorListener);
         queue.add(request);
         return request;
     }
@@ -101,7 +101,7 @@ public class LocallySavableCMObject extends CMObject {
     }
 
     public static CloudMineRequest loadObjects(Context context, Collection <String> objectIds, CMSessionToken token, Handler handler) {
-        BaseObjectLoadRequest request = new BaseObjectLoadRequest(objectIds, token, null, null);
+        BaseObjectLoadRequest request = new BaseObjectLoadRequest(objectIds, token, null, null, null);
         request.setHandler(handler);
         getRequestQueue(context).add(request);
         return request;

@@ -14,6 +14,7 @@ import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.integration.CMObjectIntegrationTest;
 import com.cloudmine.api.persistance.ClassNameRegistry;
 import com.cloudmine.api.rest.callbacks.CreationResponseCallback;
+import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.CreationResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
@@ -34,8 +35,7 @@ import java.util.List;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
 import static com.cloudmine.test.ResponseCallbackTuple.*;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 /**
  * <br>
@@ -73,7 +73,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
     public void testObjectModificationRequest() {
         final ExtendedLocallySavableCMObject object = new ExtendedLocallySavableCMObject("Fred", true, 55);
 
-        queue.add(new ObjectModificationRequest(object, ResponseCallbackTuple.wasCreated(object.getObjectId()), defaultFailureListener));
+        queue.add(new com.cloudmine.api.rest.ObjectModificationRequest(object, ResponseCallbackTuple.wasCreated(object.getObjectId()), defaultFailureListener));
         waitThenAssertTestResults();
 
         CMUser user = user();
@@ -97,23 +97,38 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
     }
 
     @Test
+    public void testServerFunction() {
+        final ExtendedLocallySavableCMObject object = new ExtendedLocallySavableCMObject("Fred", true, 55);
+        insertAndAssert(object);
+        queue.add(new com.cloudmine.api.rest.ObjectLoadRequest(new CMServerFunction("NewSnippet", false), testCallback(new Response.Listener<CMObjectResponse>() {
+            @Override
+            public void onResponse(CMObjectResponse objectResponse) {
+                Object result = objectResponse.getObject("result");
+                assertNotNull(result);
+                assertEquals(object, objectResponse.getCMObject(object.getObjectId()));
+            }
+        }), ResponseCallbackTuple.defaultFailureListener));
+        waitThenAssertTestResults();
+    }
+
+    @Test
     public void testObjectLoadRequest() {
         ExtendedCMObject object = new ExtendedCMObject("John", 26);
         insertAndAssert(object);
 
-        queue.add(new ObjectLoadRequest(wasLoaded(object), defaultFailureListener));
+        queue.add(new com.cloudmine.api.rest.ObjectLoadRequest(wasLoaded(object), defaultFailureListener));
         waitThenAssertTestResults();
 
         ExtendedCMObject fredObject = new ExtendedCMObject("Fred", 3);
         insertAndAssert(fredObject);
 
-        queue.add(new ObjectLoadRequest(fredObject.getObjectId(), wasLoaded(fredObject), defaultFailureListener));
+        queue.add(new com.cloudmine.api.rest.ObjectLoadRequest(fredObject.getObjectId(), wasLoaded(fredObject), defaultFailureListener));
         waitThenAssertTestResults();
 
         queue.add(new ObjectLoadRequestBuilder(wasLoaded(fredObject), defaultFailureListener).search("[number < 10]").build());
         waitThenAssertTestResults();
 
-        queue.add(new BaseObjectLoadRequest((Collection<String>) null, null, wasLoaded(fredObject, object), defaultFailureListener));
+        queue.add(new BaseObjectLoadRequest((Collection<String>) null, null, null, wasLoaded(fredObject, object), defaultFailureListener));
         waitThenAssertTestResults();
     }
 

@@ -4,6 +4,7 @@ import android.os.Handler;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.cloudmine.api.CMSessionToken;
+import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import me.cloudmine.annotations.Expand;
 import me.cloudmine.annotations.Optional;
@@ -23,12 +24,12 @@ public class BaseObjectLoadRequest extends CloudMineRequest<CMObjectResponse> {
     static final CMURLBuilder BASE_URL = new CMURLBuilder(BASE_ENDPOINT, true);
 
     @Expand
-    public BaseObjectLoadRequest(@Single @Optional Collection<String> objectIds, @Optional CMSessionToken sessionToken, Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        this(BASE_URL.copy().objectIds(objectIds), sessionToken, successListener, errorListener);
+    public BaseObjectLoadRequest(@Single @Optional Collection<String> objectIds, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        this(BASE_URL.copy().objectIds(objectIds).serverFunction(serverFunction), sessionToken, successListener, errorListener);
     }
 
     @Expand
-    public BaseObjectLoadRequest(@Single @Optional Collection<String> objectIds, CMSessionToken sessionToken, Handler handler) {
+    public BaseObjectLoadRequest(@Single @Optional Collection<String> objectIds, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, Handler handler) {
         this(BASE_URL.copy().objectIds(objectIds), sessionToken, null, null);
         setHandler(handler);
     }
