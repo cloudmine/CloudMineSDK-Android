@@ -101,16 +101,19 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
         ExtendedCMObject object = new ExtendedCMObject("John", 26);
         insertAndAssert(object);
 
-        queue.add(new com.cloudmine.api.rest.ObjectLoadRequest(wasLoaded(object), defaultFailureListener));
+        queue.add(new ObjectLoadRequest(wasLoaded(object), defaultFailureListener));
         waitThenAssertTestResults();
 
         ExtendedCMObject fredObject = new ExtendedCMObject("Fred", 3);
         insertAndAssert(fredObject);
 
-        queue.add(new com.cloudmine.api.rest.ObjectLoadRequest(fredObject.getObjectId(), wasLoaded(fredObject), defaultFailureListener));
+        queue.add(new ObjectLoadRequest(fredObject.getObjectId(), wasLoaded(fredObject), defaultFailureListener));
         waitThenAssertTestResults();
 
         queue.add(new ObjectLoadRequestBuilder(wasLoaded(fredObject), defaultFailureListener).search("[number < 10]").build());
+        waitThenAssertTestResults();
+
+        queue.add(new BaseObjectLoadRequest((Collection<String>) null, null, wasLoaded(fredObject, object), defaultFailureListener));
         waitThenAssertTestResults();
     }
 
