@@ -51,6 +51,6 @@ public class ObjectModificationRequestBuilder extends RequestBuilder<ObjectModif
         String url = sessionToken == null ?
                 BaseObjectModificationRequest.ENDPOINT :
                 BaseObjectModificationRequest.user(BaseObjectModificationRequest.ENDPOINT);
-        return new BaseObjectModificationRequest(operationCode, url, transportable.transportableRepresentation(), sessionToken, successListener, errorListener);
+        return new BaseObjectModificationRequest(operationCode, url, transportable.transportableRepresentation(), sessionToken, serverFunction, successListener, errorListener);
     }
 }

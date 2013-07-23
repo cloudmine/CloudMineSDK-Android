@@ -89,7 +89,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
                 assertTrue(modificationResponse.wasCreated(userObject.getObjectId()));
             }
         });
-        queue.add(new BaseObjectModificationRequest(userObject, user.getSessionToken(), objectModificationResponseResponseCallbackTuple, defaultFailureListener));
+        queue.add(new BaseObjectModificationRequest(userObject, user.getSessionToken(), null, objectModificationResponseResponseCallbackTuple, defaultFailureListener));
         waitThenAssertTestResults();
 
         assertUserHasObject(userObject, user);
@@ -108,7 +108,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
                 assertEquals(object, objectResponse.getCMObject(object.getObjectId()));
             }
         }), ResponseCallbackTuple.defaultFailureListener));
-        waitThenAssertTestResults();
+         waitThenAssertTestResults();
     }
 
     @Test

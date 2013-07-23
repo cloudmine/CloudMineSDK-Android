@@ -3,6 +3,7 @@ package com.cloudmine.api.rest;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.cloudmine.api.CMSessionToken;
+import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.CreationResponse;
 import me.cloudmine.annotations.Expand;
 import me.cloudmine.annotations.Optional;
@@ -16,8 +17,8 @@ public class BaseProfileUpdateRequest extends CloudMineRequest<CreationResponse>
     public static final int REQUEST_TYPE = 405;
 
     @Expand
-    public BaseProfileUpdateRequest(String userProfile, CMSessionToken sessionToken, @Optional Response.Listener<CreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.POST, "/account", userProfile, sessionToken, successListener,  errorListener);
+    public BaseProfileUpdateRequest(String userProfile, CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.POST, "/account", userProfile, sessionToken, serverFunction, successListener,  errorListener);
     }
 
     @Override

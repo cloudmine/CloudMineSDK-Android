@@ -4,6 +4,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.cloudmine.api.CMFile;
 import com.cloudmine.api.CMSessionToken;
+import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.FileCreationResponse;
 import me.cloudmine.annotations.Expand;
 import me.cloudmine.annotations.Optional;
@@ -23,8 +24,8 @@ public class BaseFileCreationRequest extends CloudMineRequest<FileCreationRespon
     private final String contentType;
 
     @Expand
-    public BaseFileCreationRequest(CMFile file, @Optional CMSessionToken sessionToken, @Optional Response.Listener<FileCreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.PUT, BASE_URL.copy().user(sessionToken).binary(file.getFileId()).asUrlString(), sessionToken, successListener, errorListener);
+    public BaseFileCreationRequest(CMFile file, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional Response.Listener<FileCreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.PUT, BASE_URL.copy().user(sessionToken).binary(file.getFileId()), sessionToken, serverFunction, successListener, errorListener);
         body = file.getFileContents();
         contentType = file.getMimeType();
     }

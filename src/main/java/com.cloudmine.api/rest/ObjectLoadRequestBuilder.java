@@ -15,6 +15,8 @@ public class ObjectLoadRequestBuilder extends RequestBuilder<ObjectLoadRequestBu
 
     private CMURLBuilder urlBuilder = BaseObjectLoadRequest.BASE_URL.copy();
 
+
+
     public ObjectLoadRequestBuilder(CMSessionToken sessionToken, Response.Listener<CMObjectResponse> success) {
         this(sessionToken, success, null);
     }
@@ -33,7 +35,7 @@ public class ObjectLoadRequestBuilder extends RequestBuilder<ObjectLoadRequestBu
 
     @Override
     public BaseObjectLoadRequest build() {
-        return new BaseObjectLoadRequest(urlBuilder, sessionToken, successListener, errorListener);
+        return new BaseObjectLoadRequest(urlBuilder, sessionToken, serverFunction, successListener, errorListener);
     }
 
     public ObjectLoadRequestBuilder search(String searchQuery) {

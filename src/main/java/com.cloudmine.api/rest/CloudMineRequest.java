@@ -13,6 +13,7 @@ import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.HasHandler;
 import com.cloudmine.api.Strings;
 import com.cloudmine.api.rest.callbacks.Callback;
+import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.ResponseBase;
 
 import java.io.UnsupportedEncodingException;
@@ -28,7 +29,7 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
 
     protected static String BASE_URL = "https://api.cloudmine.me/v1/app/";
     protected static String USER = "/user";
-    public static final CloudMineRequest FAKE_REQUEST = new CloudMineRequest(Method.DEPRECATED_GET_OR_POST, "", null, null) {
+    public static final CloudMineRequest FAKE_REQUEST = new CloudMineRequest(Method.DEPRECATED_GET_OR_POST, new CMURLBuilder(), null, null, null) {
         public static final int FAKE_REQUEST_TYPE = -1;
         @Override
         protected Response parseNetworkResponse(NetworkResponse networkResponse) {
@@ -77,20 +78,33 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
     private String sessionTokenString;
     private Handler handler;
 
+    private static String addServerFunction(String url, CMServerFunction serverFunction) {
+        if(serverFunction != null) return url + "?" + serverFunction.asUrlString();
+        else                       return url;
+    }
+
     private static String getUrl(String url) {
         return new StringBuilder(BASE_URL).append(CMApiCredentials.getApplicationIdentifier()).append(url).toString();
     }
 
-    public CloudMineRequest(int method, String url, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
-        this(method, url, null, null, successListener, errorListener);
+    public CloudMineRequest(int method, CMURLBuilder url, CMServerFunction serverFunction, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
+        this(method, url, null, null, serverFunction, successListener, errorListener);
     }
 
-    public CloudMineRequest(int method, String url, CMSessionToken sessionToken, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
-        this(method, url, null, sessionToken, successListener, errorListener);
+    public CloudMineRequest(int method, CMURLBuilder url, CMSessionToken sessionToken, CMServerFunction serverFunction, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
+        this(method, url, null, sessionToken, serverFunction, successListener, errorListener);
     }
 
-    public CloudMineRequest(int method, String url, String body, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
-        this(method, url, body, null, successListener, errorListener);
+    public CloudMineRequest(int method, CMURLBuilder url, String body, CMServerFunction serverFunction, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
+        this(method, url, body, null, serverFunction, successListener, errorListener);
+    }
+
+    public CloudMineRequest(int method, CMURLBuilder url, String body, CMSessionToken sessionToken, CMServerFunction serverFunction, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
+        this(method, url.serverFunction(serverFunction).asUrlString(), body, sessionToken, successListener, errorListener);
+    }
+
+    public CloudMineRequest(int method, String url, String body, CMSessionToken sessionToken, CMServerFunction serverFunction, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
+        this(method, addServerFunction(url, serverFunction), body, sessionToken, successListener, errorListener);
     }
 
     public CloudMineRequest(int method, String url, String body, CMSessionToken sessionToken, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {

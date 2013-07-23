@@ -60,7 +60,7 @@ public class LocallySavableCMObject extends CMObject {
 
     public static CloudMineRequest saveObjects(Context context, Collection <CMObject> objects, CMSessionToken token, Response.Listener<ObjectModificationResponse> listener, Response.ErrorListener errorListener) {
 
-        CloudMineRequest request = new BaseObjectModificationRequest(CMObject.massTransportable(objects), token, listener, errorListener);
+        CloudMineRequest request = new BaseObjectModificationRequest(CMObject.massTransportable(objects), token, null, listener, errorListener);
         getRequestQueue(context).add(request);
         return request;
     }
@@ -216,13 +216,13 @@ public class LocallySavableCMObject extends CMObject {
         if(isUserLevel()) {
             CMUser user = getUser();
             if(user != null && user.getSessionToken() != null) {
-                request = new BaseObjectModificationRequest(this, user.getSessionToken(), successListener, errorListener);
+                request = new BaseObjectModificationRequest(this, user.getSessionToken(), null, successListener, errorListener);
             } else {
                 if(errorListener != null) errorListener.onErrorResponse(new VolleyError("Can't save user level object when the associated user is not logged in"));
                 return CloudMineRequest.FAKE_REQUEST;
             }
         } else {
-            request = new BaseObjectModificationRequest(this, null, successListener, errorListener);
+            request = new BaseObjectModificationRequest(this, null, null, successListener, errorListener);
         }
 
         queue.add(request);
@@ -235,7 +235,7 @@ public class LocallySavableCMObject extends CMObject {
 
     public CloudMineRequest save(Context context, CMSessionToken sessionToken, Response.Listener< ObjectModificationResponse > successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        BaseObjectModificationRequest request = new BaseObjectModificationRequest(this, sessionToken, successListener, errorListener);
+        BaseObjectModificationRequest request = new BaseObjectModificationRequest(this, sessionToken, null, successListener, errorListener);
         queue.add(request);
         return request;
     }

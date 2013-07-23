@@ -29,7 +29,7 @@ public class CacheableCMFile extends CMFile {
 
     public static CloudMineRequest loadFile(Context context, String fileName, CMSessionToken sessionToken, Response.Listener<FileLoadResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        BaseFileLoadRequest request = new BaseFileLoadRequest(fileName, sessionToken, successListener, errorListener);
+        BaseFileLoadRequest request = new BaseFileLoadRequest(fileName, sessionToken, null, successListener, errorListener); //TODO support running server functions from here
         queue.add(request);
         return request;
     }
@@ -56,7 +56,7 @@ public class CacheableCMFile extends CMFile {
 
     public CloudMineRequest save(Context context, CMSessionToken token, Response.Listener<FileCreationResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = SharedRequestQueueHolders.getRequestQueue(context);
-        BaseFileCreationRequest request = new BaseFileCreationRequest(this, token, successListener, errorListener);
+        BaseFileCreationRequest request = new BaseFileCreationRequest(this, token, null, successListener, errorListener);
         queue.add(request);
         return request;
     }

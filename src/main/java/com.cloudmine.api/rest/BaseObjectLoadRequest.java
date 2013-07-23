@@ -25,17 +25,17 @@ public class BaseObjectLoadRequest extends CloudMineRequest<CMObjectResponse> {
 
     @Expand
     public BaseObjectLoadRequest(@Single @Optional Collection<String> objectIds, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        this(BASE_URL.copy().objectIds(objectIds).serverFunction(serverFunction), sessionToken, successListener, errorListener);
+        this(BASE_URL.copy().objectIds(objectIds), sessionToken, serverFunction, successListener, errorListener);
     }
 
     @Expand
     public BaseObjectLoadRequest(@Single @Optional Collection<String> objectIds, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, Handler handler) {
-        this(BASE_URL.copy().objectIds(objectIds), sessionToken, null, null);
+        this(BASE_URL.copy().objectIds(objectIds), sessionToken, serverFunction, null, null);
         setHandler(handler);
     }
 
-    BaseObjectLoadRequest(CMURLBuilder url, CMSessionToken sessionToken, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
-        super(Method.GET, url.user(sessionToken).asUrlString(), sessionToken, successListener, errorListener);
+    BaseObjectLoadRequest(CMURLBuilder url, CMSessionToken sessionToken, CMServerFunction serverFunction, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
+        super(Method.GET, url.user(sessionToken), sessionToken, serverFunction, successListener, errorListener);
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.cloudmine.api.CMFile;
 import com.cloudmine.api.CMSessionToken;
+import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.FileLoadResponse;
 import me.cloudmine.annotations.Expand;
 import me.cloudmine.annotations.Optional;
@@ -23,8 +24,8 @@ public class BaseFileLoadRequest extends CloudMineRequest<FileLoadResponse> {
     private final String fileName;
 
     @Expand
-    public BaseFileLoadRequest(String fileName, @Optional CMSessionToken sessionToken, Response.Listener<FileLoadResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.GET, BASE_URL.copy().user(sessionToken).addKey(fileName).asUrlString(), sessionToken, successListener, errorListener);
+    public BaseFileLoadRequest(String fileName, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, Response.Listener<FileLoadResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.GET, BASE_URL.copy().user(sessionToken).addKey(fileName), sessionToken, serverFunction, successListener, errorListener);
         this.fileName = fileName;
     }
 

@@ -34,7 +34,7 @@ public class ACMUser extends CMUser {
 
     public CloudMineRequest create(Context context, Response.Listener<CreationResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        CloudMineRequest request = new BaseUserCreationRequest(this, successListener,  errorListener);
+        CloudMineRequest request = new BaseUserCreationRequest(this, null, successListener,  errorListener);
         queue.add(request);
         return request;
     }
@@ -46,7 +46,7 @@ public class ACMUser extends CMUser {
     public CloudMineRequest login(Context context, String password, final Response.Listener<LoginResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
 
-        CloudMineRequest request = new BaseUserLoginRequest(getUserIdentifier(), password, new Response.Listener<LoginResponse>() {
+        CloudMineRequest request = new BaseUserLoginRequest(getUserIdentifier(), password, null, new Response.Listener<LoginResponse>() {
             @Override
             public void onResponse(LoginResponse response) {
                 try {
@@ -61,7 +61,7 @@ public class ACMUser extends CMUser {
     }
 
     public CloudMineRequest login(Context context, String password, Handler handler) {
-        BaseUserLoginRequest request = new BaseUserLoginRequest(getUserIdentifier(), password, null, null);
+        BaseUserLoginRequest request = new BaseUserLoginRequest(getUserIdentifier(), password, null, null, null);
         request.setHandler(handler);
         getRequestQueue(context).add(request);
         return request;
@@ -69,14 +69,14 @@ public class ACMUser extends CMUser {
 
     public CloudMineRequest saveProfile(Context context, Response.Listener<CreationResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        CloudMineRequest request = new BaseProfileUpdateRequest(profileTransportRepresentation(), getSessionToken(), successListener, errorListener);
+        CloudMineRequest request = new BaseProfileUpdateRequest(profileTransportRepresentation(), getSessionToken(), null, successListener, errorListener);
         queue.add(request);
         return request;
     }
 
     public CloudMineRequest loadProfile(Context context, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        CloudMineRequest request = new BaseProfileLoadRequest(getSessionToken(), successListener, errorListener);
+        CloudMineRequest request = new BaseProfileLoadRequest(getSessionToken(), null, successListener, errorListener);
         queue.add(request);
         return request;
     }
