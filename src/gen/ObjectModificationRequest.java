@@ -2,6 +2,22 @@ package com.cloudmine.api.rest;
 
 public class ObjectModificationRequest extends com.cloudmine.api.rest.BaseObjectModificationRequest {
 
+    public ObjectModificationRequest(com.cloudmine.api.rest.Transportable savable, com.cloudmine.api.CMSessionToken userSession, com.cloudmine.api.rest.options.CMServerFunction serverFunction, com.cloudmine.api.rest.callbacks.Callback<com.cloudmine.api.rest.response.ObjectModificationResponse> callback) {
+        super(savable, userSession, serverFunction, callback);
+    }
+
+    public ObjectModificationRequest(com.cloudmine.api.rest.Transportable savable, com.cloudmine.api.rest.options.CMServerFunction serverFunction, com.cloudmine.api.rest.callbacks.Callback<com.cloudmine.api.rest.response.ObjectModificationResponse> callback) {
+        super(savable, (com.cloudmine.api.CMSessionToken)null, serverFunction, callback);
+    }
+
+    public ObjectModificationRequest(com.cloudmine.api.rest.Transportable savable, com.cloudmine.api.CMSessionToken userSession, com.cloudmine.api.rest.callbacks.Callback<com.cloudmine.api.rest.response.ObjectModificationResponse> callback) {
+        super(savable, userSession, (com.cloudmine.api.rest.options.CMServerFunction)null, callback);
+    }
+
+    public ObjectModificationRequest(com.cloudmine.api.rest.Transportable savable, com.cloudmine.api.rest.callbacks.Callback<com.cloudmine.api.rest.response.ObjectModificationResponse> callback) {
+        super(savable, (com.cloudmine.api.CMSessionToken)null, (com.cloudmine.api.rest.options.CMServerFunction)null, callback);
+    }
+
     public ObjectModificationRequest(com.cloudmine.api.rest.Transportable savable, com.cloudmine.api.CMSessionToken token, com.cloudmine.api.rest.options.CMServerFunction serverFunction, com.android.volley.Response.Listener<com.cloudmine.api.rest.response.ObjectModificationResponse> successListener, com.android.volley.Response.ErrorListener errorListener) {
         super(savable, token, serverFunction, successListener, errorListener);
     }
@@ -64,22 +80,6 @@ public class ObjectModificationRequest extends com.cloudmine.api.rest.BaseObject
 
     public ObjectModificationRequest(com.cloudmine.api.rest.Transportable savable) {
         super(savable, (com.cloudmine.api.CMSessionToken)null, (com.cloudmine.api.rest.options.CMServerFunction)null, (com.android.volley.Response.Listener<com.cloudmine.api.rest.response.ObjectModificationResponse>)null, (com.android.volley.Response.ErrorListener)null);
-    }
-
-    public ObjectModificationRequest(com.cloudmine.api.rest.Transportable savable, com.cloudmine.api.CMSessionToken userSession, com.cloudmine.api.rest.options.CMServerFunction serverFunction, com.cloudmine.api.rest.callbacks.Callback<com.cloudmine.api.rest.response.ObjectModificationResponse> callback) {
-        super(savable, userSession, serverFunction, callback);
-    }
-
-    public ObjectModificationRequest(com.cloudmine.api.rest.Transportable savable, com.cloudmine.api.rest.options.CMServerFunction serverFunction, com.cloudmine.api.rest.callbacks.Callback<com.cloudmine.api.rest.response.ObjectModificationResponse> callback) {
-        super(savable, (com.cloudmine.api.CMSessionToken)null, serverFunction, callback);
-    }
-
-    public ObjectModificationRequest(com.cloudmine.api.rest.Transportable savable, com.cloudmine.api.CMSessionToken userSession, com.cloudmine.api.rest.callbacks.Callback<com.cloudmine.api.rest.response.ObjectModificationResponse> callback) {
-        super(savable, userSession, (com.cloudmine.api.rest.options.CMServerFunction)null, callback);
-    }
-
-    public ObjectModificationRequest(com.cloudmine.api.rest.Transportable savable, com.cloudmine.api.rest.callbacks.Callback<com.cloudmine.api.rest.response.ObjectModificationResponse> callback) {
-        super(savable, (com.cloudmine.api.CMSessionToken)null, (com.cloudmine.api.rest.options.CMServerFunction)null, callback);
     }
 
 }

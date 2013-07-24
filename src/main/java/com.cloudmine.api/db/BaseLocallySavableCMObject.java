@@ -10,12 +10,19 @@ import com.android.volley.VolleyError;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.CMUser;
+import com.cloudmine.api.rest.BaseObjectDeleteRequest;
 import com.cloudmine.api.rest.BaseObjectLoadRequest;
 import com.cloudmine.api.rest.BaseObjectModificationRequest;
 import com.cloudmine.api.rest.CloudMineRequest;
+import com.cloudmine.api.rest.ObjectDeleteRequest;
 import com.cloudmine.api.rest.ObjectLoadRequestBuilder;
+import com.cloudmine.api.rest.SharedRequestQueueHolders;
+import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
+import me.cloudmine.annotations.Expand;
+import me.cloudmine.annotations.Optional;
+import me.cloudmine.annotations.Single;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,9 +40,9 @@ import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class LocallySavableCMObject extends CMObject {
+public class BaseLocallySavableCMObject extends CMObject {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LocallySavableCMObject.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BaseLocallySavableCMObject.class);
     static CMObjectDBOpenHelper cmObjectDBOpenHelper;
     static RequestDBOpenHelper requestDBOpenHelper;
 
@@ -129,6 +136,13 @@ public class LocallySavableCMObject extends CMObject {
         return request;
     }
 
+    @Expand(isStatic = true)
+    public static CloudMineRequest delete(Context context, @Single Collection<String> objectIds, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ObjectModificationResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        BaseObjectDeleteRequest deleteRequest = new BaseObjectDeleteRequest(objectIds, sessionToken, serverFunction, successListener, errorListener);
+        getRequestQueue(context).add(deleteRequest);
+        return deleteRequest;
+    }
+
     /**
      * Load the locally stored copy of the object with the given id. Will throw a {@link ClassCastException} if an object
      * exists with the given ID but is of a different type.
@@ -137,7 +151,7 @@ public class LocallySavableCMObject extends CMObject {
      * @param <OBJECT_TYPE> the type of the object to load. May be a superclass of the actual type
      * @return the object if it was found, or null
      */
-    public static <OBJECT_TYPE extends LocallySavableCMObject> OBJECT_TYPE loadLocalObject(Context context, String objectId) {
+    public static <OBJECT_TYPE extends BaseLocallySavableCMObject> OBJECT_TYPE loadLocalObject(Context context, String objectId) {
         return getCMObjectDBHelper(context).loadObjectById(objectId);
     }
 
@@ -158,11 +172,11 @@ public class LocallySavableCMObject extends CMObject {
      * @param <OBJECT_TYPE>
      * @return
      */
-    public static <OBJECT_TYPE extends LocallySavableCMObject> List<OBJECT_TYPE> loadLocalObjectsByClass(Context context, Class<OBJECT_TYPE> klass) {
+    public static <OBJECT_TYPE extends BaseLocallySavableCMObject> List<OBJECT_TYPE> loadLocalObjectsByClass(Context context, Class<OBJECT_TYPE> klass) {
         return getCMObjectDBHelper(context).loadObjectsByClass(klass);
     }
 
-    public static List<LocallySavableCMObject> loadLocalObjects(Context context) {
+    public static List<BaseLocallySavableCMObject> loadLocalObjects(Context context) {
         return getCMObjectDBHelper(context).loadAllObjects();
     }
 
@@ -263,6 +277,13 @@ public class LocallySavableCMObject extends CMObject {
 
     void setLastSaveDate(Date lastSaveDate) {
         this.lastSaveDate = lastSaveDate;
+    }
+
+    @Expand
+    public CloudMineRequest delete(Context context, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ObjectModificationResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        CloudMineRequest request = new ObjectDeleteRequest(getObjectId(), sessionToken, serverFunction, successListener, errorListener);
+        SharedRequestQueueHolders.getRequestQueue(context).add(request);
+        return request;
     }
 
     /**

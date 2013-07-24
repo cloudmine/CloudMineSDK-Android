@@ -29,17 +29,17 @@ public class LocallySavableCMObjectTest extends ServiceTestBase {
     public void setUp() {
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         DeviceIdentifier.initialize(Robolectric.application.getApplicationContext());
-        LocallySavableCMObject.cmObjectDBOpenHelper = null;
-        LocallySavableCMObject.requestDBOpenHelper = null;
+        BaseLocallySavableCMObject.cmObjectDBOpenHelper = null;
+        BaseLocallySavableCMObject.requestDBOpenHelper = null;
         super.setUp();
     }
 
     @Test
     public void testBaseCMGeoPoint() {
-        LocallySavableCMGeoPoint geoPoint = new LocallySavableCMGeoPoint(33, 44);
+        BaseLocallySavableCMGeoPoint geoPoint = new BaseLocallySavableCMGeoPoint(33, 44);
         String json = geoPoint.transportableRepresentation();
-        ClassNameRegistry.register(CMGeoPointInterface.GEOPOINT_CLASS, LocallySavableCMGeoPoint.class);
-        LocallySavableCMGeoPoint deserialized = (LocallySavableCMGeoPoint) JsonUtilities.jsonToClassMap(json).get(geoPoint.getObjectId());
+        ClassNameRegistry.register(CMGeoPointInterface.GEOPOINT_CLASS, BaseLocallySavableCMGeoPoint.class);
+        BaseLocallySavableCMGeoPoint deserialized = (BaseLocallySavableCMGeoPoint) JsonUtilities.jsonToClassMap(json).get(geoPoint.getObjectId());
         assertEquals(geoPoint, deserialized);
     }
 
@@ -51,14 +51,14 @@ public class LocallySavableCMObjectTest extends ServiceTestBase {
         boolean wasSaved = savableCMObject.saveLocally(context);
         assertTrue(wasSaved);
 
-        ExtendedLocallySavableCMObject loadedObject = LocallySavableCMObject.loadLocalObject(context, savableCMObject.getObjectId());
+        ExtendedLocallySavableCMObject loadedObject = BaseLocallySavableCMObject.loadLocalObject(context, savableCMObject.getObjectId());
         assertEquals(savableCMObject,  loadedObject);
 
         savableCMObject.setAwesome(false);
         Thread.sleep(500); //fix heisenbug.. assuming it is a problem with Robolectric and not our library ASSumptions
         wasSaved = savableCMObject.saveLocally(context);
         assertTrue(wasSaved);
-        loadedObject = LocallySavableCMObject.loadLocalObject(context, savableCMObject.getObjectId());
+        loadedObject = BaseLocallySavableCMObject.loadLocalObject(context, savableCMObject.getObjectId());
         assertFalse(loadedObject.isAwesome());
     }
 
@@ -71,9 +71,9 @@ public class LocallySavableCMObjectTest extends ServiceTestBase {
         ExtendedLocallySavableGeopoint savableGeopoint = new ExtendedLocallySavableGeopoint("School", 55.2, 39.23);
         savableGeopoint.saveLocally(context);
 
-        List<LocallySavableCMObject> loadedObjects = LocallySavableCMObject.loadLocalObjects(context);
+        List<BaseLocallySavableCMObject> loadedObjects = BaseLocallySavableCMObject.loadLocalObjects(context);
         assertEquals(2, loadedObjects.size());
-        for(LocallySavableCMObject object : loadedObjects) {
+        for(BaseLocallySavableCMObject object : loadedObjects) {
             if(object instanceof ExtendedLocallySavableCMObject) assertEquals(savableCMObject, object);
             else if(object instanceof ExtendedLocallySavableGeopoint) assertEquals(savableGeopoint, object);
             else fail();
@@ -89,8 +89,8 @@ public class LocallySavableCMObjectTest extends ServiceTestBase {
         boolean wasSaved = savableCMObject.saveLocally(context);
         assertTrue(wasSaved);
 
-        LocallySavableCMObject.deleteLocalObject(context, savableCMObject.getObjectId());
-        ExtendedLocallySavableCMObject loadedObject = LocallySavableCMObject.loadLocalObject(context, savableCMObject.getObjectId());
+        BaseLocallySavableCMObject.deleteLocalObject(context, savableCMObject.getObjectId());
+        ExtendedLocallySavableCMObject loadedObject = BaseLocallySavableCMObject.loadLocalObject(context, savableCMObject.getObjectId());
         assertNull(loadedObject);
     }
 
@@ -102,7 +102,7 @@ public class LocallySavableCMObjectTest extends ServiceTestBase {
 
         boolean wasStored = savableCMObject.saveEventually(context);
         assertTrue(wasStored);
-        RequestDBOpenHelper openHelper = LocallySavableCMObject.getRequestDBOpenHelper(context);
+        RequestDBOpenHelper openHelper = BaseLocallySavableCMObject.getRequestDBOpenHelper(context);
         Map<Integer, Request> unsentRequests = openHelper.retrieveRequestsForSending(context);
         assertFalse(unsentRequests.isEmpty());
         Request saveRequest = unsentRequests.values().iterator().next();

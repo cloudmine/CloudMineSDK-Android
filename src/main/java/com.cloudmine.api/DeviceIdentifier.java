@@ -3,7 +3,7 @@ package com.cloudmine.api;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
-import com.cloudmine.api.db.LocallySavableCMGeoPoint;
+import com.cloudmine.api.db.BaseLocallySavableCMGeoPoint;
 import com.cloudmine.api.persistance.ClassNameRegistry;
 import com.cloudmine.api.rest.AndroidAsynchronousHttpClient;
 import com.cloudmine.api.rest.AndroidBase64Encoder;
@@ -39,7 +39,7 @@ public class DeviceIdentifier {
                 new AndroidAsynchronousHttpClient()));
 //                new VolleyAsynchronousHttpClient(context.getApplicationContext())));
         //Deserialize all geopoints as locally savable objects
-        ClassNameRegistry.register(CMGeoPointInterface.GEOPOINT_CLASS, LocallySavableCMGeoPoint.class);
+        ClassNameRegistry.register(CMGeoPointInterface.GEOPOINT_CLASS, BaseLocallySavableCMGeoPoint.class);
 
         SharedPreferences preferences = context.getSharedPreferences("CLOUDMINE_PREFERENCES", Context.MODE_PRIVATE);
         boolean isNotSet = !preferences.contains(UNIQUE_ID_KEY);

@@ -1,6 +1,6 @@
 package com.cloudmine.test;
 
-import com.cloudmine.api.db.LocallySavableCMGeoPoint;
+import com.cloudmine.api.db.BaseLocallySavableCMGeoPoint;
 import com.cloudmine.api.persistance.ClassNameRegistry;
 
 /**
@@ -8,7 +8,7 @@ import com.cloudmine.api.persistance.ClassNameRegistry;
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class ExtendedLocallySavableGeopoint extends LocallySavableCMGeoPoint {
+public class ExtendedLocallySavableGeopoint extends BaseLocallySavableCMGeoPoint {
     public static final String CLASS_NAME = "ExtendedLocallySavableGeopoint";
     static {
         ClassNameRegistry.register(CLASS_NAME, ExtendedLocallySavableGeopoint.class);

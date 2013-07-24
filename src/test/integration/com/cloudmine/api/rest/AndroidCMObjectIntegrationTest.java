@@ -10,6 +10,7 @@ import com.cloudmine.api.CMAccessPermission;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.DeviceIdentifier;
+import com.cloudmine.api.db.BaseLocallySavableCMObject;
 import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.integration.CMObjectIntegrationTest;
 import com.cloudmine.api.persistance.ClassNameRegistry;
@@ -161,12 +162,16 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
 
     @Test
     public void testMassCreate() {
-        final Collection<CMObject> objects = new ArrayList<CMObject>();
-        for(int i = 0; i < 27; i++) {
+        createMultipleObjects(27);
+    }
+
+    private List<CMObject> createMultipleObjects(int numberToCreate) {
+        final List<CMObject> objects = new ArrayList<CMObject>();
+        for(int i = 0; i < numberToCreate; i++) {
             ExtendedLocallySavableCMObject anotherObject = new ExtendedLocallySavableCMObject("Kurt" + i, false,i);
             objects.add(anotherObject);
         }
-        LocallySavableCMObject.saveObjects(applicationContext, objects, testCallback(new Response.Listener<ObjectModificationResponse>() {
+        BaseLocallySavableCMObject.saveObjects(applicationContext, objects, testCallback(new Response.Listener<ObjectModificationResponse>() {
             @Override
             public void onResponse(ObjectModificationResponse modificationResponse) {
                 assertEquals(objects.size(), modificationResponse.getCreatedObjectIds().size());
@@ -176,6 +181,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
             }
         }), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
+        return objects;
     }
 
     @Test
@@ -238,6 +244,22 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
 
         BaseObjectLoadRequest request = new ObjectLoadRequestBuilder(notOwner.getSessionToken(), ResponseCallbackTuple.wasLoaded(sharableObject), ResponseCallbackTuple.defaultFailureListener).getShared().build();
         queue.add(request);
+        waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testObjectDeletion() {
+        List<CMObject> deletableObjects = createMultipleObjects(5);
+        LocallySavableCMObject firstObject = (LocallySavableCMObject) deletableObjects.get(0);
+
+        firstObject.delete(applicationContext, ResponseCallbackTuple.wasDeleted(firstObject.getObjectId()), ResponseCallbackTuple.defaultFailureListener);
+        waitThenAssertTestResults();
+
+        final String[] deleteIds = new String[4];
+        for(int i = 0; i < 4; i++) {
+            deleteIds[i] = deletableObjects.get(i+1).getObjectId();
+        }
+        LocallySavableCMObject.delete(applicationContext, Arrays.asList(deleteIds), ResponseCallbackTuple.wasDeleted(deleteIds), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
     }
 

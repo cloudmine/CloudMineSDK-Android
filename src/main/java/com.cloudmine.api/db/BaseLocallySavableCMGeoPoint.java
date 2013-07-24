@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class LocallySavableCMGeoPoint extends LocallySavableCMObject implements CMGeoPointInterface {
+public class BaseLocallySavableCMGeoPoint extends BaseLocallySavableCMObject implements CMGeoPointInterface {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LocallySavableCMGeoPoint.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BaseLocallySavableCMGeoPoint.class);
     private static final String[] LATITUDE_KEYS = {"latitude", "lat", "y"};
     private static final String[] LONGITUDE_KEYS = {"longitude", "lon", "lng", "x"};
 
@@ -23,16 +23,16 @@ public class LocallySavableCMGeoPoint extends LocallySavableCMObject implements 
     private double longitude;
     private final String __type__ = "geopoint";
 
-    protected LocallySavableCMGeoPoint() {
+    protected BaseLocallySavableCMGeoPoint() {
 
     }
 
-    public LocallySavableCMGeoPoint(double longitude, double latitude) {
+    public BaseLocallySavableCMGeoPoint(double longitude, double latitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public LocallySavableCMGeoPoint(TransportableString transportableString) {
+    public BaseLocallySavableCMGeoPoint(TransportableString transportableString) {
         //is this hacky? yes it is!
         SimpleCMObject object = new SimpleCMObject(transportableString);
         this.latitude = getValueFromKey(object, LATITUDE_KEYS);
@@ -106,7 +106,7 @@ public class LocallySavableCMGeoPoint extends LocallySavableCMObject implements 
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        LocallySavableCMGeoPoint geoPoint = (LocallySavableCMGeoPoint) o;
+        BaseLocallySavableCMGeoPoint geoPoint = (BaseLocallySavableCMGeoPoint) o;
 
         if (Double.compare(geoPoint.latitude, latitude) != 0) return false;
         if (Double.compare(geoPoint.longitude, longitude) != 0) return false;

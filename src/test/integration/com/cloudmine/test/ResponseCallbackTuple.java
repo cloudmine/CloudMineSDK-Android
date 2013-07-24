@@ -40,6 +40,7 @@ public class ResponseCallbackTuple<SUCCESS_RESPONSE> implements Response.Listene
             @Override
             public void onResponse(ObjectModificationResponse modificationResponse) {
                 assertTrue(modificationResponse.wasSuccess());
+                assertEquals(objectIds.length, modificationResponse.getCreatedObjectIds().size());
                 for(String objectId : objectIds) {
                     assertTrue(modificationResponse.wasCreated(objectId));
                 }
@@ -55,6 +56,19 @@ public class ResponseCallbackTuple<SUCCESS_RESPONSE> implements Response.Listene
                 assertEquals(objects.length, objectResponse.getObjects().size());
                 for(CMObject object : objects) {
                     assertEquals(object, objectResponse.getCMObject(object.getObjectId()));
+                }
+            }
+        });
+    }
+
+    public static ResponseCallbackTuple<ObjectModificationResponse> wasDeleted(final String... objectIds) {
+        return new ResponseCallbackTuple<ObjectModificationResponse>(new Response.Listener<ObjectModificationResponse>() {
+            @Override
+            public void onResponse(ObjectModificationResponse objectResponse) {
+                assertTrue(objectResponse.wasSuccess());
+                assertEquals(objectIds.length, objectResponse.getDeletedObjectIds().size());
+                for(String objectId : objectIds){
+                    assertTrue(objectResponse.wasDeleted(objectId));
                 }
             }
         });

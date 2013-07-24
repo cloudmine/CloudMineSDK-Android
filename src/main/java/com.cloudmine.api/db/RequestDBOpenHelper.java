@@ -241,7 +241,7 @@ public class RequestDBOpenHelper extends SQLiteOpenHelper {
             }
         }
         if(!objectIds.isEmpty()) {
-            Map<String, String> objectIdToJson = LocallySavableCMObject.getCMObjectDBHelper(context).loadObjectJsonById(objectIds);
+            Map<String, String> objectIdToJson = BaseLocallySavableCMObject.getCMObjectDBHelper(context).loadObjectJsonById(objectIds);
             for(Map.Entry<String, String> objectIdAndJsonEntry : objectIdToJson.entrySet()) {
                 objectIdsToRequests.get(objectIdAndJsonEntry.getKey()).setJsonBody(objectIdAndJsonEntry.getValue());
             }

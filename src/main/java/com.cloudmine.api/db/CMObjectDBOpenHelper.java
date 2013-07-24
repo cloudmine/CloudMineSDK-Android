@@ -63,7 +63,7 @@ public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-    public boolean insertCMObjectIfNewer(LocallySavableCMObject cmObject) {
+    public boolean insertCMObjectIfNewer(BaseLocallySavableCMObject cmObject) {
         if(cmObject == null) return false;
         SQLiteDatabase db = getWritableDatabase();
         try {
@@ -84,7 +84,7 @@ public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
         }
     }
 
-    public <OBJECT_TYPE extends LocallySavableCMObject> OBJECT_TYPE loadObjectById(String objectId) {
+    public <OBJECT_TYPE extends BaseLocallySavableCMObject> OBJECT_TYPE loadObjectById(String objectId) {
         if(Strings.isEmpty(objectId)) return null;
 
         SQLiteDatabase db = getReadableDatabase();
@@ -97,13 +97,13 @@ public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
         }
     }
 
-    public List<LocallySavableCMObject> loadAllObjects() {
+    public List<BaseLocallySavableCMObject> loadAllObjects() {
         SQLiteDatabase db = getReadableDatabase();
-        List<LocallySavableCMObject> allObjects = new ArrayList<LocallySavableCMObject>();
+        List<BaseLocallySavableCMObject> allObjects = new ArrayList<BaseLocallySavableCMObject>();
         try {
             Cursor cursor = db.query(CM_OBJECT_TABLE, new String[] {JSON_COLUMN}, null, null, null, null, null);
             while (cursor.moveToNext()) {
-                LocallySavableCMObject object = fromCursor(cursor);
+                BaseLocallySavableCMObject object = fromCursor(cursor);
                 allObjects.add(object);
             }
         } finally {
@@ -145,7 +145,7 @@ public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
         return objectIdsToJson;
     }
 
-    public <TYPE extends LocallySavableCMObject> List<TYPE> loadObjectsByClass(Class <TYPE> klass) {
+    public <TYPE extends BaseLocallySavableCMObject> List<TYPE> loadObjectsByClass(Class <TYPE> klass) {
         String[] args = {ClassNameRegistry.forClass(klass)};
         SQLiteDatabase readableDatabase = getReadableDatabase();
         try {
@@ -174,7 +174,7 @@ public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
         return csvBuilder.toString();
     }
 
-    private static <OBJECT_TYPE extends LocallySavableCMObject> OBJECT_TYPE fromCursor(Cursor cursor) {
+    private static <OBJECT_TYPE extends BaseLocallySavableCMObject> OBJECT_TYPE fromCursor(Cursor cursor) {
 
         int jsonIndex = cursor.getColumnIndex(JSON_COLUMN);
         String json = cursor.getString(jsonIndex);
