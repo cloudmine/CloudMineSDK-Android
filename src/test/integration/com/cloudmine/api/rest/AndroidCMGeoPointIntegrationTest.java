@@ -1,12 +1,22 @@
 package com.cloudmine.api.rest;
 
 import android.content.Context;
+import com.cloudmine.api.CMGeoPointInterface;
 import com.cloudmine.api.DeviceIdentifier;
+import com.cloudmine.api.db.LocallySavableCMGeoPoint;
+import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.integration.CMGeoPointIntegrationTest;
+import com.cloudmine.api.persistance.ClassNameRegistry;
+import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.cloudmine.test.CloudMineTestRunner;
+import com.cloudmine.test.ResponseCallbackTuple;
 import com.xtremelabs.robolectric.Robolectric;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
+
 /**
  * <br>
  * Copyright CloudMine LLC. All rights reserved<br>
@@ -23,6 +33,18 @@ public class AndroidCMGeoPointIntegrationTest extends CMGeoPointIntegrationTest 
         applicationContext = Robolectric.application.getApplicationContext();
         DeviceIdentifier.initialize(applicationContext);
         super.setUp();
+    }
+
+    @Test
+    public void testLoadingGeoThroughVolley() {
+        ClassNameRegistry.register(CMGeoPointInterface.GEOPOINT_CLASS, LocallySavableCMGeoPoint.class);
+        LocallySavableCMGeoPoint geoPoint = new LocallySavableCMGeoPoint(33, 44);
+        geoPoint.saveLocally(applicationContext);
+        geoPoint.save(applicationContext, ResponseCallbackTuple.<ObjectModificationResponse>hasSuccess(), ResponseCallbackTuple.defaultFailureListener);
+        waitThenAssertTestResults();
+
+        LocallySavableCMObject.loadObject(applicationContext, geoPoint.getObjectId(), ResponseCallbackTuple.wasLoaded(geoPoint), ResponseCallbackTuple.defaultFailureListener);
+        waitThenAssertTestResults();
     }
 
 }

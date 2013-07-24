@@ -1,7 +1,9 @@
 package com.cloudmine.api.db;
 
 import android.content.Context;
+import com.cloudmine.api.CMGeoPointInterface;
 import com.cloudmine.api.DeviceIdentifier;
+import com.cloudmine.api.persistance.ClassNameRegistry;
 import com.cloudmine.api.rest.JsonUtilities;
 import com.cloudmine.test.CloudMineTestRunner;
 import com.cloudmine.test.ExtendedCMObject;
@@ -30,6 +32,15 @@ public class LocallySavableCMObjectTest extends ServiceTestBase {
         LocallySavableCMObject.cmObjectDBOpenHelper = null;
         LocallySavableCMObject.requestDBOpenHelper = null;
         super.setUp();
+    }
+
+    @Test
+    public void testBaseCMGeoPoint() {
+        LocallySavableCMGeoPoint geoPoint = new LocallySavableCMGeoPoint(33, 44);
+        String json = geoPoint.transportableRepresentation();
+        ClassNameRegistry.register(CMGeoPointInterface.GEOPOINT_CLASS, LocallySavableCMGeoPoint.class);
+        LocallySavableCMGeoPoint deserialized = (LocallySavableCMGeoPoint) JsonUtilities.jsonToClassMap(json).get(geoPoint.getObjectId());
+        assertEquals(geoPoint, deserialized);
     }
 
     @Test
