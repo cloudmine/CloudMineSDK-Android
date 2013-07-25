@@ -1,16 +1,21 @@
 package com.cloudmine.api.rest;
 
 import android.content.Context;
+import android.net.http.AndroidHttpClient;
+import android.os.Build;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.HttpClientStack;
+import com.android.volley.toolbox.HttpStack;
+import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
 import com.cloudmine.api.CMAccessList;
 import com.cloudmine.api.CMAccessPermission;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.DeviceIdentifier;
-import com.cloudmine.api.db.BaseLocallySavableCMObject;
 import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.integration.CMObjectIntegrationTest;
 import com.cloudmine.api.persistance.ClassNameRegistry;
@@ -22,6 +27,7 @@ import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.cloudmine.test.CloudMineTestRunner;
 import com.cloudmine.test.ExtendedCMObject;
 import com.cloudmine.test.ExtendedLocallySavableCMObject;
+import com.cloudmine.test.MemoryCache;
 import com.cloudmine.test.ResponseCallbackTuple;
 import com.cloudmine.test.TestServiceCallback;
 import com.xtremelabs.robolectric.Robolectric;
@@ -34,6 +40,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import static com.cloudmine.test.AsyncTestResultsCoordinator.reset;
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
 import static com.cloudmine.test.ResponseCallbackTuple.*;
 import static junit.framework.Assert.*;
@@ -158,6 +165,37 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
 
         queue.add(new com.cloudmine.api.rest.ObjectLoadRequest(Arrays.asList(object.getObjectId(), anotherObject.getObjectId()), user.getSessionToken(), wasLoaded(object, anotherObject), defaultFailureListener));
         waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testVolleyCaching() {
+        RequestQueue queue = getMemoryCacheQueue();
+        List <CMObject> objects = createMultipleObjects(5);
+        queue.add(new com.cloudmine.api.rest.ObjectLoadRequest(testCallback(new Response.Listener<CMObjectResponse>() {
+            @Override
+            public void onResponse(CMObjectResponse objectResponse) {
+                assertTrue(objectResponse.hasSuccess());
+                assertEquals(5, objectResponse.getObjects().size());
+            }
+        }), ResponseCallbackTuple.defaultFailureListener));
+
+        waitThenAssertTestResults();
+        //Now the response should be cached, we should hit the callback twice
+        reset(2);
+        queue.add(new com.cloudmine.api.rest.ObjectLoadRequest(ResponseCallbackTuple.wasLoaded(objects), ResponseCallbackTuple.defaultFailureListener));
+        waitThenAssertTestResults();
+    }
+
+    private RequestQueue getMemoryCacheQueue() {
+        HttpStack stack;
+        if (Build.VERSION.SDK_INT >= 9) {
+            stack = new HurlStack();
+        } else {
+            stack = new HttpClientStack(AndroidHttpClient.newInstance("testing"));
+        }
+        RequestQueue queue = new RequestQueue(new MemoryCache(), new BasicNetwork(stack));
+        queue.start();
+        return queue;
     }
 
     @Test

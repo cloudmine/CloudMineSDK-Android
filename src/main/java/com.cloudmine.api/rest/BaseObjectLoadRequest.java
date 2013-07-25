@@ -40,7 +40,7 @@ public class BaseObjectLoadRequest extends CloudMineRequest<CMObjectResponse> {
 
     @Override
     protected Response<CMObjectResponse> parseNetworkResponse(NetworkResponse networkResponse) {
-        return Response.success(new CMObjectResponse(new String(networkResponse.data), networkResponse.statusCode), getCacheEntry());
+        return Response.success(new CMObjectResponse(new String(networkResponse.data), networkResponse.statusCode), getCacheEntry(networkResponse));
     }
 
     @Override

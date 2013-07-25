@@ -7,6 +7,9 @@ import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.cloudmine.api.rest.response.ResponseBase;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
@@ -48,17 +51,21 @@ public class ResponseCallbackTuple<SUCCESS_RESPONSE> implements Response.Listene
         });
     }
 
-    public static ResponseCallbackTuple<CMObjectResponse> wasLoaded(final CMObject... objects) {
+    public static ResponseCallbackTuple<CMObjectResponse> wasLoaded(final List<CMObject> objects) {
         return new ResponseCallbackTuple<CMObjectResponse>(new Response.Listener<CMObjectResponse>() {
             @Override
             public void onResponse(CMObjectResponse objectResponse) {
                 assertTrue(objectResponse.wasSuccess());
-                assertEquals(objects.length, objectResponse.getObjects().size());
+                assertEquals(objects.size(), objectResponse.getObjects().size());
                 for(CMObject object : objects) {
                     assertEquals(object, objectResponse.getCMObject(object.getObjectId()));
                 }
             }
         });
+    }
+
+    public static ResponseCallbackTuple<CMObjectResponse> wasLoaded(final CMObject... objects) {
+        return wasLoaded(Arrays.asList(objects));
     }
 
     public static ResponseCallbackTuple<ObjectModificationResponse> wasDeleted(final String... objectIds) {

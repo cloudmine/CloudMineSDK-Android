@@ -3,6 +3,7 @@ package com.cloudmine.api.rest;
 import android.os.Handler;
 import android.os.Message;
 import com.android.volley.AuthFailureError;
+import com.android.volley.Cache;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -29,7 +30,7 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
 
     protected static String BASE_URL = "https://api.cloudmine.me/v1/app/";
     protected static String USER = "/user";
-    public static final CloudMineRequest FAKE_REQUEST = new CloudMineRequest(Method.DEPRECATED_GET_OR_POST, new CMURLBuilder(), null, null, null) {
+    public static final CloudMineRequest FAKE_REQUEST = new CloudMineRequest(Method.DEPRECATED_GET_OR_POST, new CMURLBuilder("", true), null, null, null) {
         public static final int FAKE_REQUEST_TYPE = -1;
         @Override
         protected Response parseNetworkResponse(NetworkResponse networkResponse) {
@@ -73,6 +74,45 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
     static {
         DEFAULT_HEADERS.put(HeaderFactory.AGENT_HEADER_KEY, AndroidHeaderFactory.CLOUD_MINE_AGENT);
     }
+
+    private static long applicationSoftTtl = 0;
+    private static long applicationTtl = 120000;
+
+    public static long getApplicationSoftTtl() {
+        return applicationSoftTtl;
+    }
+
+    /**
+     * Set the default soft ttl, in milliseconds The soft ttl is how long a cache entry is able to stand in for a network call.
+     * The default is 0, so all calls go to the network in addition to using the cache. This means if there is a cache entry,
+     * the Response Listener or handle will receive two results - the cached value and the network value
+     * If this value is modified, it should be from the base Application or every Activity, just like {@link CMApiCredentials#initialize(String, String, Object)}.
+     * It should not be changed for a series of requests and then switched back - instead, make use of {@link #setSoftTtl(long)} and add
+     * the request to the RequestQueue manually
+     * @param applicationSoftTtl
+     */
+    public static void setApplicationSoftTtl(long applicationSoftTtl) {
+        CloudMineRequest.applicationSoftTtl = applicationSoftTtl;
+    }
+
+    public static long getApplicationTtl() {
+        return applicationTtl;
+    }
+
+    /**
+     * Set the default ttl, in milliseconds. The TTL is how long a cache entry remains valid for - once a cache entry
+     * is expired, it will be ignored and calls will go straight to network. Default is 2 minutes
+     * If this value is modified, it should be from the base Application or every Activity, just like {@link CMApiCredentials#initialize(String, String, Object)}.
+     * It should not be changed for a series of requests and then switched back - instead, make use of {@link #setTtl(long)} and add
+     * the request to the RequestQueue manually
+     * @param applicationTtl
+     */
+    public static void setApplicationTtl(long applicationTtl) {
+        CloudMineRequest.applicationTtl = applicationTtl;
+    }
+
+    private long softTtl = applicationSoftTtl;
+    private long ttl = applicationTtl;
     private Response.Listener<RESPONSE> responseListener;
     private String body;
     private String sessionTokenString;
@@ -192,6 +232,31 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
         String deviceHeaderValue = deviceId;
         if(Strings.isNotEmpty(timingHeaders)) deviceHeaderValue += "; " + timingHeaders;
         return deviceHeaderValue;
+    }
+
+    protected Cache.Entry getCacheEntry(NetworkResponse response) {
+        Cache.Entry entry = new Cache.Entry();
+        entry.data = response.data;
+        entry.serverDate = System.currentTimeMillis();
+        entry.softTtl = System.currentTimeMillis() + getSoftTtl();
+        entry.ttl = System.currentTimeMillis() + getTtl();
+        return entry;
+    }
+
+    public long getSoftTtl() {
+        return softTtl;
+    }
+
+    public void setSoftTtl(long softTtl) {
+        this.softTtl = softTtl;
+    }
+
+    public long getTtl() {
+        return ttl;
+    }
+
+    public void setTtl(long ttl) {
+        this.ttl = ttl;
     }
 
     public abstract int getRequestType();
