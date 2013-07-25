@@ -171,7 +171,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
             ExtendedLocallySavableCMObject anotherObject = new ExtendedLocallySavableCMObject("Kurt" + i, false,i);
             objects.add(anotherObject);
         }
-        BaseLocallySavableCMObject.saveObjects(applicationContext, objects, testCallback(new Response.Listener<ObjectModificationResponse>() {
+        LocallySavableCMObject.saveObjects(applicationContext, objects, testCallback(new Response.Listener<ObjectModificationResponse>() {
             @Override
             public void onResponse(ObjectModificationResponse modificationResponse) {
                 assertEquals(objects.size(), modificationResponse.getCreatedObjectIds().size());

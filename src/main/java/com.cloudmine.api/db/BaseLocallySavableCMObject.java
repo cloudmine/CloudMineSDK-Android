@@ -61,76 +61,68 @@ public class BaseLocallySavableCMObject extends CMObject {
         return requestDBOpenHelper;
     }
 
-    public static CloudMineRequest saveObjects(Context context, Collection<CMObject> objects, Response.Listener<ObjectModificationResponse> listener, Response.ErrorListener errorListener) {
-        return saveObjects(context, objects, null, listener, errorListener);
-    }
-
-    public static CloudMineRequest saveObjects(Context context, Collection <CMObject> objects, CMSessionToken token, Response.Listener<ObjectModificationResponse> listener, Response.ErrorListener errorListener) {
-
-        CloudMineRequest request = new BaseObjectModificationRequest(CMObject.massTransportable(objects), token, null, listener, errorListener);
+    @Expand(isStatic = true)
+    public static CloudMineRequest saveObjects(Context context, Collection <CMObject> objects, @Optional CMSessionToken token, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ObjectModificationResponse> listener, @Optional Response.ErrorListener errorListener) {
+        CloudMineRequest request = new BaseObjectModificationRequest(CMObject.massTransportable(objects), token, serverFunction, listener, errorListener);
         getRequestQueue(context).add(request);
         return request;
     }
 
-    public static CloudMineRequest loadAllObjects(Context context, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
-        return loadAllObjects(context, null, listener, errorListener);
-    }
-
-    public static CloudMineRequest loadAllObjects(Context context, CMSessionToken token, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
-        return loadObjects(context, (Collection<String>) null, token, listener, errorListener);
-    }
-
-    public static CloudMineRequest loadObject(Context context, String objectId, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
-        return loadObject(context, objectId, null, listener, errorListener);
-    }
-
-    public static CloudMineRequest loadObject(Context context, String objectId, CMSessionToken token, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
-        return loadObjects(context, Collections.singleton(objectId), token, listener, errorListener);
-    }
-
-    public static CloudMineRequest loadObject(Context context, String objectId, CMSessionToken token, Handler handler) {
-        return loadObjects(context, Collections.singleton(objectId), token, handler);
-    }
-
-    public static CloudMineRequest loadObjects(Context context, Collection <String> objectIds, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
-        return loadObjects(context, objectIds, null, listener, errorListener);
-    }
-
-    public static CloudMineRequest loadObjects(Context context, Collection <String> objectIds, CMSessionToken token, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
-        RequestQueue queue = getRequestQueue(context);
-        BaseObjectLoadRequest request = new BaseObjectLoadRequest(objectIds, token, null, listener, errorListener);
-        queue.add(request);
-        return request;
-    }
-
-    public static CloudMineRequest loadObjects(Context context, Collection <String> objectIds, Handler handler) {
-        return loadObjects(context,  objectIds, null, handler);
-    }
-
-    public static CloudMineRequest loadObjects(Context context, Collection <String> objectIds, CMSessionToken token, Handler handler) {
-        BaseObjectLoadRequest request = new BaseObjectLoadRequest(objectIds, token, null, null, null);
+    @Expand(isStatic = true)
+    public static CloudMineRequest saveObjects(Context context, Collection <CMObject> objects, @Optional CMSessionToken token, @Optional CMServerFunction serverFunction, Handler handler) {
+        CloudMineRequest request = new BaseObjectModificationRequest(CMObject.massTransportable(objects), token, serverFunction, null, null);
         request.setHandler(handler);
         getRequestQueue(context).add(request);
         return request;
     }
 
-    public static CloudMineRequest searchObjects(Context context, String searchString, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
-        return searchObjects(context, searchString, null, listener, errorListener);
+    @Expand(isStatic = true)
+    public static CloudMineRequest loadAllObjects(Context context, @Optional CMSessionToken token, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMObjectResponse> listener, @Optional Response.ErrorListener errorListener) {
+        return loadObjects(context, (Collection<String>) null, token, serverFunction, listener, errorListener);
     }
 
-    public static CloudMineRequest searchObjects(Context context, String searchString, CMSessionToken token, Response.Listener<CMObjectResponse> listener, Response.ErrorListener errorListener) {
+    @Expand(isStatic = true)
+    public static CloudMineRequest loadAllObjects(Context context, @Optional CMSessionToken token, @Optional CMServerFunction serverFunction, Handler handler) {
+        return loadObjects(context, (Collection<String>) null, token, serverFunction, handler);
+    }
+
+    @Expand(isStatic = true)
+    public static CloudMineRequest loadObject(Context context, String objectId, @Optional CMSessionToken token, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMObjectResponse> listener, @Optional Response.ErrorListener errorListener) {
+        return loadObjects(context, Collections.singleton(objectId), token, serverFunction, listener, errorListener);
+    }
+
+    @Expand(isStatic = true)
+    public static CloudMineRequest loadObject(Context context, String objectId, @Optional CMSessionToken token, @Optional CMServerFunction serverFunction, Handler handler) {
+        return loadObjects(context, Collections.singleton(objectId), token, serverFunction, handler);
+    }
+
+    @Expand(isStatic = true)
+    public static CloudMineRequest loadObjects(Context context, Collection <String> objectIds, @Optional CMSessionToken token, @Optional CMServerFunction serverFunction, Response.Listener<CMObjectResponse> listener, @Optional Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        BaseObjectLoadRequest request = new ObjectLoadRequestBuilder(token, listener, errorListener).search(searchString).build();
+        BaseObjectLoadRequest request = new BaseObjectLoadRequest(objectIds, token, serverFunction, listener, errorListener);
         queue.add(request);
         return request;
     }
 
-    public static CloudMineRequest searchObjects(Context context, String searchString, Handler handler) {
-        return searchObjects(context, searchString, null, handler);
+    @Expand(isStatic = true)
+    public static CloudMineRequest loadObjects(Context context, Collection <String> objectIds, @Optional CMSessionToken token, @Optional CMServerFunction serverFunction, Handler handler) {
+        BaseObjectLoadRequest request = new BaseObjectLoadRequest(objectIds, token, serverFunction, null, null);
+        request.setHandler(handler);
+        getRequestQueue(context).add(request);
+        return request;
     }
 
-    public static CloudMineRequest searchObjects(Context context, String searchString, CMSessionToken token, Handler handler) {
-        BaseObjectLoadRequest request = new ObjectLoadRequestBuilder(token, null, null).search(searchString).build();
+    @Expand(isStatic = true)
+    public static CloudMineRequest searchObjects(Context context, String searchString, @Optional CMSessionToken token, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMObjectResponse> listener, @Optional Response.ErrorListener errorListener) {
+        RequestQueue queue = getRequestQueue(context);
+        BaseObjectLoadRequest request = new ObjectLoadRequestBuilder(token, listener, errorListener).search(searchString).runFunction(serverFunction).build();
+        queue.add(request);
+        return request;
+    }
+
+    @Expand(isStatic = true)
+    public static CloudMineRequest searchObjects(Context context, String searchString, @Optional CMSessionToken token, @Optional CMServerFunction serverFunction, Handler handler) {
+        BaseObjectLoadRequest request = new ObjectLoadRequestBuilder(token, null, null).search(searchString).runFunction(serverFunction).build();
         request.setHandler(handler);
         getRequestQueue(context).add(request);
         return request;
