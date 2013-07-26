@@ -10,6 +10,7 @@ import com.android.volley.VolleyError;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.CMUser;
+import com.cloudmine.api.LocallySavable;
 import com.cloudmine.api.rest.BaseObjectDeleteRequest;
 import com.cloudmine.api.rest.BaseObjectLoadRequest;
 import com.cloudmine.api.rest.BaseObjectModificationRequest;
@@ -40,7 +41,7 @@ import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class BaseLocallySavableCMObject extends CMObject {
+public class BaseLocallySavableCMObject extends CMObject implements LocallySavable {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseLocallySavableCMObject.class);
     static CMObjectDBOpenHelper cmObjectDBOpenHelper;
@@ -180,8 +181,9 @@ public class BaseLocallySavableCMObject extends CMObject {
      * @return true if the object was saved, false otherwise
      */
     public boolean saveLocally(Context context) {
-        lastSaveDate = new Date();
-        return getCMObjectDBHelper(context).insertCMObjectIfNewer(this);
+        boolean wasSaved = getCMObjectDBHelper(context).insertCMObjectIfNewer(this);
+        if(wasSaved) lastSaveDate = new Date();
+        return wasSaved;
     }
 
     /**
@@ -212,11 +214,11 @@ public class BaseLocallySavableCMObject extends CMObject {
         return wasCreated;
     }
 
-    public CloudMineRequest save(Context context, Response.Listener<ObjectModificationResponse> successListener) {
-        return save(context, successListener, null);
+    public int deleteLocally(Context context) {
+        return BaseLocallySavableCMObject.deleteLocalObject(context, getObjectId());
     }
 
-    public CloudMineRequest save(Context context, Response.Listener< ObjectModificationResponse > successListener, Response.ErrorListener errorListener) {
+    public CloudMineRequest save(Context context, @Optional Response.Listener< ObjectModificationResponse > successListener, @Optional Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
         BaseObjectModificationRequest request;
         if(isUserLevel()) {
@@ -235,11 +237,7 @@ public class BaseLocallySavableCMObject extends CMObject {
         return request;
     }
 
-    public CloudMineRequest save(Context context, CMSessionToken sessionToken, Response.Listener<ObjectModificationResponse> successListener) {
-        return save(context, sessionToken, successListener, null);
-    }
-
-    public CloudMineRequest save(Context context, CMSessionToken sessionToken, Response.Listener< ObjectModificationResponse > successListener, Response.ErrorListener errorListener) {
+    public CloudMineRequest save(Context context, CMSessionToken sessionToken, @Optional Response.Listener< ObjectModificationResponse > successListener, @Optional Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
         BaseObjectModificationRequest request = new BaseObjectModificationRequest(this, sessionToken, null, successListener, errorListener);
         queue.add(request);
