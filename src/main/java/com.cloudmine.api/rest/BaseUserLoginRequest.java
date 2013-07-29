@@ -1,8 +1,8 @@
 package com.cloudmine.api.rest;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Response;
+import com.android.cloudmine.AuthFailureError;
+import com.android.cloudmine.NetworkResponse;
+import com.android.cloudmine.Response;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.LoginResponse;

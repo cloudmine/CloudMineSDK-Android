@@ -1,6 +1,6 @@
 package com.cloudmine.api.rest;
 
-import com.android.volley.Response;
+import com.android.cloudmine.Response;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMSortOptions;

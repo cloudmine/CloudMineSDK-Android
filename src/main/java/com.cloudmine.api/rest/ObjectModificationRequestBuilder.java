@@ -1,7 +1,7 @@
 package com.cloudmine.api.rest;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
+import com.android.cloudmine.Request;
+import com.android.cloudmine.Response;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.exceptions.CreationException;
