@@ -3,6 +3,7 @@ package com.cloudmine.api;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
+import android.widget.ImageView;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.cloudmine.api.exceptions.CreationException;
@@ -30,6 +31,14 @@ import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
  * See LICENSE file included with SDK for details.
  */
 public class CacheableCMFile extends CMFile implements LocallySavable{
+
+    public static void populateImageViewFromLocalOrNetwork(Context context, ImageView imageView, String fileId) {
+        populateImageViewFromLocalOrNetwork(imageView, fileId, shouldUseExternalStorage(context));
+    }
+
+    public static void populateImageViewFromLocalOrNetwork(ImageView imageView, String fileId, boolean fromExternalStorage) {
+
+    }
 
     public static CMFile loadLocalFile(Context context, String fileId) {
         return loadLocalFile(context, fileId, shouldUseExternalStorage(context));
