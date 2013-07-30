@@ -2,15 +2,18 @@ package com.cloudmine.api.rest;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import com.android.volley.Response;
+import com.android.cloudmine.Response;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMFile;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.CacheableCMFile;
+import com.cloudmine.api.SearchQuery;
 import com.cloudmine.api.integration.CMFileIntegrationTest;
+import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.FileCreationResponse;
 import com.cloudmine.api.rest.response.FileLoadResponse;
 import com.cloudmine.test.CloudMineTestRunner;
+import com.cloudmine.test.ExtendedCMFile;
 import com.cloudmine.test.ResponseCallbackTuple;
 import com.xtremelabs.robolectric.Robolectric;
 import org.junit.Before;
@@ -19,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
+import static com.cloudmine.test.ResponseCallbackTuple.defaultFailureListener;
 import static com.cloudmine.test.ResponseCallbackTuple.testCallback;
 import static junit.framework.Assert.*;
 
@@ -84,6 +88,33 @@ public class AndroidCMFileIntegrationTest extends CMFileIntegrationTest {
         waitThenAssertTestResults();
 
         CacheableCMFile.loadFile(applicationContext, otherUserFile.getFileId(), user.getSessionToken(), getSuccessLoadListener(otherUserFile), ResponseCallbackTuple.defaultFailureListener);
+        waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testFileDeleteRequest() {
+
+        final CacheableCMFile file = new CacheableCMFile(getObjectInputStream(), randomString(), "application/oop");
+        file.save(applicationContext, getSuccessFileCreationListener(file), ResponseCallbackTuple.defaultFailureListener);
+        waitThenAssertTestResults();
+
+    }
+
+    @Test
+    @Ignore
+    public void testLoadMetadata() {
+        final String text = "This is an object stream output";
+        ExtendedCMFile file = new ExtendedCMFile(getObjectInputStream(), text);
+        file.save(applicationContext, ResponseCallbackTuple.<FileCreationResponse >hasSuccess(), defaultFailureListener);
+        waitThenAssertTestResults();
+        final String fileId = file.getFileId();
+        BaseObjectLoadRequest request = new ObjectLoadRequestBuilder(testCallback(new Response.Listener<CMObjectResponse>() {
+            @Override
+            public void onResponse(CMObjectResponse response) {
+
+            }
+        }), ResponseCallbackTuple.defaultFailureListener).search(SearchQuery.filter(JsonUtilities.TYPE_KEY).equal(CMFile.TYPE_VALUE).searchQuery()).build();
+        SharedRequestQueueHolders.getRequestQueue(applicationContext).add(request);
         waitThenAssertTestResults();
     }
 

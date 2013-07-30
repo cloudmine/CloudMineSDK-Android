@@ -1,7 +1,7 @@
 package com.cloudmine.test;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
+import com.android.cloudmine.Response;
+import com.android.cloudmine.VolleyError;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
@@ -12,6 +12,7 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+
 
 /**
  * <br>
