@@ -2,10 +2,13 @@ package com.cloudmine.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.widget.ImageView;
 import com.android.cloudmine.RequestQueue;
 import com.android.cloudmine.Response;
+import com.android.cloudmine.VolleyError;
 import com.cloudmine.api.exceptions.CreationException;
 import com.cloudmine.api.rest.BaseFileCreationRequest;
 import com.cloudmine.api.rest.BaseFileLoadRequest;
@@ -13,6 +16,7 @@ import com.cloudmine.api.rest.CloudMineRequest;
 import com.cloudmine.api.rest.SharedRequestQueueHolders;
 import com.cloudmine.api.rest.response.FileCreationResponse;
 import com.cloudmine.api.rest.response.FileLoadResponse;
+import me.cloudmine.annotations.Optional;
 import org.apache.http.HttpResponse;
 
 import java.io.File;
@@ -32,12 +36,47 @@ import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
  */
 public class CacheableCMFile extends CMFile implements LocallySavable{
 
-    public static void populateImageViewFromLocalOrNetwork(Context context, ImageView imageView, String fileId) {
-        populateImageViewFromLocalOrNetwork(imageView, fileId, shouldUseExternalStorage(context));
+    public static Bitmap asBitmap(CMFile file) {
+        if(file == null) return null;
+        byte[] fileContents = file.getFileContents();
+        return BitmapFactory.decodeByteArray(fileContents, 0, fileContents.length);
     }
 
-    public static void populateImageViewFromLocalOrNetwork(ImageView imageView, String fileId, boolean fromExternalStorage) {
+    public static void populateImageViewFromLocalOrNetwork(final Context context, final ImageView imageView, @Optional final int errorDisplay, final String fileId, @Optional CMSessionToken sessionToken) {
+        populateImageViewFromLocalOrNetwork(context, imageView, errorDisplay, fileId, sessionToken, shouldUseExternalStorage(context));
+    }
 
+    public static void populateImageViewFromLocalOrNetwork(final Context context, final ImageView imageView, @Optional final int errorResourceId, final String fileId, @Optional CMSessionToken sessionToken, final boolean fromExternalStorage) {
+        CacheableCMFile file = fromExternalStorage ?
+                loadLocalFileFromExternalStorage(fileId) :
+                loadLocalFileFromInternalStorage(context, fileId);
+        if(file == null) {
+            loadFile(context, fileId, sessionToken,
+                    new Response.Listener<FileLoadResponse>() {
+                        @Override
+                        public void onResponse(FileLoadResponse response) {
+                            CMFile file = response.getFile();
+                            Bitmap bitmap = asBitmap(file);
+                            if (bitmap != null) {
+                                imageView.setImageBitmap(bitmap);
+                                boolean saved = saveLocally(context, fromExternalStorage, file);
+                            } else if (errorResourceId != 0) {
+                                imageView.setImageResource(errorResourceId);
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            if (errorResourceId != 0) {
+                                imageView.setImageResource(errorResourceId);
+                            }
+                        }
+                    }
+            );
+        } else {
+            imageView.setImageBitmap(file.asBitmap());
+        }
     }
 
     public static CMFile loadLocalFile(Context context, String fileId) {
@@ -45,7 +84,7 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
     }
 
     public static CacheableCMFile loadLocalFile(Context context, String fileId, boolean fromExternalStorage) {
-        if(fromExternalStorage) return loadLocalFileFromExternalStorage(context, fileId);
+        if(fromExternalStorage) return loadLocalFileFromExternalStorage(fileId);
         else                    return loadLocalFileFromInternalStorage(context, fileId);
     }
 
@@ -57,7 +96,7 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
         }
     }
 
-    public static CacheableCMFile loadLocalFileFromExternalStorage(Context context, String fileId) {
+    public static CacheableCMFile loadLocalFileFromExternalStorage(String fileId) {
         File file = new File(Environment.getExternalStorageDirectory(), fileId);
         return getCmFile(fileId, file);
     }
@@ -71,6 +110,28 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
         } catch (FileNotFoundException e) {
             return null;
         }
+    }
+
+    public static boolean deleteLocalFile(Context context, String fileId) {
+        return deleteLocalFile(context, fileId, shouldUseExternalStorage(context));
+    }
+
+    public static boolean deleteLocalFile(Context context, String fileId, boolean fromExternalStorage) {
+        if(fromExternalStorage) {
+            return deleteLocalFileFromExternalStorage(fileId);
+        } else {
+            return deleteLocalFileFromInternalStorage(context, fileId);
+        }
+    }
+
+    public static boolean deleteLocalFileFromInternalStorage(Context context, String fileId) {
+        return context.deleteFile(fileId);
+    }
+
+    public static boolean deleteLocalFileFromExternalStorage(String fileId) {
+        File file = new File(Environment.getExternalStorageDirectory(), fileId);
+        if(file != null) return file.delete();
+        else             return false;
     }
 
     public static CloudMineRequest loadFile(Context context, String fileName, Response.Listener<FileLoadResponse> successListener, Response.ErrorListener errorListener) {
@@ -118,10 +179,13 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
         return save(context, token, successListener, errorListener);
     }
 
+    public static boolean saveLocally(Context context, CMFile file) {
+        return saveLocally(context, shouldUseExternalStorage(context), file);
+    }
 
     @Override
     public boolean saveLocally(Context context) {
-        return saveLocally(context, shouldUseExternalStorage(context));
+        return saveLocally(context, this);
     }
 
     public static boolean shouldUseExternalStorage(Context context) {
@@ -136,18 +200,28 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
         editor.apply();
     }
 
-    public boolean saveLocally(Context context, boolean useInternalStorage) {
-        if(useInternalStorage) {
-            return saveToInternalStorage(context);
+    public boolean saveLocally(Context context, boolean useExternalStorage) {
+        return saveLocally(context, useExternalStorage, this);
+    }
+
+    public static boolean saveLocally(Context context, boolean useExternalStorage, CMFile file) {
+        if(file == null) return false;
+        if(useExternalStorage) {
+            return saveToInternalStorage(context, file);
         } else {
-            return saveToExternalStorage();
+            return saveToExternalStorage(file);
         }
     }
 
     public boolean saveToExternalStorage() {
+        return saveToExternalStorage(this);
+    }
+
+    public static boolean saveToExternalStorage(CMFile file) {
+        if(file == null) return false;
         if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            byte[] fileContents = getFileContents();
-            File output = new File(Environment.getExternalStorageDirectory(), getFileId());
+            byte[] fileContents = file.getFileContents();
+            File output = new File(Environment.getExternalStorageDirectory(), file.getFileId());
             try {
                 new FileOutputStream(output).write(fileContents);
             } catch (IOException e) {
@@ -159,14 +233,18 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
         }
     }
 
-    public boolean saveToInternalStorage(Context context) {
+    public static boolean saveToInternalStorage(Context context, CMFile file) {
         try {
-            byte[] fileContents = getFileContents();
-            context.openFileOutput(getFileId(), Context.MODE_PRIVATE).write(fileContents);
+            byte[] fileContents = file.getFileContents();
+            context.openFileOutput(file.getFileId(), Context.MODE_PRIVATE).write(fileContents);
             return true;
         } catch (IOException e) {
             return false;
         }
+    }
+
+    public boolean saveToInternalStorage(Context context) {
+        return saveToInternalStorage(context, this);
     }
 
     @Override
@@ -182,5 +260,9 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
     @Override
     public Date getLastSaveDate() {
         return null;
+    }
+
+    public Bitmap asBitmap() {
+        return asBitmap(this);
     }
 }
