@@ -265,7 +265,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
         return lastSaveDate;
     }
 
-    void setLastSaveDate(Date lastSaveDate) {
+    protected void setLastSaveDate(Date lastSaveDate) {
         this.lastSaveDate = lastSaveDate;
     }
 

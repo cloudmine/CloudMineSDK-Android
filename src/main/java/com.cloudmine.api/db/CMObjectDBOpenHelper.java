@@ -70,8 +70,8 @@ public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
             boolean wasInsertedOrUpdated;
             ContentValues contentValues = cmObject.toContentValues();
 
-            int numUpdated = db.update(CM_OBJECT_TABLE, contentValues, UPDATE_OBJECT_WHERE,
-                    new String[]{cmObject.getObjectId(), String.valueOf(cmObject.getLastSavedDateAsSeconds())});
+            int numUpdated = db.update(CM_OBJECT_TABLE, contentValues, OBJECT_ID_WHERE,
+                    new String[]{cmObject.getObjectId()});
             wasInsertedOrUpdated = numUpdated > 0;
             if(!wasInsertedOrUpdated) {
                 long insertResult = db.insert(CM_OBJECT_TABLE, null, contentValues);
