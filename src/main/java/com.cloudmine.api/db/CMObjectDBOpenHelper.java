@@ -63,6 +63,7 @@ public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
+    //TODO this just always updates right now - should we not insert older objects, how much processing power are we willing to devote to that?
     public boolean insertCMObjectIfNewer(BaseLocallySavableCMObject cmObject) {
         if(cmObject == null) return false;
         SQLiteDatabase db = getWritableDatabase();
