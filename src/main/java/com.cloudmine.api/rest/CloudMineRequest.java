@@ -109,6 +109,7 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
     private String body;
     private String sessionTokenString;
     private Handler handler;
+    private final Object handlerLock = new Object();
 
     protected static String addServerFunction(String url, CMServerFunction serverFunction) {
         if(serverFunction != null) return url + "?" + serverFunction.asUrlString();
@@ -167,13 +168,13 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
     @Override
     protected void deliverResponse(RESPONSE response) {
         if(handler != null) {
-            synchronized (handler) { //see deliver error for why we check this twice
+            synchronized (handlerLock) { //see deliver error for why we check this twice
                 if(handler != null) {
                     Message msg = Message.obtain(handler);
                     msg.obj = response;
                     msg.arg1 = getRequestType();
                     if(response instanceof ResponseBase) msg.arg2 = ((ResponseBase)response).getStatusCode();
-                    handler.dispatchMessage(msg);
+                    handler.sendMessage(msg);
                 } else {
                     deliverResponseNoHandler(response);
                 }
@@ -189,7 +190,7 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
 
     public void deliverError(VolleyError error) {
         if(handler != null) {
-            synchronized (handler) {//only waste the time synchronizing if we have a handler
+            synchronized (handlerLock) {//only waste the time synchronizing if we have a handler
                 if(handler != null) {   //so we need to recheck that no one has messed with our handler
                     Message msg = Message.obtain(handler);
                     msg.obj = error;
@@ -242,7 +243,7 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
     public abstract int getRequestType();
 
     public void setHandler(Handler handler) {
-        synchronized (handler) {
+        synchronized (handlerLock) {
             this.handler = handler;
         }
     }
