@@ -9,7 +9,7 @@ reports
 javadocs
 *.trace
 *.html
-
+src/gen/
 # Package Files #
 *.jar
 *.war
