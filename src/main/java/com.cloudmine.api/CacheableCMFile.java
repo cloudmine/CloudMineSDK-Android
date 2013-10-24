@@ -1,6 +1,7 @@
 package com.cloudmine.api;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +10,9 @@ import android.widget.ImageView;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.cloudmine.api.db.RequestDBObject;
+import com.cloudmine.api.db.RequestDBOpenHelper;
+import com.cloudmine.api.db.RequestPerformerService;
 import com.cloudmine.api.exceptions.CreationException;
 import com.cloudmine.api.rest.BaseFileCreationRequest;
 import com.cloudmine.api.rest.BaseFileDeleteRequest;
@@ -28,7 +32,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
 
@@ -84,6 +91,19 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
 
     public static CMFile loadLocalFile(Context context, String fileId) {
         return loadLocalFile(context, fileId, shouldUseExternalStorage(context));
+    }
+
+    public static Map<String, CacheableCMFile> loadLocalFiles(Context context, Collection<String> fileIds) {
+        return loadLocalFiles(context, fileIds, shouldUseExternalStorage(context));
+    }
+
+    public static Map<String, CacheableCMFile> loadLocalFiles(Context context, Collection<String> fileIds, boolean fromExternalStorage) {
+        Map<String, CacheableCMFile> localFiles = new HashMap<String, CacheableCMFile>();
+        if(context == null || fileIds == null) return localFiles;
+        for(String fileId : fileIds) {
+            localFiles.put(fileId, loadLocalFile(context, fileId, fromExternalStorage));
+        }
+        return localFiles;
     }
 
     public static CacheableCMFile loadLocalFile(Context context, String fileId, boolean fromExternalStorage) {
@@ -261,18 +281,38 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
         return saveToInternalStorage(context, this);
     }
 
-    //TODO add save eventuality support
     @Override
     public boolean saveEventually(Context context) {
+        boolean wasCreated = saveLocally(context);
+        if(wasCreated) {
+            RequestDBObject request = RequestDBObject.createApplicationFileRequest(getFileId());
+            try {
+            RequestDBOpenHelper.getRequestDBOpenHelper(context).insertRequest(request);
+            wasCreated = true;
+            }catch (Exception e) {
+                wasCreated = false;
+            }
+        }
+        if(wasCreated) {
+            context.startService(new Intent(context, RequestPerformerService.class));
+        }
         return false;
     }
 
     @Override
+    @Deprecated
+    /**
+     * Not supported for cmfiles
+     */
     public int getLastSavedDateAsSeconds() {
         return 0;
     }
 
     @Override
+    @Deprecated
+    /**
+     * Not supported for CMFiles
+     */
     public Date getLastSaveDate() {
         return null;
     }

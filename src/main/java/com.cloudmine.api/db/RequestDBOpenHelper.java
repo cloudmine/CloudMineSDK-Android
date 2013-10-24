@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+import com.cloudmine.api.CacheableCMFile;
 import com.cloudmine.api.Strings;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
@@ -37,6 +39,7 @@ public class RequestDBOpenHelper extends SQLiteOpenHelper {
     public static final String KEY_REQUEST_VERB = "REQUEST_VERB_COLUMN";
     public static final String KEY_REQUEST_SYNCHRONIZED = "SYNCHRONIZED_COLUMN"; //0 for unsent, 1 for in progress, 2 for sent
     public static final String KEY_REQUEST_OBJECT_ID = "REQUEST_OBJECT_ID";
+    public static final String KEY_REQUEST_FILE_ID = "REQUEST_FILE_ID";
 
     public static final String KEY_HEADER_ID = "_id";
     public static final String KEY_HEADER_NAME = "HEADER_NAME";
@@ -56,6 +59,7 @@ public class RequestDBOpenHelper extends SQLiteOpenHelper {
         REQUEST_COLUMN_NAMES.add(KEY_REQUEST_VERB);
         REQUEST_COLUMN_NAMES.add(KEY_REQUEST_SYNCHRONIZED);
         REQUEST_COLUMN_NAMES.add(KEY_REQUEST_OBJECT_ID);
+        REQUEST_COLUMN_NAMES.add(KEY_REQUEST_FILE_ID);
 
         HEADER_COLUMN_NAMES.add(KEY_HEADER_ID);
         HEADER_COLUMN_NAMES.add(KEY_HEADER_NAME);
@@ -70,6 +74,7 @@ public class RequestDBOpenHelper extends SQLiteOpenHelper {
             requestColumn(KEY_REQUEST_VERB),
             requestColumn(KEY_REQUEST_SYNCHRONIZED),
             requestColumn(KEY_REQUEST_OBJECT_ID),
+            requestColumn(KEY_REQUEST_FILE_ID),
             headerColumn(KEY_HEADER_NAME),
             headerColumn(KEY_HEADER_VALUE)
     };
@@ -98,7 +103,8 @@ public class RequestDBOpenHelper extends SQLiteOpenHelper {
             KEY_REQUEST_TARGET_URL + " text not null, " +
             KEY_REQUEST_VERB + " text not null, " +
             KEY_REQUEST_SYNCHRONIZED + " integer not null, " +
-            KEY_REQUEST_OBJECT_ID + " text" +
+            KEY_REQUEST_OBJECT_ID + " text, " +
+            KEY_REQUEST_FILE_ID + " text" +
             ");";
     private static final String KEY_WHERE = KEY_REQUEST_ID + "=?";
     private static final String SYNCHRONIZED_VALUE_WHERE = requestColumn(KEY_REQUEST_SYNCHRONIZED) + "=?";
@@ -108,6 +114,14 @@ public class RequestDBOpenHelper extends SQLiteOpenHelper {
 
     public static final long FAILED_REQUEST = -1;
 
+    //TODO issue that we are holding onto the context here? Don't think so because it is the application context
+    private static RequestDBOpenHelper requestDBOpenHelper;
+    public static synchronized RequestDBOpenHelper getRequestDBOpenHelper(Context context) {
+        if(requestDBOpenHelper == null) {
+            requestDBOpenHelper = new RequestDBOpenHelper(context.getApplicationContext());
+        }
+        return requestDBOpenHelper;
+    }
 
     public RequestDBOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -230,20 +244,32 @@ public class RequestDBOpenHelper extends SQLiteOpenHelper {
     public LinkedHashMap<Integer, RequestDBObject> retrieveRequestsForSending(Context context) {
         Cursor requestCursor = loadRequestTableContentsForUpdating();
         LinkedHashMap<Integer, RequestDBObject> requestMapping = createRequestMapping(requestCursor);
-        List<String> objectIds = new ArrayList<String>();
+
         Map<String, RequestDBObject> objectIdsToRequests = new HashMap<String, RequestDBObject>();
+        Map<String, RequestDBObject> fileIdsToRequests = new HashMap<String, RequestDBObject>();
         for(RequestDBObject request : requestMapping.values()) {
             String objectId = request.getObjectId();
-
             if(Strings.isNotEmpty(objectId)) {
-                objectIds.add(objectId);
                 objectIdsToRequests.put(objectId, request);
             }
+
+            String fileId = request.getFileId();
+            if(Strings.isNotEmpty(fileId)) {
+                fileIdsToRequests.put(fileId, request);
+            }
         }
-        if(!objectIds.isEmpty()) {
-            Map<String, String> objectIdToJson = BaseLocallySavableCMObject.getCMObjectDBHelper(context).loadObjectJsonById(objectIds);
+        if(!objectIdsToRequests.isEmpty()) {
+            Map<String, String> objectIdToJson = CMObjectDBOpenHelper.getCMObjectDBHelper(context).loadObjectJsonById(objectIdsToRequests.keySet());
             for(Map.Entry<String, String> objectIdAndJsonEntry : objectIdToJson.entrySet()) {
                 objectIdsToRequests.get(objectIdAndJsonEntry.getKey()).setJsonBody(objectIdAndJsonEntry.getValue());
+            }
+        }
+        if(!fileIdsToRequests.isEmpty()) {
+            Map<String, CacheableCMFile> fileIdToFiles = CacheableCMFile.loadLocalFiles(context, fileIdsToRequests.keySet());
+            for(Map.Entry<String, RequestDBObject> fileIdAndRequest : fileIdsToRequests.entrySet()) {
+                CacheableCMFile cacheableCMFile = fileIdToFiles.get(fileIdAndRequest.getKey());
+                if(cacheableCMFile != null) fileIdAndRequest.getValue().setBody(cacheableCMFile.getFileContents());
+                else Log.e("CloudMine", "Had a null file " + fileIdAndRequest.getKey());
             }
         }
         return requestMapping;
@@ -270,6 +296,7 @@ public class RequestDBOpenHelper extends SQLiteOpenHelper {
         int headerNameIndex = cursor.getColumnIndexOrThrow(KEY_HEADER_NAME);
         int headerValueIndex = cursor.getColumnIndexOrThrow(KEY_HEADER_VALUE);
         int objectIdIndex = cursor.getColumnIndexOrThrow(KEY_REQUEST_OBJECT_ID);
+        int fileIdIndex = cursor.getColumnIndexOrThrow(KEY_REQUEST_FILE_ID);
         LinkedHashMap<Integer, RequestDBObject> requestMapping = new LinkedHashMap<Integer, RequestDBObject>();
         while (cursor.moveToNext()) {
             Integer id = cursor.getInt(idIndex);
@@ -280,9 +307,10 @@ public class RequestDBOpenHelper extends SQLiteOpenHelper {
                 String url = cursor.getString(urlIndex);
                 String verb = cursor.getString(verbIndex);
                 String objectId = cursor.getString(objectIdIndex);
+                String fileId = cursor.getString(fileIdIndex);
                 int syncOrdinal = cursor.getInt(syncedIndex);
                 RequestDBObject.SyncStatus status = RequestDBObject.SyncStatus.getSyncStatus(syncOrdinal);
-                request = new RequestDBObject(url, RequestDBObject.Verb.getVerb(verb), json, objectId, id, status, new ArrayList<Header>());
+                request = new RequestDBObject(url, RequestDBObject.Verb.getVerb(verb), json, objectId, fileId, id, status, new ArrayList<Header>());
                 requestMapping.put(id, request);
             }
             String headerName = cursor.getString(headerNameIndex);

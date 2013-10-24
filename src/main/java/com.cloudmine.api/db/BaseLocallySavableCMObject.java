@@ -44,23 +44,8 @@ import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
 public class BaseLocallySavableCMObject extends CMObject implements LocallySavable {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseLocallySavableCMObject.class);
-    static CMObjectDBOpenHelper cmObjectDBOpenHelper;
-    static RequestDBOpenHelper requestDBOpenHelper;
 
 
-    static synchronized CMObjectDBOpenHelper getCMObjectDBHelper(Context context) {
-        if(cmObjectDBOpenHelper == null) {
-            cmObjectDBOpenHelper = new CMObjectDBOpenHelper(context.getApplicationContext());
-        }
-        return cmObjectDBOpenHelper;
-    }
-
-    static synchronized RequestDBOpenHelper getRequestDBOpenHelper(Context context) {
-        if(requestDBOpenHelper == null) {
-            requestDBOpenHelper = new RequestDBOpenHelper(context.getApplicationContext());
-        }
-        return requestDBOpenHelper;
-    }
 
     @Expand(isStatic = true)
     public static CloudMineRequest saveObjects(Context context, Collection <CMObject> objects, @Optional CMSessionToken token, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ObjectModificationResponse> listener, @Optional Response.ErrorListener errorListener) {
@@ -145,7 +130,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
      * @return the object if it was found, or null
      */
     public static <OBJECT_TYPE extends BaseLocallySavableCMObject> OBJECT_TYPE loadLocalObject(Context context, String objectId) {
-        return getCMObjectDBHelper(context).loadObjectById(objectId);
+        return CMObjectDBOpenHelper.getCMObjectDBHelper(context).loadObjectById(objectId);
     }
 
     /**
@@ -155,7 +140,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
      * @return negative number if operation failed, 0 if succeeded but nothing was deleted, 1 if the object was deleted
      */
     public static int deleteLocalObject(Context context, String objectId) {
-        return getCMObjectDBHelper(context).deleteObjectById(objectId);
+        return CMObjectDBOpenHelper.getCMObjectDBHelper(context).deleteObjectById(objectId);
     }
 
     /**
@@ -166,11 +151,11 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
      * @return
      */
     public static <OBJECT_TYPE extends BaseLocallySavableCMObject> List<OBJECT_TYPE> loadLocalObjectsByClass(Context context, Class<OBJECT_TYPE> klass) {
-        return getCMObjectDBHelper(context).loadObjectsByClass(klass);
+        return CMObjectDBOpenHelper.getCMObjectDBHelper(context).loadObjectsByClass(klass);
     }
 
     public static List<BaseLocallySavableCMObject> loadLocalObjects(Context context) {
-        return getCMObjectDBHelper(context).loadAllObjects();
+        return CMObjectDBOpenHelper.getCMObjectDBHelper(context).loadAllObjects();
     }
 
     private Date lastSaveDate;
@@ -181,7 +166,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
      * @return true if the object was saved, false otherwise
      */
     public boolean saveLocally(Context context) {
-        boolean wasSaved = getCMObjectDBHelper(context).insertCMObjectIfNewer(this);
+        boolean wasSaved = CMObjectDBOpenHelper.getCMObjectDBHelper(context).insertCMObjectIfNewer(this);
         if(wasSaved) lastSaveDate = new Date();
         return wasSaved;
     }
@@ -200,7 +185,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
         if(wasCreated) {
             RequestDBObject request = RequestDBObject.createApplicationObjectRequest(getObjectId());
             try {
-                getRequestDBOpenHelper(context).insertRequest(request);
+                RequestDBOpenHelper.getRequestDBOpenHelper(context).insertRequest(request);
                 wasCreated = true;
                 LOG.debug("Request was inserted");
             } catch (Exception e) {
@@ -218,6 +203,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
         return BaseLocallySavableCMObject.deleteLocalObject(context, getObjectId());
     }
 
+    @Expand
     public CloudMineRequest save(Context context, @Optional Response.Listener< ObjectModificationResponse > successListener, @Optional Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
         BaseObjectModificationRequest request;

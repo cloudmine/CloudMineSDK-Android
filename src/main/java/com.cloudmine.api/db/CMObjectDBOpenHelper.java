@@ -47,6 +47,14 @@ public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
     private static final String CLASS_SELECT_WHERE = CLASS_NAME_COLUMN + "=?";
     private static final String[] COLUMNS = {OBJECT_ID_COLUMN, CLASS_NAME_COLUMN, JSON_COLUMN, SAVED_DATE_COLUMN, SYNCED_DATE_COLUMN};
 
+    private static CMObjectDBOpenHelper cmObjectDBOpenHelper;
+    static synchronized CMObjectDBOpenHelper getCMObjectDBHelper(Context context) {
+        if(cmObjectDBOpenHelper == null) {
+            cmObjectDBOpenHelper = new CMObjectDBOpenHelper(context.getApplicationContext());
+        }
+        return cmObjectDBOpenHelper;
+    }
+
     public CMObjectDBOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }

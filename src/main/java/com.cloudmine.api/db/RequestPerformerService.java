@@ -98,7 +98,6 @@ public class RequestPerformerService extends Service {
                     HttpResponse response = null;
                     Throwable thrown = null;
                     try {
-
                         androidClient = createClient();
                         LOG.debug("Running request " + next);
                         HttpUriRequest request = next.toHttpRequest();
