@@ -9,10 +9,10 @@ import com.cloudmine.api.CMUser;
 import com.cloudmine.api.CacheableCMFile;
 import com.cloudmine.api.SearchQuery;
 import com.cloudmine.api.integration.CMFileIntegrationTest;
-import com.cloudmine.api.rest.FileCreationRequest;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.FileCreationResponse;
 import com.cloudmine.api.rest.response.FileLoadResponse;
+import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.cloudmine.test.CloudMineTestRunner;
 import com.cloudmine.test.ExtendedCMFile;
 import com.cloudmine.test.ResponseCallbackTuple;
@@ -86,7 +86,7 @@ public class AndroidCMFileIntegrationTest extends CMFileIntegrationTest {
 
         final CacheableCMFile otherUserFile = new CacheableCMFile(getObjectInputStream(), randomString(), "application/oop");
         otherUserFile.save(applicationContext, user.getSessionToken(), getSuccessFileCreationListener(otherUserFile), ResponseCallbackTuple.defaultFailureListener);
-        waitThenAssertTestResults();
+        waitThenAssertTestResults(20);
 
         CacheableCMFile.loadFile(applicationContext, otherUserFile.getFileId(), user.getSessionToken(), getSuccessLoadListener(otherUserFile), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
@@ -99,6 +99,8 @@ public class AndroidCMFileIntegrationTest extends CMFileIntegrationTest {
         file.save(applicationContext, getSuccessFileCreationListener(file), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
 
+        file.delete(applicationContext, ResponseCallbackTuple.<ObjectModificationResponse>hasSuccess(), ResponseCallbackTuple.defaultFailureListener);
+        waitThenAssertTestResults();
     }
 
     @Test

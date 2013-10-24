@@ -11,11 +11,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.cloudmine.api.exceptions.CreationException;
 import com.cloudmine.api.rest.BaseFileCreationRequest;
+import com.cloudmine.api.rest.BaseFileDeleteRequest;
 import com.cloudmine.api.rest.BaseFileLoadRequest;
 import com.cloudmine.api.rest.CloudMineRequest;
 import com.cloudmine.api.rest.SharedRequestQueueHolders;
 import com.cloudmine.api.rest.response.FileCreationResponse;
 import com.cloudmine.api.rest.response.FileLoadResponse;
+import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import me.cloudmine.annotations.Optional;
 import org.apache.http.HttpResponse;
 
@@ -25,6 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Date;
 
 import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
@@ -167,6 +170,17 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
         super(contents, fileId, contentType);
     }
 
+    public CloudMineRequest delete(Context context, CMSessionToken token, Response.Listener<ObjectModificationResponse> successListener, Response.ErrorListener errorListener) {
+        RequestQueue queue = SharedRequestQueueHolders.getRequestQueue(context);
+        BaseFileDeleteRequest deleteRequest = new BaseFileDeleteRequest(Arrays.asList(getObjectId()), token, null, successListener, errorListener);
+        queue.add(deleteRequest);
+        return deleteRequest;
+    }
+
+    public CloudMineRequest delete(Context context, Response.Listener<ObjectModificationResponse> successListener, Response.ErrorListener errorListener) {
+        return delete(context, null, successListener, errorListener);
+    }
+
     public CloudMineRequest save(Context context, CMSessionToken token, Response.Listener<FileCreationResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = SharedRequestQueueHolders.getRequestQueue(context);
         BaseFileCreationRequest request = new BaseFileCreationRequest(this, token, null, successListener, errorListener);
@@ -247,6 +261,7 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
         return saveToInternalStorage(context, this);
     }
 
+    //TODO add save eventuality support
     @Override
     public boolean saveEventually(Context context) {
         return false;

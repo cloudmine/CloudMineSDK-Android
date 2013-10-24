@@ -17,9 +17,11 @@ import java.util.Collection;
  */
 public class BaseFileDeleteRequest extends CloudMineRequest<ObjectModificationResponse> {
     public static final int REQUEST_TYPE = 409;
+    static final String BASE_ENDPOINT = "/data";
+    static final CMURLBuilder BASE_URL = new CMURLBuilder(BASE_ENDPOINT, true);
 
-    public BaseFileDeleteRequest(@Single Collection<String> fileIds, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction) {
-        super(Method.DELETE, null, null, null, null);
+    public BaseFileDeleteRequest(@Single Collection<String> fileIds, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, Response.Listener<ObjectModificationResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.DELETE, BASE_URL.copy().user(sessionToken).objectIds(fileIds), serverFunction, successListener, errorListener);
     }
 
     @Override
