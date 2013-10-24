@@ -9,6 +9,7 @@ import com.cloudmine.api.CMUser;
 import com.cloudmine.api.CacheableCMFile;
 import com.cloudmine.api.SearchQuery;
 import com.cloudmine.api.integration.CMFileIntegrationTest;
+import com.cloudmine.api.rest.FileCreationRequest;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.FileCreationResponse;
 import com.cloudmine.api.rest.response.FileLoadResponse;
@@ -62,7 +63,7 @@ public class AndroidCMFileIntegrationTest extends CMFileIntegrationTest {
         waitThenAssertTestResults();
 
         CacheableCMFile.loadFile(applicationContext, userFile.getFileId(), user.getSessionToken(), getSuccessLoadListener(userFile), ResponseCallbackTuple.defaultFailureListener);
-        waitThenAssertTestResults();
+        waitThenAssertTestResults(20);
     }
 
     @Test
@@ -78,7 +79,7 @@ public class AndroidCMFileIntegrationTest extends CMFileIntegrationTest {
         final CMUser user = loggedInUser();
         userFile.setSaveWith(user);
         userFile.save(applicationContext, getSuccessFileCreationListener(userFile), ResponseCallbackTuple.defaultFailureListener);
-        waitThenAssertTestResults();
+        waitThenAssertTestResults(20);
 
         CacheableCMFile.loadFile(applicationContext, userFile.getFileId(), user.getSessionToken(), getSuccessLoadListener(userFile), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
@@ -122,7 +123,7 @@ public class AndroidCMFileIntegrationTest extends CMFileIntegrationTest {
     @Ignore //can't decode bitmaps with robolectric
     public void testImageLoad() {
         SharedRequestQueueHolders.getRequestQueue(applicationContext).add(
-                new ImageLoadRequest(fileId, Bitmap.Config.RGB_565, testCallback(new Response.Listener<Bitmap>() {
+                new com.cloudmine.api.rest.ImageLoadRequest(fileId, Bitmap.Config.RGB_565, testCallback(new Response.Listener<Bitmap>() {
             @Override
             public void onResponse(Bitmap bitmap) {
                         assertNotNull(bitmap);
