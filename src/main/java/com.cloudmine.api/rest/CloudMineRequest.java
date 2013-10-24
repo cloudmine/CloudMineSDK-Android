@@ -2,12 +2,12 @@ package com.cloudmine.api.rest;
 
 import android.os.Handler;
 import android.os.Message;
-import com.android.cloudmine.AuthFailureError;
-import com.android.cloudmine.Cache;
-import com.android.cloudmine.NetworkResponse;
-import com.android.cloudmine.Request;
-import com.android.cloudmine.Response;
-import com.android.cloudmine.VolleyError;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Cache;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.HasHandler;

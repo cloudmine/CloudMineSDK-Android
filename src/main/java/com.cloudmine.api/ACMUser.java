@@ -2,8 +2,8 @@ package com.cloudmine.api;
 
 import android.content.Context;
 import android.os.Handler;
-import com.android.cloudmine.RequestQueue;
-import com.android.cloudmine.Response;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
 import com.cloudmine.api.rest.BaseProfileLoadRequest;
 import com.cloudmine.api.rest.BaseProfileUpdateRequest;
 import com.cloudmine.api.rest.BaseUserCreationRequest;

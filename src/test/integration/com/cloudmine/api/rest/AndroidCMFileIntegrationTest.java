@@ -2,7 +2,7 @@ package com.cloudmine.api.rest;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import com.android.cloudmine.Response;
+import com.android.volley.Response;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMFile;
 import com.cloudmine.api.CMUser;

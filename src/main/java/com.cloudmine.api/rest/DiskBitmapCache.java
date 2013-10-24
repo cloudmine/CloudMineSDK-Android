@@ -3,8 +3,8 @@ package com.cloudmine.api.rest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import com.android.cloudmine.toolbox.DiskBasedCache;
-import com.android.cloudmine.toolbox.ImageLoader;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.ImageLoader;
 
 import java.io.File;
 import java.nio.ByteBuffer;

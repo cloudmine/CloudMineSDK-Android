@@ -1,13 +1,13 @@
 package com.cloudmine.api.rest;
 
 import android.content.Context;
-import com.android.cloudmine.AuthFailureError;
-import com.android.cloudmine.NetworkResponse;
-import com.android.cloudmine.Request;
-import com.android.cloudmine.RequestQueue;
-import com.android.cloudmine.Response;
-import com.android.cloudmine.VolleyError;
-import com.android.cloudmine.toolbox.Volley;
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 import com.cloudmine.api.rest.callbacks.Callback;
 import com.cloudmine.api.rest.response.ResponseConstructor;
 import org.apache.http.Header;

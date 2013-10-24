@@ -1,7 +1,7 @@
 package com.cloudmine.test;
 
-import com.android.cloudmine.Response;
-import com.android.cloudmine.VolleyError;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;

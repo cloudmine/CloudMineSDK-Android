@@ -1,7 +1,7 @@
 package com.cloudmine.api.rest;
 
 import android.content.Context;
-import com.android.cloudmine.Response;
+import com.android.volley.Response;
 import com.cloudmine.api.ACMUser;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.integration.CMUserIntegrationTest;

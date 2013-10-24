@@ -87,7 +87,7 @@
             <version>1.0</version>
         </dependency>
         <dependency>
-          <groupId>com.android.cloudmine</groupId>
+          <groupId>com.android</groupId>
             <artifactId>volley</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>

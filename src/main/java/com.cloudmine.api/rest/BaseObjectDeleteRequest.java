@@ -1,7 +1,7 @@
 package com.cloudmine.api.rest;
 
-import com.android.cloudmine.NetworkResponse;
-import com.android.cloudmine.Response;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Response;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;

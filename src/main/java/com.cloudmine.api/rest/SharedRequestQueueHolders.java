@@ -1,8 +1,8 @@
 package com.cloudmine.api.rest;
 
 import android.content.Context;
-import com.android.cloudmine.RequestQueue;
-import com.android.cloudmine.toolbox.Volley;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 
 import java.util.Map;
 import java.util.WeakHashMap;

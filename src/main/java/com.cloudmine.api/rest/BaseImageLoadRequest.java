@@ -1,9 +1,9 @@
 package com.cloudmine.api.rest;
 
 import android.graphics.Bitmap;
-import com.android.cloudmine.AuthFailureError;
-import com.android.cloudmine.Response;
-import com.android.cloudmine.toolbox.ImageRequest;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Response;
+import com.android.volley.toolbox.ImageRequest;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import me.cloudmine.annotations.Expand;

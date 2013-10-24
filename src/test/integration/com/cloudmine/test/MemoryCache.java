@@ -1,6 +1,6 @@
 package com.cloudmine.test;
 
-import com.android.cloudmine.Cache;
+import com.android.volley.Cache;
 
 import java.util.HashMap;
 import java.util.Map;
