@@ -146,6 +146,17 @@ public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
         return objectIdsToJson;
     }
 
+    public <TYPE> int deleteObjectsByClass(Class<TYPE> klass) {
+        String[] args = {ClassNameRegistry.forClass(klass)};
+        SQLiteDatabase writableDatabase = getWritableDatabase();
+        try {
+            return writableDatabase.delete(CM_OBJECT_TABLE, CLASS_SELECT_WHERE, args);
+        } catch (Throwable t) {} finally {
+            writableDatabase.close();
+            return 0;
+        }
+    }
+
     public <TYPE extends BaseLocallySavableCMObject> List<TYPE> loadObjectsByClass(Class <TYPE> klass) {
         String[] args = {ClassNameRegistry.forClass(klass)};
         SQLiteDatabase readableDatabase = getReadableDatabase();
