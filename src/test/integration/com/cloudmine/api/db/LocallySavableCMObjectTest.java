@@ -103,9 +103,9 @@ public class LocallySavableCMObjectTest extends ServiceTestBase {
         boolean wasStored = savableCMObject.saveEventually(context);
         assertTrue(wasStored);
         RequestDBOpenHelper openHelper = BaseLocallySavableCMObject.getRequestDBOpenHelper(context);
-        Map<Integer, Request> unsentRequests = openHelper.retrieveRequestsForSending(context);
+        Map<Integer, RequestDBObject> unsentRequests = openHelper.retrieveRequestsForSending(context);
         assertFalse(unsentRequests.isEmpty());
-        Request saveRequest = unsentRequests.values().iterator().next();
+        RequestDBObject saveRequest = unsentRequests.values().iterator().next();
         assertTrue(JsonUtilities.isJsonEquivalent(savableCMObject.transportableRepresentation(), saveRequest.getJsonBody()));
     }
 }

@@ -25,7 +25,7 @@ import static com.cloudmine.api.db.RequestDBOpenHelper.*;
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class Request {
+public class RequestDBObject {
 
     private static final String APP_SAVE_URL;
     private static final String USER_SAVE_URL;
@@ -78,8 +78,8 @@ public class Request {
         }
     }
 
-    public static Request createApplicationObjectRequest(String objectId) {
-        Request request = new Request(APP_SAVE_URL, Verb.PUT, (String)null, objectId, -1, SyncStatus.UNSYNCED, new ArrayList<Header>(LibrarySpecificClassCreator.getCreator().getHeaderFactory().getCloudMineHeaders()));
+    public static RequestDBObject createApplicationObjectRequest(String objectId) {
+        RequestDBObject request = new RequestDBObject(APP_SAVE_URL, Verb.PUT, (String)null, objectId, -1, SyncStatus.UNSYNCED, new ArrayList<Header>(LibrarySpecificClassCreator.getCreator().getHeaderFactory().getCloudMineHeaders()));
         return request;
     }
 
@@ -91,7 +91,7 @@ public class Request {
     private final SyncStatus syncStatus;
     private final List<Header> headers;
 
-    public Request(String requestUrl, Verb requestType, String jsonBody) {
+    public RequestDBObject(String requestUrl, Verb requestType, String jsonBody) {
         this(requestUrl, requestType, jsonBody, new ArrayList<Header>());
     }
 
@@ -102,11 +102,11 @@ public class Request {
      * @param jsonBody
      * @param headers
      */
-    public Request(String requestUrl, Verb requestType, String jsonBody, List <Header> headers) {
+    public RequestDBObject(String requestUrl, Verb requestType, String jsonBody, List<Header> headers) {
         this(requestUrl, requestType, jsonBody, null, -1, SyncStatus.UNSYNCED, headers);
     }
 
-    public Request(String requestUrl, Verb requestType, String jsonBody, String objectId, int id, SyncStatus syncStatus, List<Header> headers) {
+    public RequestDBObject(String requestUrl, Verb requestType, String jsonBody, String objectId, int id, SyncStatus syncStatus, List<Header> headers) {
         this.requestUrl = requestUrl;
         this.requestType = requestType;
         this.jsonBody = jsonBody;
@@ -228,7 +228,7 @@ public class Request {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Request request = (Request) o;
+        RequestDBObject request = (RequestDBObject) o;
 
         if (id != request.id) return false;
         if (headers != null ? !headers.equals(request.headers) : request.headers != null) return false;

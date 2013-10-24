@@ -73,9 +73,9 @@ public class RequestPerformerService extends Service {
                     NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
                     boolean isConnected = activeNetworkInfo != null && activeNetworkInfo.isConnected();
                     if (isConnected) {
-                        Map<Integer, Request> unsentRequests = openHelper.retrieveRequestsForSending(getApplicationContext());
+                        Map<Integer, RequestDBObject> unsentRequests = openHelper.retrieveRequestsForSending(getApplicationContext());
                         if (unsentRequests == null || unsentRequests.isEmpty()) return;
-                        for (Map.Entry<Integer, Request> entries : unsentRequests.entrySet()) {
+                        for (Map.Entry<Integer, RequestDBObject> entries : unsentRequests.entrySet()) {
                             //Remaining requests will be skipped, set them unsynchronized
                             if (!keepRunning.get()) {
                                 LOG.debug("Done running, setting remaining entries to unsynchronized: " + entries.getKey());
@@ -93,7 +93,7 @@ public class RequestPerformerService extends Service {
                  * @param id
                  * @param next
                  */
-                private void sendRequest(final Integer id, Request next) {
+                private void sendRequest(final Integer id, RequestDBObject next) {
                     AndroidHttpClient androidClient = null;
                     HttpResponse response = null;
                     Throwable thrown = null;

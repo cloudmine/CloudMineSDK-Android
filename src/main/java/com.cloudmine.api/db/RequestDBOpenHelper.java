@@ -138,7 +138,7 @@ public class RequestDBOpenHelper extends SQLiteOpenHelper {
      * so only the entire request or none of it will be inserted.
      * @param request to insert. Do not pass a null request in here
      */
-    public void insertRequest(Request request) {
+    public void insertRequest(RequestDBObject request) {
         if(request == null) return;
         insertRequest(request.toRequestContentValues(), request.toHeaderContentValues());
     }
@@ -227,12 +227,12 @@ public class RequestDBOpenHelper extends SQLiteOpenHelper {
      * Get all of the requests that are currently unsynced. Sets their status to in progress
      * @return
      */
-    public LinkedHashMap<Integer, Request> retrieveRequestsForSending(Context context) {
+    public LinkedHashMap<Integer, RequestDBObject> retrieveRequestsForSending(Context context) {
         Cursor requestCursor = loadRequestTableContentsForUpdating();
-        LinkedHashMap<Integer, Request> requestMapping = createRequestMapping(requestCursor);
+        LinkedHashMap<Integer, RequestDBObject> requestMapping = createRequestMapping(requestCursor);
         List<String> objectIds = new ArrayList<String>();
-        Map<String, Request> objectIdsToRequests = new HashMap<String, Request>();
-        for(Request request : requestMapping.values()) {
+        Map<String, RequestDBObject> objectIdsToRequests = new HashMap<String, RequestDBObject>();
+        for(RequestDBObject request : requestMapping.values()) {
             String objectId = request.getObjectId();
 
             if(Strings.isNotEmpty(objectId)) {
@@ -249,7 +249,7 @@ public class RequestDBOpenHelper extends SQLiteOpenHelper {
         return requestMapping;
     }
 
-    public LinkedHashMap<Integer, Request> retrieveAllRequests() {
+    public LinkedHashMap<Integer, RequestDBObject> retrieveAllRequests() {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(BOTH_DATABASE_TABLE_JOIN, RESULTS_COLUMNS, null, null, null, null, requestColumn(KEY_REQUEST_ID));
         return createRequestMapping(cursor);
@@ -261,7 +261,7 @@ public class RequestDBOpenHelper extends SQLiteOpenHelper {
      * @param cursor
      * @return
      */
-    private LinkedHashMap<Integer, Request> createRequestMapping(Cursor cursor) {
+    private LinkedHashMap<Integer, RequestDBObject> createRequestMapping(Cursor cursor) {
         int idIndex = cursor.getColumnIndexOrThrow(KEY_REQUEST_ID);
         int jsonIndex = cursor.getColumnIndexOrThrow(KEY_REQUEST_JSON_BODY);
         int urlIndex = cursor.getColumnIndexOrThrow(KEY_REQUEST_TARGET_URL);
@@ -270,19 +270,19 @@ public class RequestDBOpenHelper extends SQLiteOpenHelper {
         int headerNameIndex = cursor.getColumnIndexOrThrow(KEY_HEADER_NAME);
         int headerValueIndex = cursor.getColumnIndexOrThrow(KEY_HEADER_VALUE);
         int objectIdIndex = cursor.getColumnIndexOrThrow(KEY_REQUEST_OBJECT_ID);
-        LinkedHashMap<Integer, Request> requestMapping = new LinkedHashMap<Integer, Request>();
+        LinkedHashMap<Integer, RequestDBObject> requestMapping = new LinkedHashMap<Integer, RequestDBObject>();
         while (cursor.moveToNext()) {
             Integer id = cursor.getInt(idIndex);
 
-            Request request = requestMapping.get(id);
+            RequestDBObject request = requestMapping.get(id);
             if(request == null) {
                 String json = cursor.getString(jsonIndex);
                 String url = cursor.getString(urlIndex);
                 String verb = cursor.getString(verbIndex);
                 String objectId = cursor.getString(objectIdIndex);
                 int syncOrdinal = cursor.getInt(syncedIndex);
-                Request.SyncStatus status = Request.SyncStatus.getSyncStatus(syncOrdinal);
-                request = new Request(url, Request.Verb.getVerb(verb), json, objectId, id, status, new ArrayList<Header>());
+                RequestDBObject.SyncStatus status = RequestDBObject.SyncStatus.getSyncStatus(syncOrdinal);
+                request = new RequestDBObject(url, RequestDBObject.Verb.getVerb(verb), json, objectId, id, status, new ArrayList<Header>());
                 requestMapping.put(id, request);
             }
             String headerName = cursor.getString(headerNameIndex);

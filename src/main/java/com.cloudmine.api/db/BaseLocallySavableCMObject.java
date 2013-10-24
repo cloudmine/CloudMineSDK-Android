@@ -198,7 +198,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
         LOG.debug("Was saved locally? " + wasCreated);
 
         if(wasCreated) {
-            Request request = Request.createApplicationObjectRequest(getObjectId());
+            RequestDBObject request = RequestDBObject.createApplicationObjectRequest(getObjectId());
             try {
                 getRequestDBOpenHelper(context).insertRequest(request);
                 wasCreated = true;
