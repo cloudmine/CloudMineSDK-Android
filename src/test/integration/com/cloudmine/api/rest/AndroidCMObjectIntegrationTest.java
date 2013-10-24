@@ -61,7 +61,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         applicationContext = Robolectric.application.getApplicationContext();
         DeviceIdentifier.initialize(applicationContext);
-        queue = Volley.newRequestQueue(applicationContext);
+        queue = SharedRequestQueueHolders.getRequestQueue(applicationContext);
         super.setUp();
     }
 

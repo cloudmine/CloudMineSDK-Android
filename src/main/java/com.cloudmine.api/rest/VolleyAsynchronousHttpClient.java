@@ -29,7 +29,7 @@ public class VolleyAsynchronousHttpClient implements AsynchronousHttpClient {
     private RequestQueue queue;
 
     public VolleyAsynchronousHttpClient(Context context) {
-        queue = Volley.newRequestQueue(context);
+        queue = Volley.newRequestQueue(context, new OkHttpStack());
     }
 
 
