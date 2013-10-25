@@ -89,7 +89,7 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
         }
     }
 
-    public static CMFile loadLocalFile(Context context, String fileId) {
+    public static CacheableCMFile loadLocalFile(Context context, String fileId) {
         return loadLocalFile(context, fileId, shouldUseExternalStorage(context));
     }
 
@@ -224,7 +224,8 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
 
     public static boolean shouldUseExternalStorage(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(CMSharedPreferencesConstants.PREFERENCES_KEY, Context.MODE_PRIVATE);
-        return preferences.getBoolean(CMSharedPreferencesConstants.USE_EXTERNAL_STORAGE_KEY, CMSharedPreferencesConstants.SHOULD_USE_EXTERNAL_STORAGE_DEFAULT);
+        boolean useExternalStorage = preferences.getBoolean(CMSharedPreferencesConstants.USE_EXTERNAL_STORAGE_KEY, CMSharedPreferencesConstants.SHOULD_USE_EXTERNAL_STORAGE_DEFAULT);
+        return useExternalStorage;
     }
 
     public static void setShouldUseExternalStorage(Context context, boolean shouldUseExternalStorage) {
@@ -241,9 +242,9 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
     public static boolean saveLocally(Context context, boolean useExternalStorage, CMFile file) {
         if(file == null) return false;
         if(useExternalStorage) {
-            return saveToInternalStorage(context, file);
-        } else {
             return saveToExternalStorage(file);
+        } else {
+            return saveToInternalStorage(context, file);
         }
     }
 
