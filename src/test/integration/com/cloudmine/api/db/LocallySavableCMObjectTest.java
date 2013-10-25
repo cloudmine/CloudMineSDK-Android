@@ -29,8 +29,8 @@ public class LocallySavableCMObjectTest extends ServiceTestBase {
     public void setUp() {
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         DeviceIdentifier.initialize(Robolectric.application.getApplicationContext());
-        BaseLocallySavableCMObject.cmObjectDBOpenHelper = null;
-        BaseLocallySavableCMObject.requestDBOpenHelper = null;
+
+
         super.setUp();
     }
 
@@ -102,7 +102,7 @@ public class LocallySavableCMObjectTest extends ServiceTestBase {
 
         boolean wasStored = savableCMObject.saveEventually(context);
         assertTrue(wasStored);
-        RequestDBOpenHelper openHelper = BaseLocallySavableCMObject.getRequestDBOpenHelper(context);
+        RequestDBOpenHelper openHelper = RequestDBOpenHelper.getRequestDBOpenHelper(context);
         Map<Integer, RequestDBObject> unsentRequests = openHelper.retrieveRequestsForSending(context);
         assertFalse(unsentRequests.isEmpty());
         RequestDBObject saveRequest = unsentRequests.values().iterator().next();

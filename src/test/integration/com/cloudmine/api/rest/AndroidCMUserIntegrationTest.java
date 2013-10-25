@@ -3,6 +3,7 @@ package com.cloudmine.api.rest;
 import android.content.Context;
 import com.android.volley.Response;
 import com.cloudmine.api.ACMUser;
+import com.cloudmine.api.CMObject;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.integration.CMUserIntegrationTest;
 import com.cloudmine.api.rest.response.CMObjectResponse;
@@ -21,8 +22,7 @@ import java.util.List;
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
 import static com.cloudmine.test.ResponseCallbackTuple.defaultFailureListener;
 import static com.cloudmine.test.ResponseCallbackTuple.testCallback;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 /**
  * <br>
@@ -102,6 +102,27 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
         waitThenAssertTestResults();
 
         assertEquals(10000, user.getPoints());
+
+        final String userObjectId = user.getObjectId();
+        ACMUser.loadAllUserProfiles(applicationContext, ResponseCallbackTuple.testCallback(new Response.Listener<CMObjectResponse>() {
+            @Override
+            public void onResponse(CMObjectResponse response) {
+                CMObject object = response.getCMObject(userObjectId);
+                assertNotNull(object);
+                assertEquals(10000, ((ExtendedACMUser) object).getPoints());
+            }
+        }), defaultFailureListener);
+        waitThenAssertTestResults();
+
+        ACMUser.searchUserProfiles(applicationContext, "[points = 10000]", testCallback(new Response.Listener<CMObjectResponse>() {
+            @Override
+            public void onResponse(CMObjectResponse response) {
+                CMObject object = response.getCMObject(userObjectId);
+                assertNotNull(object);
+                assertEquals(10000, ((ExtendedACMUser) object).getPoints());
+            }
+        }), defaultFailureListener);
+        waitThenAssertTestResults();
     }
 
     private void testCreateAndLogin(ACMUser user) {
