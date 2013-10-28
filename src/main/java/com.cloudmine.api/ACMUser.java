@@ -4,23 +4,41 @@ import android.content.Context;
 import android.os.Handler;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.cloudmine.api.rest.BaseChangeUserPasswordRequest;
+import com.cloudmine.api.rest.BaseLoadUserProfilesRequest;
 import com.cloudmine.api.rest.BaseProfileLoadRequest;
 import com.cloudmine.api.rest.BaseProfileUpdateRequest;
 import com.cloudmine.api.rest.BaseUserCreationRequest;
 import com.cloudmine.api.rest.BaseUserLoginRequest;
 import com.cloudmine.api.rest.CloudMineRequest;
+import com.cloudmine.api.rest.SharedRequestQueueHolders;
 import com.cloudmine.api.rest.response.CMObjectResponse;
+import com.cloudmine.api.rest.response.CMResponse;
 import com.cloudmine.api.rest.response.CreationResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
 
 import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
 
 /**
+ * Android specific CMUser. Should be used over CMUser unless running server side code
  * <br>
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 public class ACMUser extends CMUser {
+
+    public static CloudMineRequest loadAllUserProfiles(Context context, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
+        BaseLoadUserProfilesRequest loadUserProfilesRequest = new BaseLoadUserProfilesRequest(null, successListener, errorListener);
+        SharedRequestQueueHolders.getRequestQueue(context).add(loadUserProfilesRequest);
+        return loadUserProfilesRequest;
+    }
+
+    public static CloudMineRequest searchUserProfiles(Context context, String searchString, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
+        BaseLoadUserProfilesRequest loadUserProfilesRequest = new BaseLoadUserProfilesRequest(searchString, null, successListener, errorListener);
+        SharedRequestQueueHolders.getRequestQueue(context).add(loadUserProfilesRequest);
+        return loadUserProfilesRequest;
+    }
+
 
     protected ACMUser() {}
 
@@ -78,6 +96,13 @@ public class ACMUser extends CMUser {
         RequestQueue queue = getRequestQueue(context);
         CloudMineRequest request = new BaseProfileLoadRequest(getSessionToken(), null, successListener, errorListener);
         queue.add(request);
+        return request;
+    }
+
+    public CloudMineRequest changePassword(Context context, String currentPassword, String newPassword, Response.Listener<CMResponse> successListener, Response.ErrorListener errorListener) {
+        CloudMineRequest request = new BaseChangeUserPasswordRequest(getUserIdentifier(), currentPassword, newPassword, null, successListener, errorListener);
+        SharedRequestQueueHolders.getRequestQueue(context).add(request);
+        setPassword(newPassword);
         return request;
     }
 }

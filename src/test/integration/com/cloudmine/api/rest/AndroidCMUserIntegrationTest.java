@@ -7,6 +7,7 @@ import com.cloudmine.api.CMObject;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.integration.CMUserIntegrationTest;
 import com.cloudmine.api.rest.response.CMObjectResponse;
+import com.cloudmine.api.rest.response.CMResponse;
 import com.cloudmine.api.rest.response.CreationResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
 import com.cloudmine.test.CloudMineTestRunner;
@@ -21,6 +22,7 @@ import java.util.List;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
 import static com.cloudmine.test.ResponseCallbackTuple.defaultFailureListener;
+import static com.cloudmine.test.ResponseCallbackTuple.hasSuccess;
 import static com.cloudmine.test.ResponseCallbackTuple.testCallback;
 import static junit.framework.Assert.*;
 
@@ -122,6 +124,16 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
                 assertEquals(10000, ((ExtendedACMUser) object).getPoints());
             }
         }), defaultFailureListener);
+        waitThenAssertTestResults();
+    }
+
+    public void testChangePassword() {
+        String password = randomString();
+        ACMUser user = new ACMUser(randomEmail(), password);
+        CMWebService.getService().insert(user);
+        user.changePassword(applicationContext, password, "newPassword", ResponseCallbackTuple.<CMResponse>hasSuccess(), defaultFailureListener);
+        waitThenAssertTestResults();
+        user.login(applicationContext, ResponseCallbackTuple.<LoginResponse>hasSuccess(), defaultFailureListener);
         waitThenAssertTestResults();
     }
 
