@@ -8,11 +8,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Created with IntelliJ IDEA.
- * User: johnmccarthy
- * Date: 10/24/13
- * Time: 2:14 PM
- * To change this template use File | Settings | File Templates.
  */
 public class OkHttpStack extends HurlStack {
     private final OkHttpClient client;

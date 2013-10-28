@@ -4,11 +4,7 @@ import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.rest.CMURLBuilder;
 
 /**
- * Created with IntelliJ IDEA.
- * User: johnmccarthy
- * Date: 10/24/13
- * Time: 5:30 PM
- * To change this template use File | Settings | File Templates.
+ *
  */
 public abstract class RequestConstants {
 

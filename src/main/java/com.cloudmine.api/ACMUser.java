@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.cloudmine.api.rest.BaseChangeUserIdentifierRequest;
 import com.cloudmine.api.rest.BaseChangeUserPasswordRequest;
 import com.cloudmine.api.rest.BaseLoadUserProfilesRequest;
 import com.cloudmine.api.rest.BaseProfileLoadRequest;
@@ -39,6 +40,13 @@ public class ACMUser extends CMUser {
         return loadUserProfilesRequest;
     }
 
+    public static ACMUser ACMUserWithUserName(String userName, String password) {
+        return new ACMUser(null, userName, password);
+    }
+
+    public static ACMUser ACMUserWithUserName(String userName) {
+        return new ACMUser(null, userName, "");
+    }
 
     protected ACMUser() {}
 
@@ -103,6 +111,13 @@ public class ACMUser extends CMUser {
         CloudMineRequest request = new BaseChangeUserPasswordRequest(getUserIdentifier(), currentPassword, newPassword, null, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
         setPassword(newPassword);
+        return request;
+    }
+
+    public CloudMineRequest changeUserName(Context context, String newUserName, String currentPassword, Response.Listener<CMResponse> successListener, Response.ErrorListener errorListener) {
+        CloudMineRequest request = new BaseChangeUserIdentifierRequest(getUserIdentifier(), currentPassword, null, newUserName, null, successListener, errorListener);
+        SharedRequestQueueHolders.getRequestQueue(context).add(request);
+        setUserName(newUserName);
         return request;
     }
 }
