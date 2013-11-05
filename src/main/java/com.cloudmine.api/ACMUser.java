@@ -48,6 +48,15 @@ public class ACMUser extends CMUser {
         return new ACMUser(null, userName, "");
     }
 
+
+    public static ACMUser ACMUserWithEmail(String email, String password) {
+        return new ACMUser(email, password);
+    }
+
+    public static ACMUser ACMUserWithEmail(String email) {
+        return new ACMUser(email, "");
+    }
+
     protected ACMUser() {}
 
     public ACMUser(String email, String userName, String password) {
@@ -118,6 +127,14 @@ public class ACMUser extends CMUser {
         CloudMineRequest request = new BaseChangeUserIdentifierRequest(getUserIdentifier(), currentPassword, null, newUserName, null, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
         setUserName(newUserName);
+        return request;
+    }
+
+
+    public CloudMineRequest changeEmail(Context context, String newEmail, String currentPassword, Response.Listener<CMResponse> successListener, Response.ErrorListener errorListener) {
+        CloudMineRequest request = new BaseChangeUserIdentifierRequest(getUserIdentifier(), currentPassword, newEmail, null, null, successListener, errorListener);
+        SharedRequestQueueHolders.getRequestQueue(context).add(request);
+        setEmail(newEmail);
         return request;
     }
 }
