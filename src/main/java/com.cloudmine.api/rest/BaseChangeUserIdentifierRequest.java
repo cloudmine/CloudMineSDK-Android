@@ -54,7 +54,7 @@ public class BaseChangeUserIdentifierRequest extends CloudMineRequest<CMResponse
 
     public Map<String, String> getHeaders() throws AuthFailureError {
         Map<String, String> headers = super.getHeaders();
-        headers.put("Basic", LibrarySpecificClassCreator.getCreator().getEncoder().encode(userIdentifier + ":" + password));
+        headers.put("Authorization", "Basic " + LibrarySpecificClassCreator.getCreator().getEncoder().encode(userIdentifier + ":" + password));
         return headers;
     }
 
