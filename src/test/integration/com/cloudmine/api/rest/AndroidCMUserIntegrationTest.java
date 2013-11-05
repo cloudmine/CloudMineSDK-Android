@@ -15,9 +15,8 @@ import com.cloudmine.test.ExtendedACMUser;
 import com.cloudmine.test.ResponseCallbackTuple;
 import com.xtremelabs.robolectric.Robolectric;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-
+import org.junit.Test;
 import java.util.List;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
@@ -25,7 +24,6 @@ import static com.cloudmine.test.ResponseCallbackTuple.defaultFailureListener;
 import static com.cloudmine.test.ResponseCallbackTuple.hasSuccess;
 import static com.cloudmine.test.ResponseCallbackTuple.testCallback;
 import static junit.framework.Assert.*;
-
 /**
  * <br>
  * Copyright CloudMine LLC. All rights reserved<br>
@@ -69,6 +67,16 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
 
         ACMUser usernameUser = new ACMUser(null, randomString(), randomString());
         testCreateAndLogin(usernameUser);
+    }
+
+    @Test
+    public void testLogout() {
+        String password = randomString();
+        ACMUser user = new ACMUser(randomEmail(), password);
+        testCreateAndLogin(user);
+        user.logout(applicationContext, ResponseCallbackTuple.<CMResponse>hasSuccess(), defaultFailureListener);
+        waitThenAssertTestResults();
+        assertFalse(user.isLoggedIn());
     }
 
     @Test

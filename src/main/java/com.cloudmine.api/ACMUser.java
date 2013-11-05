@@ -11,6 +11,7 @@ import com.cloudmine.api.rest.BaseProfileLoadRequest;
 import com.cloudmine.api.rest.BaseProfileUpdateRequest;
 import com.cloudmine.api.rest.BaseUserCreationRequest;
 import com.cloudmine.api.rest.BaseUserLoginRequest;
+import com.cloudmine.api.rest.BaseUserLogoutRequest;
 import com.cloudmine.api.rest.CloudMineRequest;
 import com.cloudmine.api.rest.SharedRequestQueueHolders;
 import com.cloudmine.api.rest.response.CMObjectResponse;
@@ -98,6 +99,23 @@ public class ACMUser extends CMUser {
     public CloudMineRequest login(Context context, String password, Handler handler) {
         BaseUserLoginRequest request = new BaseUserLoginRequest(getUserIdentifier(), password, null, null, null);
         request.setHandler(handler);
+        getRequestQueue(context).add(request);
+        return request;
+    }
+
+    public CloudMineRequest logout(Context context, final Response.Listener<CMResponse> successListener, Response.ErrorListener errorListener) {
+        BaseUserLogoutRequest request = new BaseUserLogoutRequest(getSessionToken(), null, new Response.Listener<CMResponse>() {
+            @Override
+            public void onResponse(CMResponse response) {
+                try {
+                    if(response.wasSuccess()) {
+                        setSessionToken(null);
+                    }
+                }finally {
+                    successListener.onResponse(response);
+                }
+            }
+        }, errorListener);
         getRequestQueue(context).add(request);
         return request;
     }
