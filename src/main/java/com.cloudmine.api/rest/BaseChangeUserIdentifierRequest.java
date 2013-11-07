@@ -20,12 +20,12 @@ public class BaseChangeUserIdentifierRequest extends CloudMineRequest<CMResponse
     public static final int REQUEST_TYPE = 412;
 
     @Expand(isStatic = true)
-    public static BaseChangeUserIdentifierRequest changeUserEmail(String userIdentifier, String password, String newEmail, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener){
+    public static CloudMineRequest changeUserEmail(String userIdentifier, String password, String newEmail, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener){
         return new BaseChangeUserIdentifierRequest(userIdentifier, password, newEmail, null, serverFunction, successListener, errorListener);
     }
 
     @Expand(isStatic = true)
-    public static BaseChangeUserIdentifierRequest changeUserName(String userIdentifier, String password, String newUserName, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener){
+    public static CloudMineRequest changeUserName(String userIdentifier, String password, String newUserName, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener){
         return new BaseChangeUserIdentifierRequest(userIdentifier, password, null, newUserName, serverFunction, successListener, errorListener);
     }
 
