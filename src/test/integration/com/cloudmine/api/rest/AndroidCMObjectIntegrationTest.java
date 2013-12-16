@@ -58,6 +58,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
 
     @Before
     public void setUp() {
+        CloudMineRequest.setCachingEnabled(false);
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         applicationContext = Robolectric.application.getApplicationContext();
         DeviceIdentifier.initialize(applicationContext);

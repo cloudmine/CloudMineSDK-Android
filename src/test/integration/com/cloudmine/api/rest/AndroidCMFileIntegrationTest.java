@@ -40,6 +40,7 @@ public class AndroidCMFileIntegrationTest extends CMFileIntegrationTest {
 
     @Before
     public void setUp() {
+        CloudMineRequest.setCachingEnabled(false);
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         applicationContext = Robolectric.application.getApplicationContext();
         CMApiCredentials.initialize(APP_ID, API_KEY, applicationContext);
