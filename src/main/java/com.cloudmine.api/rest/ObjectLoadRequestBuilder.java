@@ -1,7 +1,6 @@
 package com.cloudmine.api.rest;
 
 import com.android.volley.Response;
-import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMSortOptions;
 import com.cloudmine.api.rest.response.CMObjectResponse;
@@ -76,11 +75,6 @@ public class ObjectLoadRequestBuilder extends RequestBuilder<ObjectLoadRequestBu
 
     public ObjectLoadRequestBuilder getSharedOnly() {
         urlBuilder.addQuery("shared_only", "true");
-        return this;
-    }
-
-    public ObjectLoadRequestBuilder ofClass(Class<? extends CMObject> cls) {
-        //TODO this will be easier with the search query helper
         return this;
     }
 }
