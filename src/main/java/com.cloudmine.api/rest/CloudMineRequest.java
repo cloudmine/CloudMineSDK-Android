@@ -69,6 +69,15 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
 
     private static long applicationSoftTtl = 0;
     private static long applicationTtl = 120000;
+    private static boolean isCachingEnabled = true;
+
+    public static boolean isCachingEnabled() {
+        return isCachingEnabled;
+    }
+
+    public static void setCachingEnabled(boolean isCachingEnabled) {
+        CloudMineRequest.isCachingEnabled = isCachingEnabled;
+    }
 
     public static long getApplicationSoftTtl() {
         return applicationSoftTtl;
@@ -167,6 +176,7 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
 
     @Override
     protected void deliverResponse(RESPONSE response) {
+        System.out.println("Delivering response " + response);
         if(handler != null) {
             synchronized (handlerLock) { //see deliver error for why we check this twice
                 if(handler != null) {
@@ -216,12 +226,16 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
     }
 
     protected Cache.Entry getCacheEntry(NetworkResponse response) {
-        Cache.Entry entry = new Cache.Entry();
-        entry.data = response.data;
-        entry.serverDate = System.currentTimeMillis();
-        entry.softTtl = System.currentTimeMillis() + getSoftTtl();
-        entry.ttl = System.currentTimeMillis() + getTtl();
-        return entry;
+        if(isCachingEnabled) {
+            Cache.Entry entry = new Cache.Entry();
+            entry.data = response.data;
+            entry.serverDate = System.currentTimeMillis();
+            entry.softTtl = System.currentTimeMillis() + getSoftTtl();
+            entry.ttl = System.currentTimeMillis() + getTtl();
+            return entry;
+        }else {
+            return getCacheEntry();
+        }
     }
 
     public long getSoftTtl() {

@@ -16,13 +16,16 @@ public class ExtendedLocallySavableCMObject extends LocallySavableCMObject {
     private ExtendedCMObject subobject;
     private int numberOfHighFives;
 
-    public ExtendedLocallySavableCMObject() {}
+    public ExtendedLocallySavableCMObject() {
+        super();
+    }
 
     public ExtendedLocallySavableCMObject(String name, boolean awesome, int numberOfHighFives) {
         this(name, awesome, null, numberOfHighFives);
     }
 
     public ExtendedLocallySavableCMObject(String name, boolean awesome, ExtendedCMObject subobject, int numberOfHighFives) {
+        super();
         this.name = name;
         isAwesome = awesome;
         this.subobject = subobject;

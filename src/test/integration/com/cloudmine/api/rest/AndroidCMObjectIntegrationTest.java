@@ -169,6 +169,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
 
     @Test
     public void testVolleyCaching() {
+        CloudMineRequest.setCachingEnabled(true);
         RequestQueue queue = getMemoryCacheQueue();
         List <CMObject> objects = createMultipleObjects(5);
         queue.add(new com.cloudmine.api.rest.ObjectLoadRequest(testCallback(new Response.Listener<CMObjectResponse>() {
@@ -184,6 +185,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
         reset(2);
         queue.add(new com.cloudmine.api.rest.ObjectLoadRequest(ResponseCallbackTuple.wasLoaded(objects), ResponseCallbackTuple.defaultFailureListener));
         waitThenAssertTestResults();
+        CloudMineRequest.setCachingEnabled(false);
     }
 
     private RequestQueue getMemoryCacheQueue() {
