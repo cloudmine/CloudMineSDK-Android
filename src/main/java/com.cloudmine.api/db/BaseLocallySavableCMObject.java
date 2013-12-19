@@ -223,6 +223,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
         return request;
     }
 
+    @Expand
     public CloudMineRequest save(Context context, CMSessionToken sessionToken, @Optional Response.Listener< ObjectModificationResponse > successListener, @Optional Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
         BaseObjectModificationRequest request = new BaseObjectModificationRequest(this, sessionToken, null, successListener, errorListener);

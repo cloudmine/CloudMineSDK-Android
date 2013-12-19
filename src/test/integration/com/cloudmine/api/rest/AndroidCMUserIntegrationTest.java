@@ -141,6 +141,7 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
         String password = randomString();
         ACMUser user = new ACMUser(randomEmail(), password);
         CMWebService.getService().insert(user);
+
         user.changePassword(applicationContext, password, "newPassword", ResponseCallbackTuple.<CMResponse>hasSuccess(), defaultFailureListener);
         waitThenAssertTestResults();
         user.login(applicationContext, ResponseCallbackTuple.<LoginResponse>hasSuccess(), defaultFailureListener);
