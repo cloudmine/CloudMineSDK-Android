@@ -18,6 +18,7 @@ public class AndroidCMAccessListIntegrationTest extends CMAccessListIntegrationT
 
     @Before
     public void setUp() {
+        CloudMineRequest.setCachingEnabled(false);
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         DeviceIdentifier.initialize(Robolectric.application.getApplicationContext());
         super.setUp();
