@@ -7,6 +7,7 @@ import com.android.volley.Response;
 import com.cloudmine.api.rest.BaseAddPaymentMethodRequest;
 import com.cloudmine.api.rest.BaseChangeUserIdentifierRequest;
 import com.cloudmine.api.rest.BaseChangeUserPasswordRequest;
+import com.cloudmine.api.rest.BaseLoadPaymentMethodsRequest;
 import com.cloudmine.api.rest.BaseLoadUserProfilesRequest;
 import com.cloudmine.api.rest.BaseProfileLoadRequest;
 import com.cloudmine.api.rest.BaseProfileUpdateRequest;
@@ -167,6 +168,12 @@ public class ACMUser extends CMUser {
 
     public CloudMineRequest addPaymentMethod(Context context, Collection<CMCreditCard> creditCards, Response.Listener<PaymentResponse> successListener, Response.ErrorListener errorListener) {
         CloudMineRequest request = new BaseAddPaymentMethodRequest(creditCards, getSessionToken(), null, successListener, errorListener);
+        SharedRequestQueueHolders.getRequestQueue(context).add(request);
+        return request;
+    }
+
+    public CloudMineRequest loadPaymentMethods(Context context, Response.Listener<PaymentResponse> successListener, Response.ErrorListener errorListener) {
+        CloudMineRequest request = new BaseLoadPaymentMethodsRequest(getSessionToken(), null, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
         return request;
     }

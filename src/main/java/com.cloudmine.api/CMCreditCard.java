@@ -2,6 +2,8 @@ package com.cloudmine.api;
 
 
 import com.cloudmine.api.db.BaseLocallySavableCMObject;
+import com.cloudmine.api.rest.JsonUtilities;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * <br>Copyright CloudMine LLC. All rights reserved
@@ -67,6 +69,11 @@ public class CMCreditCard extends BaseLocallySavableCMObject {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @JsonIgnore
+    public String getPaymentTransportRepresentation() {
+        return JsonUtilities.objectToJson(this);
     }
 
     @Override

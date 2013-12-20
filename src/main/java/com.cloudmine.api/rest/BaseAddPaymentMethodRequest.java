@@ -21,9 +21,22 @@ public class BaseAddPaymentMethodRequest extends CloudMineRequest<PaymentRespons
 
     private static final String URL = "/payments/account/methods/card";
 
+    private static String toCreditCardArray(Collection<CMCreditCard> creditCards) {
+        StringBuilder ccArray = new StringBuilder("{\"payments\":[");
+        if(creditCards != null) {
+            String separator = "";
+            for(CMCreditCard card : creditCards) {
+                ccArray.append(separator).append(card.getPaymentTransportRepresentation());
+                separator = ", ";
+            }
+        }
+        ccArray.append("]}");
+        return ccArray.toString();
+    }
+
     @Expand
     public BaseAddPaymentMethodRequest(@Single Collection<CMCreditCard> cards, CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, Response.Listener<PaymentResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.POST, URL, JsonUtilities.cmobjectsToJson(cards), sessionToken, serverFunction, successListener, errorListener);
+        super(Method.POST, URL, toCreditCardArray(cards), sessionToken, serverFunction, successListener, errorListener);
     }
 
     @Override

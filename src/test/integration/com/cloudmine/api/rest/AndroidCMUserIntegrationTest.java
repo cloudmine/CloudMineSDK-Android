@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
@@ -52,11 +53,20 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
         assertTrue(service.insert(user).wasSuccess());
         user.login(hasSuccess);
         waitThenAssertTestResults();
-        CMCreditCard card = new CMCreditCard("Smith", randomString(), "0215", "3333", "visa");
+        final CMCreditCard card = new CMCreditCard("Smith", randomString(), "0215", "3333", "visa");
         user.addPaymentMethod(applicationContext, card, testCallback(new Response.Listener<PaymentResponse>() {
             @Override
             public void onResponse(PaymentResponse response) {
                 assertTrue(response.wasSuccess());
+            }
+        }), defaultFailureListener);
+        waitThenAssertTestResults();
+
+        user.loadPaymentMethods(applicationContext, testCallback(new Response.Listener<PaymentResponse>() {
+            @Override
+            public void onResponse(PaymentResponse response) {
+                assertTrue(response.wasSuccess());
+                assertEquals(Arrays.asList(card), response.getCreditCards());
             }
         }), defaultFailureListener);
         waitThenAssertTestResults();
