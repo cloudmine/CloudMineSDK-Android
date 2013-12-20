@@ -15,6 +15,16 @@ public class CMCreditCard extends BaseLocallySavableCMObject {
     private String last4Digits;
     private String type;
 
+    public CMCreditCard() {}
+
+    public CMCreditCard(String nameOnCard, String token, String expirationDate, String last4Digits, String type) {
+        this.nameOnCard = nameOnCard;
+        this.token = token;
+        this.expirationDate = expirationDate;
+        this.last4Digits = last4Digits;
+        this.type = type;
+    }
+
     public String getNameOnCard() {
         return nameOnCard;
     }
