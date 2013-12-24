@@ -30,6 +30,15 @@ public class PaymentResponse extends ResponseBase<PaymentCode> {
         return PaymentCode.codeForStatus(getStatusCode());
     }
 
+    public String getStep() {
+        Object step = getObject("step");
+        return step == null ? "" : step.toString();
+    }
+
+    public boolean wasCompleted() {
+        return "completed".equals(getStep());
+    }
+
     public List<CMCreditCard> getCreditCards() {
         if(creditCards == null) {
             creditCards = new ArrayList<CMCreditCard>();
