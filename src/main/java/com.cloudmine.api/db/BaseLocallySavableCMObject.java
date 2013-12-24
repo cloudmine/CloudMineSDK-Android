@@ -238,6 +238,13 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
         return request;
     }
 
+
+    public void grantAccess(BaseLocallySavableCMAccessList list) {
+        if(list == null)
+            return;
+        addAccessListId(list.getObjectId());
+    }
+
     /**
      * Get the last time this object was stored locally. Returns 0 if the object has never been stored locally
      * @return

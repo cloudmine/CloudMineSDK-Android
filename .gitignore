@@ -16,3 +16,4 @@ src/gen/
 *.ear
 target
 .DS_Store
+cloudmine-android-v*.zip

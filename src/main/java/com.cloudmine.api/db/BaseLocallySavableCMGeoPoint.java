@@ -21,7 +21,7 @@ public class BaseLocallySavableCMGeoPoint extends BaseLocallySavableCMObject imp
 
     private double latitude;
     private double longitude;
-    private final String __type__ = "geopoint";
+    private static final String __type__ = "geopoint";
 
     protected BaseLocallySavableCMGeoPoint() {
 

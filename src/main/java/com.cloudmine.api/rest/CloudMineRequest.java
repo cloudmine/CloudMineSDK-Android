@@ -155,7 +155,7 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
         responseListener = successListener;
         boolean isValidSessionToken = !(sessionToken == null || CMSessionToken.FAILED.equals(sessionToken));
         if(isValidSessionToken) sessionTokenString = sessionToken.getSessionToken();
-//        System.out.println("url=" + getUrl(url) + " valid session? " + isValidSessionToken + (isValidSessionToken ? ", sessionToken: " + sessionToken : "") + " with body: " + body);
+        System.out.println("url=" + getUrl(url) + " valid session? " + isValidSessionToken + (isValidSessionToken ? ", sessionToken: " + sessionToken : "") + " with body: " + body);
     }
 
     @Override
