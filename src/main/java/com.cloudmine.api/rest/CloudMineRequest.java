@@ -174,9 +174,13 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
         return "application/json; charset=" + getParamsEncoding();
     }
 
+    public void setSessionTokenString(String sessionTokenString) {
+        this.sessionTokenString = sessionTokenString;
+    }
+
     @Override
     protected void deliverResponse(RESPONSE response) {
-//        System.out.println("Delivering response " + response);
+        System.out.println("Delivering response " + response);
         if(handler != null) {
             synchronized (handlerLock) { //see deliver error for why we check this twice
                 if(handler != null) {

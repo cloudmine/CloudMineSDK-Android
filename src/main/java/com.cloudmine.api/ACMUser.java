@@ -81,6 +81,13 @@ public class ACMUser extends CMUser {
         return request;
     }
 
+    public CloudMineRequest create(Context context, Handler handler) {
+        CloudMineRequest request = new BaseUserCreationRequest(this, null, null, null);
+        request.setHandler(handler);
+        getRequestQueue(context).add(request);
+        return request;
+    }
+
     public CloudMineRequest login(Context context, Response.Listener<LoginResponse> successListener, Response.ErrorListener errorListener) {
         return login(context, getPassword(), successListener, errorListener);
     }

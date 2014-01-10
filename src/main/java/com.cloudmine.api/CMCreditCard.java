@@ -73,6 +73,7 @@ public class CMCreditCard extends BaseLocallySavableCMObject {
 
     @JsonIgnore
     public String getPaymentTransportRepresentation() {
+
         return JsonUtilities.objectToJson(this);
     }
 
