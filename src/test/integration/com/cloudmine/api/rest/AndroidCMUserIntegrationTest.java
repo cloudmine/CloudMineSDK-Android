@@ -73,6 +73,40 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
     }
 
     @Test
+    public void testPaymentMethodRemoving() {
+        String password = randomString();
+        ACMUser user = new ACMUser(randomEmail(), password);
+        assertTrue(service.insert(user).wasSuccess());
+        user.login(hasSuccess);
+        waitThenAssertTestResults();
+        final CMCreditCard card = new CMCreditCard("Smith", randomString(), "0215", "3333", "visa");
+        user.addPaymentMethod(applicationContext, card, testCallback(new Response.Listener<PaymentResponse>() {
+            @Override
+            public void onResponse(PaymentResponse response) {
+                assertTrue(response.wasSuccess());
+            }
+        }), defaultFailureListener);
+        waitThenAssertTestResults();
+
+        user.removePaymentMethodAtIndex(applicationContext, 0, testCallback(new Response.Listener<PaymentResponse>() {
+            @Override
+            public void onResponse(PaymentResponse response) {
+                assertTrue(response.wasSuccess());
+            }
+        }), defaultFailureListener);
+        waitThenAssertTestResults();
+
+        user.loadPaymentMethods(applicationContext, testCallback(new Response.Listener<PaymentResponse>() {
+            @Override
+            public void onResponse(PaymentResponse response) {
+                assertTrue(response.wasSuccess());
+                assertEquals(0, response.getCreditCards().size());
+            }
+        }), defaultFailureListener);
+        waitThenAssertTestResults();
+    }
+
+    @Test
     public void testUserCreationRequest() {
         ExtendedACMUser user = new ExtendedACMUser(randomEmail(), randomString());
 

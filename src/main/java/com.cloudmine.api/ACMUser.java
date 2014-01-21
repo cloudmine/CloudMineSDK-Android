@@ -11,6 +11,7 @@ import com.cloudmine.api.rest.BaseLoadPaymentMethodsRequest;
 import com.cloudmine.api.rest.BaseLoadUserProfilesRequest;
 import com.cloudmine.api.rest.BaseProfileLoadRequest;
 import com.cloudmine.api.rest.BaseProfileUpdateRequest;
+import com.cloudmine.api.rest.BaseRemovePaymentMethodRequest;
 import com.cloudmine.api.rest.BaseUserCreationRequest;
 import com.cloudmine.api.rest.BaseUserLoginRequest;
 import com.cloudmine.api.rest.BaseUserLogoutRequest;
@@ -171,6 +172,12 @@ public class ACMUser extends CMUser {
 
     public CloudMineRequest addPaymentMethod(Context context, CMCreditCard creditCard, Response.Listener<PaymentResponse> successListener, Response.ErrorListener errorListener) {
         return addPaymentMethod(context, Collections.singleton(creditCard), successListener, errorListener);
+    }
+
+    public CloudMineRequest removePaymentMethodAtIndex(Context context, int index, Response.Listener<PaymentResponse> successListener, Response.ErrorListener errorListener) {
+        CloudMineRequest request = new BaseRemovePaymentMethodRequest(index, getSessionToken(), null,successListener, errorListener);
+        SharedRequestQueueHolders.getRequestQueue(context).add(request);
+        return request;
     }
 
     public CloudMineRequest addPaymentMethod(Context context, Collection<CMCreditCard> creditCards, Response.Listener<PaymentResponse> successListener, Response.ErrorListener errorListener) {
