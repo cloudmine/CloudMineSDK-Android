@@ -28,4 +28,5 @@ public class BaseChargeCardRequest extends CloudMineRequest<PaymentResponse> {
     public int getRequestType() {
         return REQUEST_TYPE;
     }
+
 }

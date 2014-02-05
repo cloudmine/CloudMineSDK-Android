@@ -19,7 +19,7 @@ public class SharedRequestQueueHolders {
     public static RequestQueue getRequestQueue(Context context) {
         RequestQueue queue = queueMap.get(context);
         if(queue == null) {
-            queue = Volley.newRequestQueue(context, new OkHttpStack());
+            queue = Volley.newRequestQueue(context);
             queueMap.put(context, queue);
         }
         return queue;

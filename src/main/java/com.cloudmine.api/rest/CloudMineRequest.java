@@ -69,7 +69,7 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
 
     private static long applicationSoftTtl = 0;
     private static long applicationTtl = 120000;
-    private static boolean isCachingEnabled = true;
+    private static boolean isCachingEnabled = false;
 
     public static boolean isCachingEnabled() {
         return isCachingEnabled;
@@ -226,7 +226,8 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
     }
 
     public Map<String, String> getHeaders() throws AuthFailureError {
-        return AndroidHeaderFactory.getHeaderMapping(sessionTokenString);
+        Map<String, String> headerMapping = AndroidHeaderFactory.getHeaderMapping(sessionTokenString);
+        return headerMapping;
     }
 
     protected Cache.Entry getCacheEntry(NetworkResponse response) {

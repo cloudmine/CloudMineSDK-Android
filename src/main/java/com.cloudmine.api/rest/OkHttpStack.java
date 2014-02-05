@@ -23,6 +23,7 @@ public class OkHttpStack extends HurlStack {
         this.client = client;
     }
 
+
     @Override protected HttpURLConnection createConnection(URL url) throws IOException {
         return client.open(url);
     }
