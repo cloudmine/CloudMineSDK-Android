@@ -4,6 +4,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.response.PaymentResponse;
+import me.cloudmine.annotations.Expand;
 import me.cloudmine.annotations.Optional;
 
 /**
@@ -25,6 +26,7 @@ public class BaseChargeCardRequest extends CloudMineRequest<PaymentResponse> {
      * @param successListener callback called if the call succeeds on the server
      * @param errorListener callback called if the call fails (error response from server, no Internet, some other exception)
      */
+    @Expand
     public BaseChargeCardRequest(int cardIndex, String cart, CMSessionToken sessionToken, @Optional Response.Listener<PaymentResponse> successListener, Response.ErrorListener errorListener) {
         super(Method.POST, URL, "{ \"cart\":" + cart + ", \"paymentInfo\":{\"index\":" + cardIndex + ", \"type\":\"card\"}}", sessionToken, null, successListener, errorListener);
     }
