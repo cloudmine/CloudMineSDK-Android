@@ -13,8 +13,7 @@ import me.cloudmine.annotations.Single;
 import java.util.Collection;
 
 /**
- * <br>Copyright CloudMine LLC. All rights reserved
- * <br> See LICENSE file included with SDK for details.
+ * A Volley {@link com.android.volley.Request} for adding a payment method for a user. Requires a session token
  */
 public class BaseAddPaymentMethodRequest extends CloudMineRequest<PaymentResponse> {
     public static final int REQUEST_TYPE = 415;
@@ -34,6 +33,14 @@ public class BaseAddPaymentMethodRequest extends CloudMineRequest<PaymentRespons
         return ccArray.toString();
     }
 
+
+    /**
+     * Add all of the specified {@link com.cloudmine.api.CMCreditCard} to the user associated with the given {@link com.cloudmine.api.CMSessionToken}
+     * @param cards A collection of the cards to add
+     * @param sessionToken a valid session token. The credit cards will be added to the user whose session token this is
+     * @param serverFunction A nullable server function to call after adding the credit cards to the user
+     * @param successListener callback called if the call succeeds on the server
+     */
     @Expand
     public BaseAddPaymentMethodRequest(@Single Collection<CMCreditCard> cards, CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, Response.Listener<PaymentResponse> successListener, @Optional Response.ErrorListener errorListener) {
         super(Method.POST, URL, toCreditCardArray(cards), sessionToken, serverFunction, successListener, errorListener);
