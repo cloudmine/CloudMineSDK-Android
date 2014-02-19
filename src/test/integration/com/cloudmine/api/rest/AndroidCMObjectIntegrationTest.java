@@ -10,7 +10,6 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.HurlStack;
-import com.android.volley.toolbox.Volley;
 import com.cloudmine.api.CMAccessList;
 import com.cloudmine.api.CMAccessPermission;
 import com.cloudmine.api.CMObject;
@@ -58,12 +57,14 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
 
     @Before
     public void setUp() {
-        CloudMineRequest.setCachingEnabled(false);
+
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         applicationContext = Robolectric.application.getApplicationContext();
         DeviceIdentifier.initialize(applicationContext);
-        queue = SharedRequestQueueHolders.getRequestQueue(applicationContext);
         super.setUp();
+        queue = SharedRequestQueueHolders.getRequestQueue(applicationContext);
+
+        CloudMineRequest.setCachingEnabled(false);
     }
 
     @Test
