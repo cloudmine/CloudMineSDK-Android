@@ -1,7 +1,6 @@
 package com.cloudmine.api;
 
 import android.content.Context;
-import android.os.Handler;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.cloudmine.api.rest.BaseAddPaymentMethodRequest;
@@ -29,38 +28,74 @@ import java.util.Collections;
 import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
 
 /**
- * Android specific CMUser. Should be used over CMUser unless running server side code
+ * Android specific CMUser. Should be used over JavaCMUser unless running server side code
  * <br>
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 public class CMUser extends JavaCMUser {
 
+    /**
+     * Load all of the user profiles. Requires the use of your master key
+     * @param context
+     * @param successListener
+     * @param errorListener
+     * @return
+     */
     public static CloudMineRequest loadAllUserProfiles(Context context, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
         BaseLoadUserProfilesRequest loadUserProfilesRequest = new BaseLoadUserProfilesRequest(null, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(loadUserProfilesRequest);
         return loadUserProfilesRequest;
     }
 
+    /**
+     * Search for user profiles matching a given searchString
+     * @param context
+     * @param searchString Use {@link com.cloudmine.api.SearchQuery} to construct this search string
+     * @param successListener
+     * @param errorListener
+     * @return
+     */
     public static CloudMineRequest searchUserProfiles(Context context, String searchString, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
         BaseLoadUserProfilesRequest loadUserProfilesRequest = new BaseLoadUserProfilesRequest(searchString, null, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(loadUserProfilesRequest);
         return loadUserProfilesRequest;
     }
 
+    /**
+     * Create a new CMUser with the given username and password
+     * @param userName
+     * @param password
+     * @return
+     */
     public static CMUser CMUserWithUserName(String userName, String password) {
         return new CMUser(null, userName, password);
     }
 
+    /**
+     * Create a new CMUser with the given username and blank password
+     * @param userName
+     * @return
+     */
     public static CMUser CMUserWithUserName(String userName) {
         return new CMUser(null, userName, "");
     }
 
-
+    /**
+     * Create a new CMUser with the given email and password
+     * @param email
+     * @param password
+     * @return
+     */
     public static CMUser CMUserWithEmail(String email, String password) {
         return new CMUser(email, password);
     }
 
+    /**
+     * Create a new CMUser with the given email and blank password
+     * @param email
+     * @return
+     */
     public static CMUser CMUserWithEmail(String email) {
         return new CMUser(email, "");
     }
@@ -75,6 +110,13 @@ public class CMUser extends JavaCMUser {
         super(email, password);
     }
 
+    /**
+     * Create a user asynchronously
+     * @param context
+     * @param successListener
+     * @param errorListener
+     * @return
+     */
     public CloudMineRequest create(Context context, Response.Listener<CreationResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
         CloudMineRequest request = new BaseUserCreationRequest(this, null, successListener,  errorListener);
@@ -82,10 +124,25 @@ public class CMUser extends JavaCMUser {
         return request;
     }
 
+    /**
+     * Login a user asynchronously, set their session token and profile information on this object, and clears their password
+     * @param context
+     * @param successListener
+     * @param errorListener
+     * @return
+     */
     public CloudMineRequest login(Context context, Response.Listener<LoginResponse> successListener, Response.ErrorListener errorListener) {
         return login(context, getPassword(), successListener, errorListener);
     }
 
+    /**
+     * Login a user asynchronously, set their session token and profile information on this object, and clears their password
+     * @param context
+     * @param password the password to use to login
+     * @param successListener
+     * @param errorListener
+     * @return
+     */
     public CloudMineRequest login(Context context, String password, final Response.Listener<LoginResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
 
@@ -103,13 +160,13 @@ public class CMUser extends JavaCMUser {
         return request;
     }
 
-    public CloudMineRequest login(Context context, String password, Handler handler) {
-        BaseUserLoginRequest request = new BaseUserLoginRequest(getUserIdentifier(), password, null, null, null);
-        request.setHandler(handler);
-        getRequestQueue(context).add(request);
-        return request;
-    }
-
+    /**
+     * Logs the user out, invalidating their session token. If successful, clears the session token on this object
+     * @param context
+     * @param successListener
+     * @param errorListener
+     * @return
+     */
     public CloudMineRequest logout(Context context, final Response.Listener<CMResponse> successListener, Response.ErrorListener errorListener) {
         BaseUserLogoutRequest request = new BaseUserLogoutRequest(getSessionToken(), null, new Response.Listener<CMResponse>() {
             @Override
@@ -127,6 +184,13 @@ public class CMUser extends JavaCMUser {
         return request;
     }
 
+    /**
+     * Save this user's profile. A user must be logged in to save their profile.
+     * @param context
+     * @param successListener
+     * @param errorListener
+     * @return
+     */
     public CloudMineRequest saveProfile(Context context, Response.Listener<CreationResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
         CloudMineRequest request = new BaseProfileUpdateRequest(profileTransportRepresentation(), getSessionToken(), null, successListener, errorListener);
@@ -134,6 +198,13 @@ public class CMUser extends JavaCMUser {
         return request;
     }
 
+    /**
+     * Load this user's profile. A user must be logged in to load their profile
+     * @param context
+     * @param successListener
+     * @param errorListener
+     * @return
+     */
     public CloudMineRequest loadProfile(Context context, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
         CloudMineRequest request = new BaseProfileLoadRequest(getSessionToken(), null, successListener, errorListener);
@@ -141,6 +212,15 @@ public class CMUser extends JavaCMUser {
         return request;
     }
 
+    /**
+     * Change this user's password
+     * @param context
+     * @param currentPassword
+     * @param newPassword
+     * @param successListener
+     * @param errorListener
+     * @return
+     */
     public CloudMineRequest changePassword(Context context, String currentPassword, String newPassword, Response.Listener<CMResponse> successListener, Response.ErrorListener errorListener) {
         CloudMineRequest request = new BaseChangeUserPasswordRequest(getUserIdentifier(), currentPassword, newPassword, null, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
@@ -148,6 +228,15 @@ public class CMUser extends JavaCMUser {
         return request;
     }
 
+    /**
+     * Change this user's userName
+     * @param context
+     * @param newUserName
+     * @param currentPassword
+     * @param successListener
+     * @param errorListener
+     * @return
+     */
     public CloudMineRequest changeUserName(Context context, String newUserName, String currentPassword, Response.Listener<CMResponse> successListener, Response.ErrorListener errorListener) {
         CloudMineRequest request = new BaseChangeUserIdentifierRequest(getUserIdentifier(), currentPassword, null, newUserName, null, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);

@@ -215,7 +215,7 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
     public void testChangeUserName() {
         String userName = randomString();
         String password = randomString();
-        CMUser user = CMUser.ACMUserWithUserName(userName, password);
+        CMUser user = CMUser.CMUserWithUserName(userName, password);
         assertTrue(service.insert(user).wasSuccess());
 
         String newUserName = randomString();
@@ -231,7 +231,7 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
     public void testChangeEmail() {
         String email = randomEmail();
         String password = randomString();
-        CMUser user = CMUser.ACMUserWithEmail(email, password);
+        CMUser user = CMUser.CMUserWithEmail(email, password);
         assertTrue(service.insert(user).wasSuccess());
 
         String newEmail = randomEmail();
