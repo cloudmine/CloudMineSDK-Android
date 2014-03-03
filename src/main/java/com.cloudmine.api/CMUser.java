@@ -34,7 +34,7 @@ import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class ACMUser extends JavaCMUser {
+public class CMUser extends JavaCMUser {
 
     public static CloudMineRequest loadAllUserProfiles(Context context, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
         BaseLoadUserProfilesRequest loadUserProfilesRequest = new BaseLoadUserProfilesRequest(null, successListener, errorListener);
@@ -48,30 +48,30 @@ public class ACMUser extends JavaCMUser {
         return loadUserProfilesRequest;
     }
 
-    public static ACMUser ACMUserWithUserName(String userName, String password) {
-        return new ACMUser(null, userName, password);
+    public static CMUser CMUserWithUserName(String userName, String password) {
+        return new CMUser(null, userName, password);
     }
 
-    public static ACMUser ACMUserWithUserName(String userName) {
-        return new ACMUser(null, userName, "");
+    public static CMUser CMUserWithUserName(String userName) {
+        return new CMUser(null, userName, "");
     }
 
 
-    public static ACMUser ACMUserWithEmail(String email, String password) {
-        return new ACMUser(email, password);
+    public static CMUser CMUserWithEmail(String email, String password) {
+        return new CMUser(email, password);
     }
 
-    public static ACMUser ACMUserWithEmail(String email) {
-        return new ACMUser(email, "");
+    public static CMUser CMUserWithEmail(String email) {
+        return new CMUser(email, "");
     }
 
-    protected ACMUser() {}
+    protected CMUser() {}
 
-    public ACMUser(String email, String userName, String password) {
+    public CMUser(String email, String userName, String password) {
         super(email, userName, password);
     }
 
-    public ACMUser(String email, String password) {
+    public CMUser(String email, String password) {
         super(email, password);
     }
 
