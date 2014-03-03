@@ -13,8 +13,8 @@ import com.android.volley.toolbox.HurlStack;
 import com.cloudmine.api.CMAccessList;
 import com.cloudmine.api.CMAccessPermission;
 import com.cloudmine.api.CMObject;
-import com.cloudmine.api.CMUser;
 import com.cloudmine.api.DeviceIdentifier;
+import com.cloudmine.api.JavaCMUser;
 import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.integration.CMObjectIntegrationTest;
 import com.cloudmine.api.persistance.ClassNameRegistry;
@@ -57,10 +57,10 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
 
     @Before
     public void setUp() {
-
-        Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         applicationContext = Robolectric.application.getApplicationContext();
         DeviceIdentifier.initialize(applicationContext);
+
+        Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         super.setUp();
         queue = SharedRequestQueueHolders.getRequestQueue(applicationContext);
 
@@ -73,7 +73,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
         object.save(applicationContext, ResponseCallbackTuple.wasCreated(object.getObjectId()), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
 
-        CMUser user = loggedInUser();
+        JavaCMUser user = loggedInUser();
         object = new ExtendedLocallySavableCMObject("FFF", false, 1);
         object.save(applicationContext, user.getSessionToken(), ResponseCallbackTuple.wasCreated(object.getObjectId()), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
@@ -86,7 +86,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
         queue.add(new com.cloudmine.api.rest.ObjectModificationRequest(object, ResponseCallbackTuple.wasCreated(object.getObjectId()), defaultFailureListener));
         waitThenAssertTestResults();
 
-        CMUser user = user();
+        JavaCMUser user = user();
         user.login(hasSuccess);
         waitThenAssertTestResults();
 
@@ -144,7 +144,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
 
     @Test
     public void testUserObjectLoadRequest() {
-        CMUser user = loggedInUser();
+        JavaCMUser user = loggedInUser();
         ExtendedCMObject object = new ExtendedCMObject("Francis Farmer", 55);
         UserCMWebService userService = service.getUserWebService(user.getSessionToken());
         ObjectModificationResponse insertResponse = userService.insert(object.transportableRepresentation());
@@ -261,8 +261,8 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
 
     @Test
     public void testLoadSharedSupport() {
-        CMUser owner = loggedInUser();
-        CMUser notOwner = randomLoggedInUser();
+        JavaCMUser owner = loggedInUser();
+        JavaCMUser notOwner = randomLoggedInUser();
         ExtendedLocallySavableCMObject sharableObject = new ExtendedLocallySavableCMObject("Bill", false, 0);
 
         CMAccessList accessList = new CMAccessList(owner, CMAccessPermission.READ);
@@ -317,7 +317,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
         assertEquals(object, objectLoadResponse.getCMObject(objectId));
     }
 
-    private void assertUserHasObject(CMObject object, CMUser user) {
+    private void assertUserHasObject(CMObject object, JavaCMUser user) {
         String objectId = object.getObjectId();
         CMObjectResponse objectLoadResponse = CMWebService.getService().getUserWebService(user.getSessionToken()).loadObject(objectId);
         assertTrue(objectLoadResponse.hasSuccess());

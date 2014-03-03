@@ -3,7 +3,7 @@ package com.cloudmine.api.rest;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.cloudmine.api.CMSessionToken;
-import com.cloudmine.api.CMUser;
+import com.cloudmine.api.JavaCMUser;
 import com.cloudmine.api.exceptions.CreationException;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
 
@@ -35,7 +35,7 @@ public class ObjectModificationRequestBuilder extends RequestBuilder<ObjectModif
         return this;
     }
 
-    public ObjectModificationRequestBuilder saveWith(CMUser user) {
+    public ObjectModificationRequestBuilder saveWith(JavaCMUser user) {
         if(user == null) return this;
         CMSessionToken token = user.getSessionToken();
         boolean isSessionTokenValid = !(token == null || CMSessionToken.FAILED.equals(token));

@@ -9,7 +9,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
-import com.cloudmine.api.CMUser;
+import com.cloudmine.api.JavaCMUser;
 import com.cloudmine.api.LocallySavable;
 import com.cloudmine.api.rest.BaseObjectDeleteRequest;
 import com.cloudmine.api.rest.BaseObjectLoadRequest;
@@ -207,7 +207,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
         RequestQueue queue = getRequestQueue(context);
         BaseObjectModificationRequest request;
         if(isUserLevel()) {
-            CMUser user = getUser();
+            JavaCMUser user = getUser();
             if(user != null && user.getSessionToken() != null) {
                 request = new BaseObjectModificationRequest(this, user.getSessionToken(), null, successListener, errorListener);
             } else {
