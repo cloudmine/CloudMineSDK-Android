@@ -44,8 +44,6 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseLocallySavableCMObject.class);
 
-
-
     @Expand(isStatic = true)
     public static CloudMineRequest saveObjects(Context context, Collection <CMObject> objects, @Optional CMSessionToken token, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ObjectModificationResponse> listener, @Optional Response.ErrorListener errorListener) {
         CloudMineRequest request = new BaseObjectModificationRequest(CMObject.massTransportable(objects), token, serverFunction, listener, errorListener);
@@ -157,7 +155,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
         return CMObjectDBOpenHelper.getCMObjectDBHelper(context).loadAllObjects();
     }
 
-    private Date lastSaveDate;
+    private Date lastLocalSaveDate;
 
     /**
      * Save this object to local storage. Runs on the calling thread
@@ -166,7 +164,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
      */
     public boolean saveLocally(Context context) {
         boolean wasSaved = CMObjectDBOpenHelper.getCMObjectDBHelper(context).insertCMObjectIfNewer(this);
-        if(wasSaved) lastSaveDate = new Date();
+        if(wasSaved) lastLocalSaveDate = new Date();
         return wasSaved;
     }
 
@@ -242,17 +240,17 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
      * Get the last time this object was stored locally. Returns 0 if the object has never been stored locally
      * @return
      */
-    public int getLastSavedDateAsSeconds() {
-        if(lastSaveDate == null) return 0;
-        return (int) (lastSaveDate.getTime() / 1000);
+    public int getLastLocalSavedDateAsSeconds() {
+        if(lastLocalSaveDate == null) return 0;
+        return (int) (lastLocalSaveDate.getTime() / 1000);
     }
 
-    public Date getLastSaveDate() {
-        return lastSaveDate;
+    public Date getLastLocalSaveDate() {
+        return lastLocalSaveDate;
     }
 
-    protected void setLastSaveDate(Date lastSaveDate) {
-        this.lastSaveDate = lastSaveDate;
+    protected void setLastLocalSaveDate(Date lastSaveDate) {
+        this.lastLocalSaveDate = lastSaveDate;
     }
 
     @Expand
@@ -270,7 +268,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
         ContentValues values = new ContentValues();
         values.put(CMObjectDBOpenHelper.OBJECT_ID_COLUMN, getObjectId());
         values.put(CMObjectDBOpenHelper.JSON_COLUMN, transportableRepresentation());
-        values.put(CMObjectDBOpenHelper.SAVED_DATE_COLUMN, getLastSavedDateAsSeconds());
+        values.put(CMObjectDBOpenHelper.SAVED_DATE_COLUMN, getLastLocalSavedDateAsSeconds());
         values.put(CMObjectDBOpenHelper.CLASS_NAME_COLUMN, getClassName());
         return values;
     }

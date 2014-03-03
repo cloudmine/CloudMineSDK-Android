@@ -195,7 +195,6 @@ public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
     }
 
     private static <OBJECT_TYPE extends BaseLocallySavableCMObject> OBJECT_TYPE fromCursor(Cursor cursor) {
-
         int jsonIndex = cursor.getColumnIndex(JSON_COLUMN);
         String json = cursor.getString(jsonIndex);
         if(Strings.isEmpty(json)) return null;

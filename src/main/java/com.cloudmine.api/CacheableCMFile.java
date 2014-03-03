@@ -305,7 +305,7 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
     /**
      * Not supported for cmfiles
      */
-    public int getLastSavedDateAsSeconds() {
+    public int getLastLocalSavedDateAsSeconds() {
         return 0;
     }
 
@@ -314,7 +314,7 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
     /**
      * Not supported for CMFiles
      */
-    public Date getLastSaveDate() {
+    public Date getLastLocalSaveDate() {
         return null;
     }
 
