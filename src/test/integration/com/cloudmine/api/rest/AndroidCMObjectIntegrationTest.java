@@ -18,6 +18,7 @@ import com.cloudmine.api.JavaCMUser;
 import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.integration.CMObjectIntegrationTest;
 import com.cloudmine.api.persistance.ClassNameRegistry;
+import com.cloudmine.api.rest.callbacks.CMObjectResponseCallback;
 import com.cloudmine.api.rest.callbacks.CreationResponseCallback;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.CMObjectResponse;
@@ -284,6 +285,12 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
         }), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
 
+        service.getUserWebService(owner.getSessionToken()).asyncLoadAccessLists(TestServiceCallback.testCallback(new CMObjectResponseCallback() {
+            public  void onCompletion(CMObjectResponse response) {
+                assertTrue(response.wasSuccess());
+            }
+        }));
+        waitThenAssertTestResults();
         BaseObjectLoadRequest request = new ObjectLoadRequestBuilder(notOwner.getSessionToken(), ResponseCallbackTuple.wasLoaded(sharableObject), ResponseCallbackTuple.defaultFailureListener).getShared().build();
         queue.add(request);
         waitThenAssertTestResults();
