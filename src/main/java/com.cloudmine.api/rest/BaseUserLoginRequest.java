@@ -12,6 +12,7 @@ import me.cloudmine.annotations.Optional;
 import java.util.Map;
 
 /**
+ * A Request for logging a user in
  * <br>
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
@@ -22,6 +23,25 @@ public class BaseUserLoginRequest extends CloudMineRequest<LoginResponse> {
 
     private final String credentials;
 
+    /**
+     * Create a new request for logging a user in
+     * @param user the user to log in. Must be non null
+     * @param serverFunction
+     * @param successListener
+     * @param errorListener
+     */
+    @Expand
+    public BaseUserLoginRequest(JavaCMUser user,  @Optional CMServerFunction serverFunction, Response.Listener<LoginResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        this(user.getUserIdentifier(), user.getPassword(), serverFunction, successListener, errorListener);
+    }
+    /**
+     * Create a new request for logging a user in
+     * @param userIdentifier either a username or email address of a registered user
+     * @param password the user's password
+     * @param serverFunction
+     * @param successListener
+     * @param errorListener
+     */
     @Expand
     public BaseUserLoginRequest(String userIdentifier, String password, @Optional CMServerFunction serverFunction, Response.Listener<LoginResponse> successListener, @Optional Response.ErrorListener errorListener) {
         super(Method.POST, ENDPOINT, null, null, serverFunction, successListener, errorListener);
