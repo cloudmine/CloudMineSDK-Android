@@ -9,6 +9,7 @@ import me.cloudmine.annotations.Expand;
 import me.cloudmine.annotations.Optional;
 
 /**
+ * Load ACL information for a specific, logged in user
  * <br>Copyright CloudMine LLC. All rights reserved
  * <br> See LICENSE file included with SDK for details.
  */
@@ -17,6 +18,14 @@ public class BaseAccessListLoadRequest extends CloudMineRequest<CMObjectResponse
 
     private static final String BASE_URL = "/user/access";
 
+    /**
+     * Create a BaseAccessListLoadRequest that will load the access lists of the user whose
+     * sessionToken is passed in
+     * @param sessionToken a valid sessionToken for the user whose ACL information is to be fetched
+     * @param serverFunction
+     * @param successListener
+     * @param errorListener
+     */
     @Expand
     public BaseAccessListLoadRequest(CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener) {
         super(Method.GET, BASE_URL, (String)null, sessionToken, serverFunction, successListener, errorListener);
