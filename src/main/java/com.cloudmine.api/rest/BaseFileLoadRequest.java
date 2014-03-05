@@ -12,6 +12,7 @@ import me.cloudmine.annotations.Optional;
 import java.util.Map;
 
 /**
+ * A Request for loading a CMFile, based on its id
  * <br>
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
@@ -21,12 +22,20 @@ public class BaseFileLoadRequest extends CloudMineRequest<FileLoadResponse> {
     static final String BASE_ENDPOINT = "/binary";
     static final CMURLBuilder BASE_URL = new CMURLBuilder(BASE_ENDPOINT, true);
 
-    private final String fileName;
+    private final String fileId;
 
+    /**
+     * Create a new BaseFileLoadRequest for loading a file based on its id
+     * @param fileId the id of the file to load
+     * @param sessionToken optional; if specified, it is assumed the file is user level
+     * @param serverFunction
+     * @param successListener
+     * @param errorListener
+     */
     @Expand
-    public BaseFileLoadRequest(String fileName, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, Response.Listener<FileLoadResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.GET, BASE_URL.copy().user(sessionToken).addKey(fileName), sessionToken, serverFunction, successListener, errorListener);
-        this.fileName = fileName;
+    public BaseFileLoadRequest(String fileId, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, Response.Listener<FileLoadResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.GET, BASE_URL.copy().user(sessionToken).addKey(fileId), sessionToken, serverFunction, successListener, errorListener);
+        this.fileId = fileId;
     }
 
     @Override
@@ -35,7 +44,7 @@ public class BaseFileLoadRequest extends CloudMineRequest<FileLoadResponse> {
         String fileType = (headers == null) ?
                 null :
                 headers.get("Content-Type");
-        CMFile file = new CMFile(networkResponse.data, fileName, fileType);
+        CMFile file = new CMFile(networkResponse.data, fileId, fileType);
 
         return Response.success(
                 new FileLoadResponse(
