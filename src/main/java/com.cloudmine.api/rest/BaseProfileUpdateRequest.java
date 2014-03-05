@@ -3,7 +3,7 @@ package com.cloudmine.api.rest;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.cloudmine.api.CMSessionToken;
-import com.cloudmine.api.CMUser;
+import com.cloudmine.api.JavaCMUser;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.CreationResponse;
 import me.cloudmine.annotations.Expand;
@@ -26,7 +26,7 @@ public class BaseProfileUpdateRequest extends CloudMineRequest<CreationResponse>
      * @param errorListener
      */
     @Expand
-    public BaseProfileUpdateRequest(CMUser user, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
+    public BaseProfileUpdateRequest(JavaCMUser user, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
         this(user.profileTransportRepresentation(), user.getSessionToken(), serverFunction, successListener,  errorListener);
     }
 
