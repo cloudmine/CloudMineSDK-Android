@@ -12,12 +12,15 @@ import me.cloudmine.annotations.Optional;
 import java.util.Map;
 
 /**
+ * A request specifically for loading an image from CloudMine. Allows for resizing the image
+ * once loaded
  * <br>
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 public class BaseImageLoadRequest extends ImageRequest {
     private String sessionTokenString;
+
     /**
      * Creates a new image request, decoding to a maximum specified width and
      * height. If both width and height are zero, the image will be decoded to
@@ -27,15 +30,17 @@ public class BaseImageLoadRequest extends ImageRequest {
      * be fit in the rectangle of dimensions width x height while keeping its
      * aspect ratio.
      *
-     * @param listener      Listener to receive the decoded bitmap
-     * @param maxWidth      Maximum width to decode this bitmap to, or zero for none
-     * @param maxHeight     Maximum height to decode this bitmap to, or zero for
-     *                      none
-     * @param decodeConfig  Format to decode the bitmap to
-     * @param errorListener Error listener, or null to ignore errors
+     * @param fileId the id of the file
+     * @param sessionToken optional; if specified, it is assumed the file is user level
+     * @param serverFunction
+     * @param maxWidth if nonzero, image will attempt to have this width while maintaining aspect ratio
+     * @param maxHeight if nonzero, image will attempt to have this height while maintaining aspect ratio
+     * @param decodeConfig details on how to decode the image
+     * @param listener
+     * @param errorListener
      */
     @Expand
-    public BaseImageLoadRequest(String fileId, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional("height") int maxWidth, @Optional("height") int maxHeight, Bitmap.Config decodeConfig, Response.Listener<Bitmap> listener, @Optional Response.ErrorListener errorListener) {
+    public BaseImageLoadRequest(String fileId, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional("sizing") int maxWidth, @Optional("sizing") int maxHeight, Bitmap.Config decodeConfig, Response.Listener<Bitmap> listener, @Optional Response.ErrorListener errorListener) {
         super(CloudMineRequest.getUrl(CloudMineRequest.addServerFunction(addUser(sessionToken) + "/binary/" + fileId, serverFunction)),
                 listener, maxWidth, maxHeight, decodeConfig, errorListener);
         sessionTokenString = sessionToken == null ? "" : sessionToken.getSessionToken();
