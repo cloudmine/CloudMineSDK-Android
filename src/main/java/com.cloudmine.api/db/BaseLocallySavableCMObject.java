@@ -229,10 +229,8 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
     }
 
     public CloudMineRequest save(Context context, Handler handler) {
-        RequestQueue queue = getRequestQueue(context);
-        BaseObjectModificationRequest request = new BaseObjectModificationRequest(this, null, null, null);
+        CloudMineRequest request = save(context, null,null);
         request.setHandler(handler);
-        queue.add(request);
         return request;
     }
 
