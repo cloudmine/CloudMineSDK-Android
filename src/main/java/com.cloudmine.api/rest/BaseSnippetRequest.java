@@ -10,6 +10,8 @@ import me.cloudmine.annotations.Optional;
 import java.util.Map;
 
 /**
+ * A Request for calling a server side code snippet. For detailed information about our
+ * server side code environment, view the documentation here: https://cloudmine.me/docs/servercode
  * <br>Copyright CloudMine LLC. All rights reserved
  * <br> See LICENSE file included with SDK for details.
  */
@@ -30,6 +32,14 @@ public class BaseSnippetRequest extends CloudMineRequest<CMResponse> {
         return urlBuilder.toString();
     }
 
+    /**
+     * Create a new SnippetRequest to run the Java or JavaScript code with the given snippetName
+     * @param snippetName the name of the snippet to run
+     * @param extraParams optional parameters that will be passed into the snippet
+     * @param sessionToken optional, will be passed into the snippet if specified
+     * @param successListener
+     * @param errorListener
+     */
     @Expand
     public BaseSnippetRequest(String snippetName, @Optional Map< String, String> extraParams, @Optional CMSessionToken sessionToken, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener) {
         super(Method.GET, getSnippetUrl(snippetName, extraParams), null, sessionToken, null, successListener, errorListener);
