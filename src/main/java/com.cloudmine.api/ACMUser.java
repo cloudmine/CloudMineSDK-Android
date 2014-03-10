@@ -4,11 +4,14 @@ import android.content.Context;
 import android.os.Handler;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.cloudmine.api.rest.BaseAddPaymentMethodRequest;
 import com.cloudmine.api.rest.BaseChangeUserIdentifierRequest;
 import com.cloudmine.api.rest.BaseChangeUserPasswordRequest;
+import com.cloudmine.api.rest.BaseLoadPaymentMethodsRequest;
 import com.cloudmine.api.rest.BaseLoadUserProfilesRequest;
 import com.cloudmine.api.rest.BaseProfileLoadRequest;
 import com.cloudmine.api.rest.BaseProfileUpdateRequest;
+import com.cloudmine.api.rest.BaseRemovePaymentMethodRequest;
 import com.cloudmine.api.rest.BaseUserCreationRequest;
 import com.cloudmine.api.rest.BaseUserLoginRequest;
 import com.cloudmine.api.rest.BaseUserLogoutRequest;
@@ -18,6 +21,10 @@ import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.CMResponse;
 import com.cloudmine.api.rest.response.CreationResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
+import com.cloudmine.api.rest.response.PaymentResponse;
+
+import java.util.Collection;
+import java.util.Collections;
 
 import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
 
@@ -153,6 +160,59 @@ public class ACMUser extends CMUser {
         CloudMineRequest request = new BaseChangeUserIdentifierRequest(getUserIdentifier(), currentPassword, newEmail, null, null, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
         setEmail(newEmail);
+        return request;
+    }
+
+    /**
+     * See {@link com.cloudmine.api.rest.BaseAddPaymentMethodRequest}. User must be logged in
+     * @param context
+     * @param creditCard
+     * @param successListener
+     * @param errorListener
+     * @return The request that was added to the queue
+     */
+    public CloudMineRequest addPaymentMethod(Context context, CMCreditCard creditCard, Response.Listener<PaymentResponse> successListener, Response.ErrorListener errorListener) {
+        return addPaymentMethod(context, Collections.singleton(creditCard), successListener, errorListener);
+    }
+
+    /**
+     * See {@link com.cloudmine.api.rest.BaseRemovePaymentMethodRequest}. User must be logged in
+     * @param context
+     * @param index
+     * @param successListener
+     * @param errorListener
+     * @return The request that was added to the queue
+     */
+    public CloudMineRequest removePaymentMethodAtIndex(Context context, int index, Response.Listener<PaymentResponse> successListener, Response.ErrorListener errorListener) {
+        CloudMineRequest request = new BaseRemovePaymentMethodRequest(index, getSessionToken(), null,successListener, errorListener);
+        SharedRequestQueueHolders.getRequestQueue(context).add(request);
+        return request;
+    }
+
+    /**
+     * See {@link com.cloudmine.api.rest.BaseAddPaymentMethodRequest}. User must be logged in
+     * @param context
+     * @param creditCards
+     * @param successListener
+     * @param errorListener
+     * @return The request that was added to the queue
+     */
+    public CloudMineRequest addPaymentMethod(Context context, Collection<CMCreditCard> creditCards, Response.Listener<PaymentResponse> successListener, Response.ErrorListener errorListener) {
+        CloudMineRequest request = new BaseAddPaymentMethodRequest(creditCards, getSessionToken(), null, successListener, errorListener);
+        SharedRequestQueueHolders.getRequestQueue(context).add(request);
+        return request;
+    }
+
+    /**
+     * See {@link com.cloudmine.api.rest.BaseLoadPaymentMethodsRequest}. User must be logged in
+     * @param context
+     * @param successListener
+     * @param errorListener
+     * @return The request that was added to the queue
+     */
+    public CloudMineRequest loadPaymentMethods(Context context, Response.Listener<PaymentResponse> successListener, Response.ErrorListener errorListener) {
+        CloudMineRequest request = new BaseLoadPaymentMethodsRequest(getSessionToken(), null, successListener, errorListener);
+        SharedRequestQueueHolders.getRequestQueue(context).add(request);
         return request;
     }
 }

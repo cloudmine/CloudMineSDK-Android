@@ -15,7 +15,6 @@ import com.cloudmine.api.rest.BaseObjectDeleteRequest;
 import com.cloudmine.api.rest.BaseObjectLoadRequest;
 import com.cloudmine.api.rest.BaseObjectModificationRequest;
 import com.cloudmine.api.rest.CloudMineRequest;
-import com.cloudmine.api.rest.ObjectDeleteRequest;
 import com.cloudmine.api.rest.ObjectLoadRequestBuilder;
 import com.cloudmine.api.rest.SharedRequestQueueHolders;
 import com.cloudmine.api.rest.options.CMServerFunction;
@@ -258,7 +257,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
 
     @Expand
     public CloudMineRequest delete(Context context, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ObjectModificationResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        CloudMineRequest request = new ObjectDeleteRequest(getObjectId(), sessionToken, serverFunction, successListener, errorListener);
+        CloudMineRequest request = new BaseObjectDeleteRequest(Collections.singleton(getObjectId()), sessionToken, serverFunction, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
         return request;
     }

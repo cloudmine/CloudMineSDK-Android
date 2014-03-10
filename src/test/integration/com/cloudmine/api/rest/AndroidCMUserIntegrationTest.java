@@ -3,6 +3,7 @@ package com.cloudmine.api.rest;
 import android.content.Context;
 import com.android.volley.Response;
 import com.cloudmine.api.ACMUser;
+import com.cloudmine.api.CMCreditCard;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.integration.CMUserIntegrationTest;
@@ -10,18 +11,20 @@ import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.CMResponse;
 import com.cloudmine.api.rest.response.CreationResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
+import com.cloudmine.api.rest.response.PaymentResponse;
 import com.cloudmine.test.CloudMineTestRunner;
 import com.cloudmine.test.ExtendedACMUser;
 import com.cloudmine.test.ResponseCallbackTuple;
 import com.xtremelabs.robolectric.Robolectric;
 import org.junit.Before;
-import org.junit.runner.RunWith;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.Arrays;
 import java.util.List;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
 import static com.cloudmine.test.ResponseCallbackTuple.defaultFailureListener;
-import static com.cloudmine.test.ResponseCallbackTuple.hasSuccess;
 import static com.cloudmine.test.ResponseCallbackTuple.testCallback;
 import static junit.framework.Assert.*;
 /**
@@ -36,11 +39,71 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
 
     @Before
     public void setUp() {
-        CloudMineRequest.setCachingEnabled(false);
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         applicationContext = Robolectric.application.getApplicationContext();
         DeviceIdentifier.initialize(applicationContext);
         super.setUp();
+        CloudMineRequest.setCachingEnabled(false);
+    }
+
+    @Test
+    public void testPaymentMethodAdding() {
+        String password = randomString();
+        ACMUser user = new ACMUser(randomEmail(), password);
+        assertTrue(service.insert(user).wasSuccess());
+        user.login(hasSuccess);
+        waitThenAssertTestResults();
+        final CMCreditCard card = new CMCreditCard("Smith", randomString(), "0215", "3333", "visa");
+        user.addPaymentMethod(applicationContext, card, testCallback(new Response.Listener<PaymentResponse>() {
+            @Override
+            public void onResponse(PaymentResponse response) {
+                assertTrue(response.wasSuccess());
+            }
+        }), defaultFailureListener);
+        waitThenAssertTestResults();
+
+        user.loadPaymentMethods(applicationContext, testCallback(new Response.Listener<PaymentResponse>() {
+            @Override
+            public void onResponse(PaymentResponse response) {
+                assertTrue(response.wasSuccess());
+                assertEquals(Arrays.asList(card), response.getCreditCards());
+            }
+        }), defaultFailureListener);
+        waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testPaymentMethodRemoving() {
+        String password = randomString();
+        ACMUser user = new ACMUser(randomEmail(), password);
+        assertTrue(service.insert(user).wasSuccess());
+        user.login(hasSuccess);
+        waitThenAssertTestResults();
+        final CMCreditCard card = new CMCreditCard("Smith", randomString(), "0215", "3333", "visa");
+        user.addPaymentMethod(applicationContext, card, testCallback(new Response.Listener<PaymentResponse>() {
+            @Override
+            public void onResponse(PaymentResponse response) {
+                assertTrue(response.wasSuccess());
+            }
+        }), defaultFailureListener);
+        waitThenAssertTestResults();
+
+        user.removePaymentMethodAtIndex(applicationContext, 0, testCallback(new Response.Listener<PaymentResponse>() {
+            @Override
+            public void onResponse(PaymentResponse response) {
+                assertTrue(response.wasSuccess());
+            }
+        }), defaultFailureListener);
+        waitThenAssertTestResults();
+
+        user.loadPaymentMethods(applicationContext, testCallback(new Response.Listener<PaymentResponse>() {
+            @Override
+            public void onResponse(PaymentResponse response) {
+                assertTrue(response.wasSuccess());
+                assertEquals(0, response.getCreditCards().size());
+            }
+        }), defaultFailureListener);
+        waitThenAssertTestResults();
     }
 
     @Test
