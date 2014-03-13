@@ -2,7 +2,8 @@ package com.cloudmine.api.rest;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.cloudmine.api.JavaAccessListController;
+import com.cloudmine.api.AccessListController;
+import com.cloudmine.api.CMAccessPermission;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.DeviceIdentifier;
@@ -21,6 +22,9 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
 import static com.cloudmine.test.ResponseCallbackTuple.defaultFailureListener;
@@ -48,19 +52,17 @@ public class AndroidCMAccessListIntegrationTest extends CMAccessListIntegrationT
     @Test
     public void testCreateRequest() {
         final JavaCMUser anotherUser = createOtherUser();
-        final JavaCMUser user = createMainUser();
+        final JavaCMUser owner = createOtherUser();
 
-        JavaAccessListController list = getCmAccessList(anotherUser, user);
-
-        BaseAccessListCreateRequest request = new BaseAccessListCreateRequest(list, user.getSessionToken(), null, ResponseCallbackTuple.testCallback(new Response.Listener<CreationResponse>() {
+        AccessListController list = getCmAccessList(anotherUser, owner);
+        list.save(Robolectric.application, ResponseCallbackTuple.testCallback(new Response.Listener<CreationResponse>() {
             @Override
             public void onResponse(CreationResponse response) {
                 assertTrue(response.wasSuccess());
             }
         }), defaultFailureListener);
-        SharedRequestQueueHolders.getRequestQueue(Robolectric.application).add(request);
         waitThenAssertTestResults();
-        final SimpleCMObject anObject = insertAnObject(user, list);
+        final SimpleCMObject anObject = insertAnObject(owner, list);
         anotherUser.login(hasSuccess);
         waitThenAssertTestResults();
         CMSessionToken token = anotherUser.getSessionToken();
@@ -83,7 +85,7 @@ public class AndroidCMAccessListIntegrationTest extends CMAccessListIntegrationT
         final JavaCMUser anotherUser = createOtherUser();
         final JavaCMUser user = createMainUser();
 
-        final JavaAccessListController list = getCmAccessList(anotherUser, user);
+        final AccessListController list = getCmAccessList(anotherUser, user);
 
         BaseAccessListCreateRequest request = new BaseAccessListCreateRequest(list, user.getSessionToken(), null, ResponseCallbackTuple.testCallback(new Response.Listener<CreationResponse>() {
             @Override
@@ -95,7 +97,7 @@ public class AndroidCMAccessListIntegrationTest extends CMAccessListIntegrationT
         requestQueue.add(request);
         waitThenAssertTestResults();
 
-        BaseAccessListLoadRequest loadRequest = new BaseAccessListLoadRequest(user.getSessionToken(), null, ResponseCallbackTuple.testCallback(new Response.Listener<CMObjectResponse>() {
+        AccessListController.load(Robolectric.application, user.getSessionToken(), ResponseCallbackTuple.testCallback(new Response.Listener<CMObjectResponse>() {
             @Override
             public void onResponse(CMObjectResponse response) {
                 Assert.assertTrue(response.wasSuccess());
@@ -103,7 +105,17 @@ public class AndroidCMAccessListIntegrationTest extends CMAccessListIntegrationT
                 assertEquals(list, loadedList);
             }
         }), defaultFailureListener);
-        requestQueue.add(loadRequest);
+
         waitThenAssertTestResults();
+    }
+
+
+    protected AccessListController getCmAccessList(JavaCMUser anotherUser, JavaCMUser user) {
+        List<String> userObjectIds = Arrays.asList("freddy", "teddy", "george", "puddin");
+        AccessListController list = new AccessListController(user, CMAccessPermission.READ, CMAccessPermission.UPDATE);
+        list.grantAccessTo(userObjectIds);
+        list.grantAccessTo(anotherUser);
+        list.grantPermissions(CMAccessPermission.READ);
+        return list;
     }
 }
