@@ -2,7 +2,7 @@ package com.cloudmine.api.rest;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.cloudmine.api.CMAccessList;
+import com.cloudmine.api.JavaAccessListController;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.DeviceIdentifier;
@@ -50,7 +50,7 @@ public class AndroidCMAccessListIntegrationTest extends CMAccessListIntegrationT
         final JavaCMUser anotherUser = createOtherUser();
         final JavaCMUser user = createMainUser();
 
-        CMAccessList list = getCmAccessList(anotherUser, user);
+        JavaAccessListController list = getCmAccessList(anotherUser, user);
 
         BaseAccessListCreateRequest request = new BaseAccessListCreateRequest(list, user.getSessionToken(), null, ResponseCallbackTuple.testCallback(new Response.Listener<CreationResponse>() {
             @Override
@@ -83,7 +83,7 @@ public class AndroidCMAccessListIntegrationTest extends CMAccessListIntegrationT
         final JavaCMUser anotherUser = createOtherUser();
         final JavaCMUser user = createMainUser();
 
-        final CMAccessList list = getCmAccessList(anotherUser, user);
+        final JavaAccessListController list = getCmAccessList(anotherUser, user);
 
         BaseAccessListCreateRequest request = new BaseAccessListCreateRequest(list, user.getSessionToken(), null, ResponseCallbackTuple.testCallback(new Response.Listener<CreationResponse>() {
             @Override
