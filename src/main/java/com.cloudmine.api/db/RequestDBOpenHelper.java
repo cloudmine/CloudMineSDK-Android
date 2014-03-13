@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import com.cloudmine.api.CacheableCMFile;
+import com.cloudmine.api.BaseCacheableCMFile;
 import com.cloudmine.api.Strings;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
@@ -265,9 +265,9 @@ public class RequestDBOpenHelper extends SQLiteOpenHelper {
             }
         }
         if(!fileIdsToRequests.isEmpty()) {
-            Map<String, CacheableCMFile> fileIdToFiles = CacheableCMFile.loadLocalFiles(context, fileIdsToRequests.keySet());
+            Map<String, BaseCacheableCMFile> fileIdToFiles = BaseCacheableCMFile.loadLocalFiles(context, fileIdsToRequests.keySet());
             for(Map.Entry<String, RequestDBObject> fileIdAndRequest : fileIdsToRequests.entrySet()) {
-                CacheableCMFile cacheableCMFile = fileIdToFiles.get(fileIdAndRequest.getKey());
+                BaseCacheableCMFile cacheableCMFile = fileIdToFiles.get(fileIdAndRequest.getKey());
                 if(cacheableCMFile != null) fileIdAndRequest.getValue().setBody(cacheableCMFile.getFileContents());
                 else Log.e("CloudMine", "Had a null file " + fileIdAndRequest.getKey());
             }

@@ -3,9 +3,9 @@ package com.cloudmine.api.rest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import com.android.volley.Response;
+import com.cloudmine.api.BaseCacheableCMFile;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMFile;
-import com.cloudmine.api.CacheableCMFile;
 import com.cloudmine.api.JavaCMUser;
 import com.cloudmine.api.SearchQuery;
 import com.cloudmine.api.integration.CMFileIntegrationTest;
@@ -53,7 +53,7 @@ public class AndroidCMFileIntegrationTest extends CMFileIntegrationTest {
         file.save(hasSuccess);
         waitThenAssertTestResults();
 
-        CacheableCMFile.loadFile(applicationContext, file.getFileId(), getSuccessLoadListener(file), ResponseCallbackTuple.defaultFailureListener);
+        BaseCacheableCMFile.loadFile(applicationContext, file.getFileId(), getSuccessLoadListener(file), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
 
         final CMFile userFile = new CMFile(getObjectInputStream(), randomString(), "application/oop");
@@ -62,40 +62,40 @@ public class AndroidCMFileIntegrationTest extends CMFileIntegrationTest {
         userFile.save(hasSuccess);
         waitThenAssertTestResults();
 
-        CacheableCMFile.loadFile(applicationContext, userFile.getFileId(), user.getSessionToken(), getSuccessLoadListener(userFile), ResponseCallbackTuple.defaultFailureListener);
+        BaseCacheableCMFile.loadFile(applicationContext, userFile.getFileId(), user.getSessionToken(), getSuccessLoadListener(userFile), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults(20);
     }
 
     @Test
     public void testFileInsertRequest() {
-        final CacheableCMFile file = new CacheableCMFile(getObjectInputStream(), randomString(), "application/oop");
+        final BaseCacheableCMFile file = new BaseCacheableCMFile(getObjectInputStream(), randomString(), "application/oop");
         file.save(applicationContext, getSuccessFileCreationListener(file), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
 
-        CacheableCMFile.loadFile(applicationContext, file.getFileId(), getSuccessLoadListener(file), ResponseCallbackTuple.defaultFailureListener);
+        BaseCacheableCMFile.loadFile(applicationContext, file.getFileId(), getSuccessLoadListener(file), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
 
-        final CacheableCMFile userFile = new CacheableCMFile(getObjectInputStream(), randomString(), "application/oop");
+        final BaseCacheableCMFile userFile = new BaseCacheableCMFile(getObjectInputStream(), randomString(), "application/oop");
         final JavaCMUser user = loggedInUser();
         userFile.setSaveWith(user);
         userFile.save(applicationContext, getSuccessFileCreationListener(userFile), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults(20);
 
-        CacheableCMFile.loadFile(applicationContext, userFile.getFileId(), user.getSessionToken(), getSuccessLoadListener(userFile), ResponseCallbackTuple.defaultFailureListener);
+        BaseCacheableCMFile.loadFile(applicationContext, userFile.getFileId(), user.getSessionToken(), getSuccessLoadListener(userFile), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
 
-        final CacheableCMFile otherUserFile = new CacheableCMFile(getObjectInputStream(), randomString(), "application/oop");
+        final BaseCacheableCMFile otherUserFile = new BaseCacheableCMFile(getObjectInputStream(), randomString(), "application/oop");
         otherUserFile.save(applicationContext, user.getSessionToken(), getSuccessFileCreationListener(otherUserFile), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults(20);
 
-        CacheableCMFile.loadFile(applicationContext, otherUserFile.getFileId(), user.getSessionToken(), getSuccessLoadListener(otherUserFile), ResponseCallbackTuple.defaultFailureListener);
+        BaseCacheableCMFile.loadFile(applicationContext, otherUserFile.getFileId(), user.getSessionToken(), getSuccessLoadListener(otherUserFile), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
     }
 
     @Test
     public void testFileDeleteRequest() {
 
-        final CacheableCMFile file = new CacheableCMFile(getObjectInputStream(), randomString(), "application/oop");
+        final BaseCacheableCMFile file = new BaseCacheableCMFile(getObjectInputStream(), randomString(), "application/oop");
         file.save(applicationContext, getSuccessFileCreationListener(file), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
 
@@ -135,7 +135,7 @@ public class AndroidCMFileIntegrationTest extends CMFileIntegrationTest {
         waitThenAssertTestResults(2000);
     }
 
-    private ResponseCallbackTuple<FileCreationResponse> getSuccessFileCreationListener(final CacheableCMFile file) {
+    private ResponseCallbackTuple<FileCreationResponse> getSuccessFileCreationListener(final BaseCacheableCMFile file) {
         return testCallback(new Response.Listener<FileCreationResponse>() {
             @Override
             public void onResponse(FileCreationResponse fileCreationResponse) {

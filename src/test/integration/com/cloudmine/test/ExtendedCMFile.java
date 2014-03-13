@@ -1,6 +1,6 @@
 package com.cloudmine.test;
 
-import com.cloudmine.api.CacheableCMFile;
+import com.cloudmine.api.BaseCacheableCMFile;
 import com.cloudmine.api.exceptions.CreationException;
 
 import java.io.InputStream;
@@ -10,7 +10,7 @@ import java.io.InputStream;
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class ExtendedCMFile extends CacheableCMFile {
+public class ExtendedCMFile extends BaseCacheableCMFile {
 
     private String text;
 
