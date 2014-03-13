@@ -25,7 +25,6 @@ import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import me.cloudmine.annotations.Expand;
 import me.cloudmine.annotations.Optional;
 import me.cloudmine.annotations.Single;
-import org.apache.http.HttpResponse;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -99,6 +98,15 @@ public class BaseCacheableCMFile extends CMFile implements LocallySavable{
         populateImageViewFromLocalOrNetwork(context, imageView, errorDisplay, fileId, sessionToken, shouldUseExternalStorage(context));
     }
 
+    /**
+     * Populates an imageview with a CacheableCMFile.
+     * @param context
+     * @param imageView
+     * @param errorResourceId
+     * @param fileId
+     * @param sessionToken
+     * @param fromExternalStorage
+     */
     @Expand(isStatic = true)
     public static void populateImageViewFromLocalOrNetwork(final Context context, final ImageView imageView, @Optional final int errorResourceId, final String fileId, @Optional CMSessionToken sessionToken, final boolean fromExternalStorage) {
         BaseCacheableCMFile file = fromExternalStorage ?
@@ -157,7 +165,7 @@ public class BaseCacheableCMFile extends CMFile implements LocallySavable{
 
     public static BaseCacheableCMFile loadLocalFileFromInternalStorage(Context context, String fileId) {
         try {
-            return new BaseCacheableCMFile(context.openFileInput(fileId), fileId);
+            return new BaseCacheableCMFile(context.openFileInput(fileId), fileId, null);
         } catch (FileNotFoundException e) {
             return null;
         }
@@ -203,23 +211,18 @@ public class BaseCacheableCMFile extends CMFile implements LocallySavable{
 
     private Date lastSaveDate;
 
-    public BaseCacheableCMFile(byte[] fileContents, String fileId, String contentType) throws CreationException {
+    @Expand
+    public BaseCacheableCMFile(byte[] fileContents, String fileId, @Optional String contentType) throws CreationException {
         super(fileContents, fileId, contentType);
     }
 
+    @Expand
     public BaseCacheableCMFile(InputStream contents) throws CreationException {
         super(contents);
     }
 
-    public BaseCacheableCMFile(InputStream contents, String contentType) throws CreationException {
-        super(contents, contentType);
-    }
-
-    public BaseCacheableCMFile(HttpResponse response, String fileId) throws CreationException {
-        super(response, fileId);
-    }
-
-    public BaseCacheableCMFile(InputStream contents, String fileId, String contentType) throws CreationException {
+    @Expand
+    public BaseCacheableCMFile(InputStream contents, String fileId, @Optional String contentType) throws CreationException {
         super(contents, fileId, contentType);
     }
 
