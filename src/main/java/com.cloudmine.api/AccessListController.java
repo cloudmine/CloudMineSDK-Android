@@ -19,6 +19,14 @@ import org.apache.http.auth.AuthenticationException;
  */
 public class AccessListController extends JavaAccessListController {
 
+    /**
+     * Load the ACLs belonging to the user who is associated with the given sessionToken
+     * @param context the activity context that will be used to cancel this request
+     * @param sessionToken A valid sessionToken for the user who is going to log in
+     * @param successListener
+     * @param errorListener
+     * @return
+     */
     public static CloudMineRequest load(Context context, CMSessionToken sessionToken, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
         BaseAccessListLoadRequest request = new BaseAccessListLoadRequest(sessionToken,  null, successListener,  errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
