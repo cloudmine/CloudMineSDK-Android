@@ -53,7 +53,7 @@ public class AndroidCMFileIntegrationTest extends CMFileIntegrationTest {
         file.save(hasSuccess);
         waitThenAssertTestResults();
 
-        BaseCacheableCMFile.loadFile(applicationContext, file.getFileId(), getSuccessLoadListener(file), ResponseCallbackTuple.defaultFailureListener);
+        BaseCacheableCMFile.loadFile(applicationContext, file.getFileId(), null, getSuccessLoadListener(file), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
 
         final CMFile userFile = new CMFile(getObjectInputStream(), randomString(), "application/oop");
@@ -72,7 +72,7 @@ public class AndroidCMFileIntegrationTest extends CMFileIntegrationTest {
         file.save(applicationContext, getSuccessFileCreationListener(file), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
 
-        BaseCacheableCMFile.loadFile(applicationContext, file.getFileId(), getSuccessLoadListener(file), ResponseCallbackTuple.defaultFailureListener);
+        BaseCacheableCMFile.loadFile(applicationContext, file.getFileId(), null, getSuccessLoadListener(file), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
 
         final BaseCacheableCMFile userFile = new BaseCacheableCMFile(getObjectInputStream(), randomString(), "application/oop");

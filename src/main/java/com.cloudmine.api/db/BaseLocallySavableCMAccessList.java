@@ -6,7 +6,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.cloudmine.api.CMAccessPermission;
-import com.cloudmine.api.CMUser;
+import com.cloudmine.api.JavaCMUser;
 import com.cloudmine.api.rest.BaseAccessListModificationRequest;
 import com.cloudmine.api.rest.CloudMineRequest;
 import com.cloudmine.api.rest.JsonUtilities;
@@ -67,7 +67,7 @@ public class BaseLocallySavableCMAccessList extends BaseLocallySavableCMObject {
      * Create a new CMAccessList that grants no privileges and contains no users. It grants permissions to
      * objects owned by the given user
      */
-    public BaseLocallySavableCMAccessList(CMUser owner) {
+    public BaseLocallySavableCMAccessList(JavaCMUser owner) {
         super();
         if(owner == null)
             throw new NullPointerException("Cannot instantiate a new CMAccessList from a null CMUser");
@@ -79,7 +79,7 @@ public class BaseLocallySavableCMAccessList extends BaseLocallySavableCMObject {
      * @param owner
      * @param permissions permissions
      */
-    public BaseLocallySavableCMAccessList(CMUser owner, CMAccessPermission... permissions) {
+    public BaseLocallySavableCMAccessList(JavaCMUser owner, CMAccessPermission... permissions) {
         this(owner);
         for(CMAccessPermission permission : permissions) {
             this.accessPermissions.add(permission);
@@ -95,7 +95,7 @@ public class BaseLocallySavableCMAccessList extends BaseLocallySavableCMObject {
      * be set
      * @param user
      */
-    public void grantAccessTo(CMUser user) {
+    public void grantAccessTo(JavaCMUser user) {
         grantAccessTo(user.getObjectId());
     }
 
@@ -194,7 +194,7 @@ public class BaseLocallySavableCMAccessList extends BaseLocallySavableCMObject {
      * @param user the user to check
      * @return true if the specified user has access, false otherwise
      */
-    public boolean doesAllowAccessTo(CMUser user) {
+    public boolean doesAllowAccessTo(JavaCMUser user) {
         if(user == null)
             return false;
         return doesAllowAccessTo(user.getObjectId());
@@ -234,7 +234,7 @@ public class BaseLocallySavableCMAccessList extends BaseLocallySavableCMObject {
 
     private CloudMineRequest getRequest(Response.Listener<CreationResponse> successListener, Response.ErrorListener errorListener) {
         CloudMineRequest request;
-        CMUser user = getUser();
+        JavaCMUser user = getUser();
         if(user != null && user.getSessionToken() != null) {
             request = new BaseAccessListModificationRequest(this, null, successListener, errorListener);
         } else {
@@ -247,7 +247,7 @@ public class BaseLocallySavableCMAccessList extends BaseLocallySavableCMObject {
     public CloudMineRequest save(Context context, Handler handler) {
         RequestQueue queue = getRequestQueue(context);
 
-        CMUser user = getUser();
+        JavaCMUser user = getUser();
         CloudMineRequest request = new BaseAccessListModificationRequest(this, null, handler);
         if(user.getSessionToken() == null) {
            request.deliverError(new VolleyError("Can't save user level object when the associated user is not logged in"));
@@ -262,7 +262,7 @@ public class BaseLocallySavableCMAccessList extends BaseLocallySavableCMObject {
      * @param user
      * @return true if this access list was created attached to the given user
      */
-    public boolean isOwnedBy(CMUser user) {
+    public boolean isOwnedBy(JavaCMUser user) {
         if(user == null)
             return false;
         return user.equals(getUser());

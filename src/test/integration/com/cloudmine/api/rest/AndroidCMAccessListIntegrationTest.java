@@ -1,24 +1,6 @@
 package com.cloudmine.api.rest;
 
-import org.junit.runner.RunWith;
-
-
 import android.content.Context;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.cloudmine.api.CMAccessPermission;
-import com.cloudmine.api.CMUser;
-import com.cloudmine.api.DeviceIdentifier;
-import com.cloudmine.api.SearchQuery;
-import com.cloudmine.api.db.BaseLocallySavableCMAccessList;
-import com.cloudmine.api.db.BaseLocallySavableCMObject;
-import com.cloudmine.api.integration.CMAccessListIntegrationTest;
-import com.cloudmine.api.rest.response.CMObjectResponse;
-import com.cloudmine.api.rest.response.CreationResponse;
-import com.cloudmine.api.rest.response.LoginResponse;
-import com.cloudmine.test.CloudMineTestRunner;
-import com.cloudmine.test.ExtendedLocallySavableCMObject;
-
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.cloudmine.api.AccessListController;
@@ -27,16 +9,20 @@ import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.JavaCMUser;
+import com.cloudmine.api.SearchQuery;
 import com.cloudmine.api.SimpleCMObject;
+import com.cloudmine.api.db.BaseLocallySavableCMAccessList;
+import com.cloudmine.api.db.BaseLocallySavableCMObject;
 import com.cloudmine.api.integration.CMAccessListIntegrationTest;
 import com.cloudmine.api.rest.callbacks.CMObjectResponseCallback;
 import com.cloudmine.api.rest.options.CMRequestOptions;
 import com.cloudmine.api.rest.options.CMSharedDataOptions;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.CreationResponse;
+import com.cloudmine.api.rest.response.LoginResponse;
 import com.cloudmine.test.CloudMineTestRunner;
+import com.cloudmine.test.ExtendedLocallySavableCMObject;
 import com.cloudmine.test.ResponseCallbackTuple;
-
 import com.xtremelabs.robolectric.Robolectric;
 import junit.framework.Assert;
 import org.junit.Before;
@@ -47,14 +33,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
-
 import static com.cloudmine.test.ResponseCallbackTuple.*;
-import static org.junit.Assert.assertEquals;
-
-import static com.cloudmine.test.ResponseCallbackTuple.defaultFailureListener;
 import static com.cloudmine.test.TestServiceCallback.testCallback;
-import static junit.framework.Assert.assertEquals;
-
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -82,14 +63,14 @@ public class AndroidCMAccessListIntegrationTest extends CMAccessListIntegrationT
 
     @Test
     public void testSegments() {
-        CMUser user = loggedInUser();
+        JavaCMUser user = loggedInUser();
         LoginResponse loginResponse = service.login(user);
         assertTrue(loginResponse.wasSuccess());
 
         final BaseLocallySavableCMAccessList cmAccessList = new BaseLocallySavableCMAccessList(user, CMAccessPermission.READ);
         cmAccessList.setIsPublic(false);
         cmAccessList.setLoggedIn(true);
-        cmAccessList.save(applicationContext, testCallback(new Response.Listener<CreationResponse>() {
+        cmAccessList.save(applicationContext, ResponseCallbackTuple.testCallback(new Response.Listener<CreationResponse>() {
             @Override
             public void onResponse(CreationResponse response) {
                 assertTrue(response.wasSuccess());
@@ -101,9 +82,9 @@ public class AndroidCMAccessListIntegrationTest extends CMAccessListIntegrationT
         queue.add(new BaseObjectModificationRequest(object, user.getSessionToken(), null, wasCreated(object.getObjectId()), defaultFailureListener));
         waitThenAssertTestResults();
 
-        CMUser anotherUser = randomLoggedInUser();
+        JavaCMUser anotherUser = randomLoggedInUser();
 
-        BaseLocallySavableCMObject.loadObject(applicationContext, object.getObjectId(), anotherUser.getSessionToken(), null, testCallback(new Response.Listener<CMObjectResponse>() {
+        BaseLocallySavableCMObject.loadObject(applicationContext, object.getObjectId(), anotherUser.getSessionToken(), null, ResponseCallbackTuple.testCallback(new Response.Listener<CMObjectResponse>() {
             @Override
             public void onResponse(CMObjectResponse response) {
                 assertTrue(response.wasSuccess());

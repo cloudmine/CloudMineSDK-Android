@@ -163,7 +163,8 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
      * @return true if the object was saved, false otherwise
      */
     public boolean saveLocally(Context context) {
-        boolean wasSaved = CMObjectDBOpenHelper.getCMObjectDBHelper(context).insertCMObjectIfNewer(this);
+        CMObjectDBOpenHelper cmObjectDBHelper = CMObjectDBOpenHelper.getCMObjectDBHelper(context);
+        boolean wasSaved = cmObjectDBHelper.insertCMObjectIfNewer(this);
         if(wasSaved) lastLocalSaveDate = new Date();
         return wasSaved;
     }
@@ -229,7 +230,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
     }
 
     public CloudMineRequest save(Context context, Handler handler) {
-        CloudMineRequest request = save(context, null,null);
+        CloudMineRequest request = save(context, null, null);
         request.setHandler(handler);
         return request;
     }

@@ -52,7 +52,7 @@ public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
     static synchronized CMObjectDBOpenHelper getCMObjectDBHelper(Context context) {
         if(cmObjectDBOpenHelper == null) {
             synchronized (syncSingleton) {
-                if(cmObjectDBOpenHelper != null) cmObjectDBOpenHelper = new CMObjectDBOpenHelper(context.getApplicationContext());
+                if(cmObjectDBOpenHelper == null) cmObjectDBOpenHelper = new CMObjectDBOpenHelper(context.getApplicationContext());
             }
         }
         return cmObjectDBOpenHelper;

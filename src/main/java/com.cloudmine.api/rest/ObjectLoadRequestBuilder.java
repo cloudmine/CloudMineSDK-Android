@@ -1,5 +1,6 @@
 package com.cloudmine.api.rest;
 
+import android.content.Context;
 import com.android.volley.Response;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMSortOptions;
@@ -77,5 +78,11 @@ public class ObjectLoadRequestBuilder extends RequestBuilder<ObjectLoadRequestBu
     public ObjectLoadRequestBuilder getSharedOnly() {
         urlBuilder.addQuery("shared_only", "true");
         return this;
+    }
+
+    public BaseObjectLoadRequest run(Context context) {
+        BaseObjectLoadRequest request = build();
+        SharedRequestQueueHolders.getRequestQueue(context).add(request);
+        return request;
     }
 }

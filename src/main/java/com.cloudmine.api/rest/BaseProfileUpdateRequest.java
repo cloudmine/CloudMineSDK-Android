@@ -32,7 +32,7 @@ public class BaseProfileUpdateRequest extends CloudMineRequest<CreationResponse>
 
     /**
      * Create a new Request for updating a user's profile. The user must be logged in
-     * @param userProfile obtained by calling {@link com.cloudmine.api.CMUser#profileTransportRepresentation()}
+     * @param userProfile obtained by calling {@link com.cloudmine.api.JavaCMUser#profileTransportRepresentation()}
      * @param sessionToken a valid session token for the user who is to be updated
      * @param serverFunction
      * @param successListener
