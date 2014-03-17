@@ -104,7 +104,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
             @Override
             public void onResponse(ObjectModificationResponse modificationResponse) {
                 assertTrue(modificationResponse.wasSuccess());
-                assertTrue(modificationResponse.wasCreated(userObject.getObjectId()));
+                assertTrue(modificationResponse.wasModified(userObject.getObjectId()));
             }
         });
         queue.add(new BaseObjectModificationRequest(userObject, user.getSessionToken(), null, objectModificationResponseResponseCallbackTuple, defaultFailureListener));
