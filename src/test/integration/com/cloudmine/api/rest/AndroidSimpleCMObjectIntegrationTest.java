@@ -1,5 +1,6 @@
 package com.cloudmine.api.rest;
 
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.integration.SimpleCMObjectIntegrationTest;
 import com.cloudmine.test.CloudMineTestRunner;
@@ -18,6 +19,7 @@ public class AndroidSimpleCMObjectIntegrationTest extends SimpleCMObjectIntegrat
 
     @Before
     public void setUp() {
+        CMApiCredentials.initialize(APP_ID, API_KEY, Robolectric.application);
         CloudMineRequest.setCachingEnabled(false);
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         DeviceIdentifier.initialize(Robolectric.application.getApplicationContext());

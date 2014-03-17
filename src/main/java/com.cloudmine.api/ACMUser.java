@@ -170,22 +170,53 @@ public class ACMUser extends CMUser {
         return request;
     }
 
+    /**
+     * See {@link com.cloudmine.api.rest.BaseAddPaymentMethodRequest}. User must be logged in
+     * @param context
+     * @param creditCard
+     * @param successListener
+     * @param errorListener
+     * @return The request that was added to the queue
+     */
     public CloudMineRequest addPaymentMethod(Context context, CMCreditCard creditCard, Response.Listener<PaymentResponse> successListener, Response.ErrorListener errorListener) {
         return addPaymentMethod(context, Collections.singleton(creditCard), successListener, errorListener);
     }
 
+    /**
+     * See {@link com.cloudmine.api.rest.BaseRemovePaymentMethodRequest}. User must be logged in
+     * @param context
+     * @param index
+     * @param successListener
+     * @param errorListener
+     * @return The request that was added to the queue
+     */
     public CloudMineRequest removePaymentMethodAtIndex(Context context, int index, Response.Listener<PaymentResponse> successListener, Response.ErrorListener errorListener) {
         CloudMineRequest request = new BaseRemovePaymentMethodRequest(index, getSessionToken(), null,successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
         return request;
     }
 
+    /**
+     * See {@link com.cloudmine.api.rest.BaseAddPaymentMethodRequest}. User must be logged in
+     * @param context
+     * @param creditCards
+     * @param successListener
+     * @param errorListener
+     * @return The request that was added to the queue
+     */
     public CloudMineRequest addPaymentMethod(Context context, Collection<CMCreditCard> creditCards, Response.Listener<PaymentResponse> successListener, Response.ErrorListener errorListener) {
         CloudMineRequest request = new BaseAddPaymentMethodRequest(creditCards, getSessionToken(), null, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
         return request;
     }
 
+    /**
+     * See {@link com.cloudmine.api.rest.BaseLoadPaymentMethodsRequest}. User must be logged in
+     * @param context
+     * @param successListener
+     * @param errorListener
+     * @return The request that was added to the queue
+     */
     public CloudMineRequest loadPaymentMethods(Context context, Response.Listener<PaymentResponse> successListener, Response.ErrorListener errorListener) {
         CloudMineRequest request = new BaseLoadPaymentMethodsRequest(getSessionToken(), null, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
