@@ -2,7 +2,7 @@ package com.cloudmine.api.rest;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
-import com.cloudmine.api.CMAccessList;
+import com.cloudmine.api.JavaAccessListController;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.CreationResponse;
@@ -27,7 +27,7 @@ public class BaseAccessListCreateRequest extends CloudMineRequest<CreationRespon
      * @param errorListener
      */
     @Expand
-    public BaseAccessListCreateRequest(CMAccessList accessList, CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
+    public BaseAccessListCreateRequest(JavaAccessListController accessList, CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
         super(Method.POST, BASE_URL, accessList.transportableRepresentation(), sessionToken, serverFunction, successListener, errorListener);
     }
 

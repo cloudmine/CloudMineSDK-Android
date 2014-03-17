@@ -10,7 +10,7 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.HurlStack;
-import com.cloudmine.api.CMAccessList;
+import com.cloudmine.api.JavaAccessListController;
 import com.cloudmine.api.CMAccessPermission;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMObject;
@@ -273,7 +273,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
         JavaCMUser notOwner = randomLoggedInUser();
         ExtendedLocallySavableCMObject sharableObject = new ExtendedLocallySavableCMObject("Bill", false, 0);
 
-        CMAccessList accessList = new CMAccessList(owner, CMAccessPermission.READ);
+        JavaAccessListController accessList = new JavaAccessListController(owner, CMAccessPermission.READ);
         accessList.grantAccessTo(notOwner);
         sharableObject.grantAccess(accessList);
 

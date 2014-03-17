@@ -22,6 +22,7 @@ import com.cloudmine.api.rest.SharedRequestQueueHolders;
 import com.cloudmine.api.rest.response.FileCreationResponse;
 import com.cloudmine.api.rest.response.FileLoadResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
+import me.cloudmine.annotations.Expand;
 import me.cloudmine.annotations.Optional;
 import org.apache.http.HttpResponse;
 
@@ -52,10 +53,12 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
         return BitmapFactory.decodeByteArray(fileContents, 0, fileContents.length);
     }
 
+    @Expand(isStatic = true)
     public static void populateImageViewFromLocalOrNetwork(final Context context, final ImageView imageView, @Optional final int errorDisplay, final String fileId, @Optional CMSessionToken sessionToken) {
         populateImageViewFromLocalOrNetwork(context, imageView, errorDisplay, fileId, sessionToken, shouldUseExternalStorage(context));
     }
 
+    @Expand(isStatic = true)
     public static void populateImageViewFromLocalOrNetwork(final Context context, final ImageView imageView, @Optional final int errorResourceId, final String fileId, @Optional CMSessionToken sessionToken, final boolean fromExternalStorage) {
         CacheableCMFile file = fromExternalStorage ?
                 loadLocalFileFromExternalStorage(fileId) :
