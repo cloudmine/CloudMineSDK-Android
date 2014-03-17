@@ -25,6 +25,8 @@ import java.util.Map;
  */
 public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  implements HasHandler{
 
+    public static final String REQUEST_TAG = "CloudMineRequest";
+
     protected static String BASE_URL = "https://api.cloudmine.me/v1/app/";
     protected static String USER = "/user";
     public static final CloudMineRequest FAKE_REQUEST = new CloudMineRequest(Method.DEPRECATED_GET_OR_POST, new CMURLBuilder("", true), null, null, null) {
@@ -155,7 +157,8 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
         responseListener = successListener;
         boolean isValidSessionToken = !(sessionToken == null || CMSessionToken.FAILED.equals(sessionToken));
         if(isValidSessionToken) sessionTokenString = sessionToken.getSessionToken();
-        System.out.println("url=" + getUrl(url) + " valid session? " + isValidSessionToken + (isValidSessionToken ? ", sessionToken: " + sessionToken : "") + " with body: " + body);
+        setTag(REQUEST_TAG);
+//        System.out.println("url=" + getUrl(url) + " valid session? " + isValidSessionToken + (isValidSessionToken ? ", sessionToken: " + sessionToken : "") + " with body: " + body);
     }
 
     @Override

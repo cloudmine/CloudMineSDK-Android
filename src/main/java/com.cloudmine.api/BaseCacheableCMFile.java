@@ -24,7 +24,7 @@ import com.cloudmine.api.rest.response.FileLoadResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import me.cloudmine.annotations.Expand;
 import me.cloudmine.annotations.Optional;
-import org.apache.http.HttpResponse;
+import me.cloudmine.annotations.Single;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,12 +41,52 @@ import java.util.Map;
 import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
 
 /**
+ * A CMFile that can be cached locally.
  * <br>
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class CacheableCMFile extends CMFile implements LocallySavable{
+public class BaseCacheableCMFile extends CMFile implements LocallySavable{
 
+
+    /**
+     * Load the file with the given fileId
+     * @param context
+     * @param fileId
+     * @param sessionToken if specified, will load a user level file with the given id
+     * @param successListener
+     * @param errorListener
+     * @return
+     */
+    @Expand(isStatic = true)
+    public static CloudMineRequest loadFile(Context context, String fileId, @Optional CMSessionToken sessionToken, @Optional Response.Listener<FileLoadResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        RequestQueue queue = getRequestQueue(context);
+        BaseFileLoadRequest request = new BaseFileLoadRequest(fileId, sessionToken, null, successListener, errorListener);
+        queue.add(request);
+        return request;
+    }
+
+    /**
+     * Delete the file(s) with the given fileIds
+     * @param context
+     * @param ids all the ids of the files to delete
+     * @param sessionToken if specified, will delete user level files with the given ids
+     * @param successListener
+     * @param errorListener
+     * @return
+     */
+    @Expand(isStatic = true)
+    public static CloudMineRequest delete(Context context, @Single Collection<String> ids, @Optional CMSessionToken sessionToken, @Optional Response.Listener<ObjectModificationResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        CloudMineRequest request = new BaseFileDeleteRequest(ids, sessionToken, null, successListener, errorListener);
+        SharedRequestQueueHolders.getRequestQueue(context).add(request);
+        return request;
+    }
+
+    /**
+     * Convert the given file into a Bitmap.
+     * @param file
+     * @return null if the file was null, a Bitmap otherwise
+     */
     public static Bitmap asBitmap(CMFile file) {
         if(file == null) return null;
         byte[] fileContents = file.getFileContents();
@@ -58,9 +98,18 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
         populateImageViewFromLocalOrNetwork(context, imageView, errorDisplay, fileId, sessionToken, shouldUseExternalStorage(context));
     }
 
+    /**
+     * Populates an imageview with a CacheableCMFile.
+     * @param context
+     * @param imageView
+     * @param errorResourceId
+     * @param fileId
+     * @param sessionToken
+     * @param fromExternalStorage
+     */
     @Expand(isStatic = true)
     public static void populateImageViewFromLocalOrNetwork(final Context context, final ImageView imageView, @Optional final int errorResourceId, final String fileId, @Optional CMSessionToken sessionToken, final boolean fromExternalStorage) {
-        CacheableCMFile file = fromExternalStorage ?
+        BaseCacheableCMFile file = fromExternalStorage ?
                 loadLocalFileFromExternalStorage(fileId) :
                 loadLocalFileFromInternalStorage(context, fileId);
         if(file == null) {
@@ -92,16 +141,16 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
         }
     }
 
-    public static CacheableCMFile loadLocalFile(Context context, String fileId) {
+    public static BaseCacheableCMFile loadLocalFile(Context context, String fileId) {
         return loadLocalFile(context, fileId, shouldUseExternalStorage(context));
     }
 
-    public static Map<String, CacheableCMFile> loadLocalFiles(Context context, Collection<String> fileIds) {
+    public static Map<String, BaseCacheableCMFile> loadLocalFiles(Context context, Collection<String> fileIds) {
         return loadLocalFiles(context, fileIds, shouldUseExternalStorage(context));
     }
 
-    public static Map<String, CacheableCMFile> loadLocalFiles(Context context, Collection<String> fileIds, boolean fromExternalStorage) {
-        Map<String, CacheableCMFile> localFiles = new HashMap<String, CacheableCMFile>();
+    public static Map<String, BaseCacheableCMFile> loadLocalFiles(Context context, Collection<String> fileIds, boolean fromExternalStorage) {
+        Map<String, BaseCacheableCMFile> localFiles = new HashMap<String, BaseCacheableCMFile>();
         if(context == null || fileIds == null) return localFiles;
         for(String fileId : fileIds) {
             localFiles.put(fileId, loadLocalFile(context, fileId, fromExternalStorage));
@@ -109,30 +158,30 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
         return localFiles;
     }
 
-    public static CacheableCMFile loadLocalFile(Context context, String fileId, boolean fromExternalStorage) {
+    public static BaseCacheableCMFile loadLocalFile(Context context, String fileId, boolean fromExternalStorage) {
         if(fromExternalStorage) return loadLocalFileFromExternalStorage(fileId);
         else                    return loadLocalFileFromInternalStorage(context, fileId);
     }
 
-    public static CacheableCMFile loadLocalFileFromInternalStorage(Context context, String fileId) {
+    public static BaseCacheableCMFile loadLocalFileFromInternalStorage(Context context, String fileId) {
         try {
-            return new CacheableCMFile(context.openFileInput(fileId), fileId);
+            return new BaseCacheableCMFile(context.openFileInput(fileId), fileId, null);
         } catch (FileNotFoundException e) {
             return null;
         }
     }
 
-    public static CacheableCMFile loadLocalFileFromExternalStorage(String fileId) {
+    public static BaseCacheableCMFile loadLocalFileFromExternalStorage(String fileId) {
         File file = new File(Environment.getExternalStorageDirectory(), fileId);
         return getCmFile(fileId, file);
     }
 
-    private static CacheableCMFile getCmFile(String fileId, File file) {
+    private static BaseCacheableCMFile getCmFile(String fileId, File file) {
         if(file == null || !file.canRead()) {
             return null;
         }
         try {
-            return new CacheableCMFile(new FileInputStream(file), fileId, null);
+            return new BaseCacheableCMFile(new FileInputStream(file), fileId, null);
         } catch (FileNotFoundException e) {
             return null;
         }
@@ -160,36 +209,20 @@ public class CacheableCMFile extends CMFile implements LocallySavable{
         else             return false;
     }
 
-    public static CloudMineRequest loadFile(Context context, String fileName, Response.Listener<FileLoadResponse> successListener, Response.ErrorListener errorListener) {
-        return loadFile(context, fileName, null, successListener, errorListener);
-    }
-
-    public static CloudMineRequest loadFile(Context context, String fileName, CMSessionToken sessionToken, Response.Listener<FileLoadResponse> successListener, Response.ErrorListener errorListener) {
-        RequestQueue queue = getRequestQueue(context);
-        BaseFileLoadRequest request = new BaseFileLoadRequest(fileName, sessionToken, null, successListener, errorListener); //TODO support running server functions from here
-        queue.add(request);
-        return request;
-    }
-
     private Date lastSaveDate;
 
-    public CacheableCMFile(byte[] fileContents, String fileId, String contentType) throws CreationException {
+    @Expand
+    public BaseCacheableCMFile(byte[] fileContents, String fileId, @Optional String contentType) throws CreationException {
         super(fileContents, fileId, contentType);
     }
 
-    public CacheableCMFile(InputStream contents) throws CreationException {
+    @Expand
+    public BaseCacheableCMFile(InputStream contents) throws CreationException {
         super(contents);
     }
 
-    public CacheableCMFile(InputStream contents, String contentType) throws CreationException {
-        super(contents, contentType);
-    }
-
-    public CacheableCMFile(HttpResponse response, String fileId) throws CreationException {
-        super(response, fileId);
-    }
-
-    public CacheableCMFile(InputStream contents, String fileId, String contentType) throws CreationException {
+    @Expand
+    public BaseCacheableCMFile(InputStream contents, String fileId, @Optional String contentType) throws CreationException {
         super(contents, fileId, contentType);
     }
 
