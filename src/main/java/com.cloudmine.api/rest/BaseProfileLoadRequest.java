@@ -9,6 +9,7 @@ import me.cloudmine.annotations.Expand;
 import me.cloudmine.annotations.Optional;
 
 /**
+ * A Request for loading a logged in user's profile
  * <br>
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
@@ -16,6 +17,13 @@ import me.cloudmine.annotations.Optional;
 public class BaseProfileLoadRequest extends CloudMineRequest<CMObjectResponse> {
     public static final int REQUEST_TYPE = 404;
 
+    /**
+     * Create a new BaseProfileLoadRequest
+     * @param sessionToken a valid session token for the user whose profile is to be loaded
+     * @param serverFunction
+     * @param successListener
+     * @param errorListener
+     */
     @Expand
     public BaseProfileLoadRequest(CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener) {
         super(Method.GET, "/account/mine", null, sessionToken, serverFunction, successListener,  errorListener);

@@ -39,6 +39,8 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.reset;
@@ -297,6 +299,19 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
         }));
         waitThenAssertTestResults();
         BaseObjectLoadRequest request = new ObjectLoadRequestBuilder(notOwner.getSessionToken(), ResponseCallbackTuple.wasLoaded(sharableObject), ResponseCallbackTuple.defaultFailureListener).getShared().build();
+        queue.add(request);
+        waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testObjectCreationRequest() {
+        Collection<CMObject> objects = new ArrayList<CMObject>();
+
+        objects.add(new ExtendedLocallySavableCMObject("John", true, 3));
+        objects.add(new ExtendedCMObject("Chris", new Date(),  1));
+        Iterator<CMObject> iterator = objects.iterator();
+        String[] objectIds = { iterator.next().getObjectId(), iterator.next().getObjectId() };
+        BaseObjectModificationRequest request = new BaseObjectModificationRequest(objects, null, null, wasCreated(objectIds), defaultFailureListener);
         queue.add(request);
         waitThenAssertTestResults();
     }

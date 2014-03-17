@@ -6,6 +6,7 @@ import com.cloudmine.api.rest.options.CMSortOptions;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 
 /**
+ * A builder for creating complex object load requests
  * <br>
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.

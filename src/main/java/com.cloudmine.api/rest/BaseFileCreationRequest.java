@@ -10,6 +10,7 @@ import me.cloudmine.annotations.Expand;
 import me.cloudmine.annotations.Optional;
 
 /**
+ * A Request for creating or updating a CMFile
  * <br>
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
@@ -23,6 +24,14 @@ public class BaseFileCreationRequest extends CloudMineRequest<FileCreationRespon
     private final byte[] body;
     private final String contentType;
 
+    /**
+     * Create a new BaseFileCreationRequest
+     * @param file the file to be created or updated
+     * @param sessionToken optional session token, if this file belongs to a specific user
+     * @param serverFunction
+     * @param successListener
+     * @param errorListener
+     */
     @Expand
     public BaseFileCreationRequest(CMFile file, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional Response.Listener<FileCreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
         super(Method.PUT, BASE_URL.copy().user(sessionToken).binary(file.getFileId()), sessionToken, serverFunction, successListener, errorListener);
