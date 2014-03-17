@@ -44,9 +44,9 @@ public class ResponseCallbackTuple<SUCCESS_RESPONSE> implements Response.Listene
             @Override
             public void onResponse(ObjectModificationResponse modificationResponse) {
                 assertTrue(modificationResponse.wasSuccess());
-                assertEquals(objectIds.length, modificationResponse.getCreatedObjectIds().size());
+                assertEquals(objectIds.length, modificationResponse.getCreatedObjectIds().size() + modificationResponse.getUpdatedObjectIds().size());
                 for(String objectId : objectIds) {
-                    assertTrue(modificationResponse.wasCreated(objectId));
+                    assertTrue(modificationResponse.wasModified(objectId));
                 }
             }
         });

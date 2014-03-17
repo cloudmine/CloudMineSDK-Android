@@ -94,13 +94,13 @@ public class CMAndroidSocial extends CMSocial {
     }
 
     /**
-     * See {@link #linkToUser(com.cloudmine.api.rest.CMSocial.Service, android.app.Activity, com.cloudmine.api.CMUser, java.util.Map, com.cloudmine.api.rest.callbacks.Callback)}
+     * See {@link #linkToUser(com.cloudmine.api.rest.CMSocial.Service, android.app.Activity, JavaCMUser, java.util.Map, com.cloudmine.api.rest.callbacks.Callback)}
      * @param service
      * @param activity
      * @param user
      * @param callback
      */
-    public static void linkToUser(final Service service, final Activity activity, final CMUser user, final Callback<CMSocialLoginResponse> callback) {
+    public static void linkToUser(final Service service, final Activity activity, final JavaCMUser user, final Callback<CMSocialLoginResponse> callback) {
         linkToUser(service, activity, user, null, callback);
     }
 
@@ -113,7 +113,7 @@ public class CMAndroidSocial extends CMSocial {
      * @param params The Parameters for the auth call, such as scope.
      * @param callback
      */
-    public static void linkToUser(final Service service, final Activity activity, final CMUser user, final Map<String, Object> params, final Callback<CMSocialLoginResponse> callback) {
+    public static void linkToUser(final Service service, final Activity activity, final JavaCMUser user, final Map<String, Object> params, final Callback<CMSocialLoginResponse> callback) {
         CMSessionToken sessionToken = user.getSessionToken();
         if(Strings.isEmpty(user.getPassword())) //assume user has been logged in, we can't log them in anyway at this point
             linkToUser(service, activity, sessionToken, callback);

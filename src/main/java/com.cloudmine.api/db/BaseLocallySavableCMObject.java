@@ -9,7 +9,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
-import com.cloudmine.api.CMUser;
+import com.cloudmine.api.JavaCMUser;
 import com.cloudmine.api.LocallySavable;
 import com.cloudmine.api.rest.BaseObjectDeleteRequest;
 import com.cloudmine.api.rest.BaseObjectLoadRequest;
@@ -43,8 +43,6 @@ import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
 public class BaseLocallySavableCMObject extends CMObject implements LocallySavable {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseLocallySavableCMObject.class);
-
-
 
     @Expand(isStatic = true)
     public static CloudMineRequest saveObjects(Context context, Collection <CMObject> objects, @Optional CMSessionToken token, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ObjectModificationResponse> listener, @Optional Response.ErrorListener errorListener) {
@@ -157,7 +155,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
         return CMObjectDBOpenHelper.getCMObjectDBHelper(context).loadAllObjects();
     }
 
-    private Date lastSaveDate;
+    private Date lastLocalSaveDate;
 
     /**
      * Save this object to local storage. Runs on the calling thread
@@ -166,7 +164,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
      */
     public boolean saveLocally(Context context) {
         boolean wasSaved = CMObjectDBOpenHelper.getCMObjectDBHelper(context).insertCMObjectIfNewer(this);
-        if(wasSaved) lastSaveDate = new Date();
+        if(wasSaved) lastLocalSaveDate = new Date();
         return wasSaved;
     }
 
@@ -207,7 +205,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
         RequestQueue queue = getRequestQueue(context);
         BaseObjectModificationRequest request;
         if(isUserLevel()) {
-            CMUser user = getUser();
+            JavaCMUser user = getUser();
             if(user != null && user.getSessionToken() != null) {
                 request = new BaseObjectModificationRequest(this, user.getSessionToken(), null, successListener, errorListener);
             } else {
@@ -249,17 +247,17 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
      * Get the last time this object was stored locally. Returns 0 if the object has never been stored locally
      * @return
      */
-    public int getLastSavedDateAsSeconds() {
-        if(lastSaveDate == null) return 0;
-        return (int) (lastSaveDate.getTime() / 1000);
+    public int getLastLocalSavedDateAsSeconds() {
+        if(lastLocalSaveDate == null) return 0;
+        return (int) (lastLocalSaveDate.getTime() / 1000);
     }
 
-    public Date getLastSaveDate() {
-        return lastSaveDate;
+    public Date getLastLocalSaveDate() {
+        return lastLocalSaveDate;
     }
 
-    protected void setLastSaveDate(Date lastSaveDate) {
-        this.lastSaveDate = lastSaveDate;
+    protected void setLastLocalSaveDate(Date lastSaveDate) {
+        this.lastLocalSaveDate = lastSaveDate;
     }
 
     @Expand
@@ -277,7 +275,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
         ContentValues values = new ContentValues();
         values.put(CMObjectDBOpenHelper.OBJECT_ID_COLUMN, getObjectId());
         values.put(CMObjectDBOpenHelper.JSON_COLUMN, transportableRepresentation());
-        values.put(CMObjectDBOpenHelper.SAVED_DATE_COLUMN, getLastSavedDateAsSeconds());
+        values.put(CMObjectDBOpenHelper.SAVED_DATE_COLUMN, getLastLocalSavedDateAsSeconds());
         values.put(CMObjectDBOpenHelper.CLASS_NAME_COLUMN, getClassName());
         return values;
     }

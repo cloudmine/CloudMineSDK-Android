@@ -3,7 +3,7 @@ package com.cloudmine.api.rest;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
-import com.cloudmine.api.CMUser;
+import com.cloudmine.api.JavaCMUser;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.LoginResponse;
 import me.cloudmine.annotations.Expand;
@@ -25,7 +25,7 @@ public class BaseUserLoginRequest extends CloudMineRequest<LoginResponse> {
     @Expand
     public BaseUserLoginRequest(String userIdentifier, String password, @Optional CMServerFunction serverFunction, Response.Listener<LoginResponse> successListener, @Optional Response.ErrorListener errorListener) {
         super(Method.POST, ENDPOINT, null, null, serverFunction, successListener, errorListener);
-        credentials = "Basic " + CMUser.encode(userIdentifier, password);
+        credentials = "Basic " + JavaCMUser.encode(userIdentifier, password);
     }
 
     @Override

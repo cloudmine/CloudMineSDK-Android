@@ -30,9 +30,10 @@ public class AndroidCMChannelIntegrationTest extends CMChannelIntegrationTest {
 
     @Before
     public void setUp() {
+        CMApiCredentials.initialize(APP_ID, API_KEY, Robolectric.application.getApplicationContext());
         CloudMineRequest.setCachingEnabled(false);
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
-        CMApiCredentials.initialize(APP_ID, API_KEY, Robolectric.application.getApplicationContext());
+
         super.setUp();
     }
 

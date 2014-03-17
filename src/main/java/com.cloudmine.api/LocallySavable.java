@@ -13,6 +13,6 @@ public interface LocallySavable {
 
     public boolean saveLocally(Context context);
     public boolean saveEventually(Context context);
-    public int getLastSavedDateAsSeconds();
-    public Date getLastSaveDate();
+    public int getLastLocalSavedDateAsSeconds();
+    public Date getLastLocalSaveDate();
 }

@@ -5,8 +5,8 @@ import android.graphics.Bitmap;
 import com.android.volley.Response;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMFile;
-import com.cloudmine.api.CMUser;
 import com.cloudmine.api.CacheableCMFile;
+import com.cloudmine.api.JavaCMUser;
 import com.cloudmine.api.SearchQuery;
 import com.cloudmine.api.integration.CMFileIntegrationTest;
 import com.cloudmine.api.rest.response.CMObjectResponse;
@@ -40,11 +40,10 @@ public class AndroidCMFileIntegrationTest extends CMFileIntegrationTest {
 
     @Before
     public void setUp() {
-        CloudMineRequest.setCachingEnabled(false);
-        Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         applicationContext = Robolectric.application.getApplicationContext();
         CMApiCredentials.initialize(APP_ID, API_KEY, applicationContext);
-
+        CloudMineRequest.setCachingEnabled(false);
+        Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         super.setUp();
     }
 
@@ -58,7 +57,7 @@ public class AndroidCMFileIntegrationTest extends CMFileIntegrationTest {
         waitThenAssertTestResults();
 
         final CMFile userFile = new CMFile(getObjectInputStream(), randomString(), "application/oop");
-        final CMUser user = loggedInUser();
+        final JavaCMUser user = loggedInUser();
         userFile.setSaveWith(user);
         userFile.save(hasSuccess);
         waitThenAssertTestResults();
@@ -77,7 +76,7 @@ public class AndroidCMFileIntegrationTest extends CMFileIntegrationTest {
         waitThenAssertTestResults();
 
         final CacheableCMFile userFile = new CacheableCMFile(getObjectInputStream(), randomString(), "application/oop");
-        final CMUser user = loggedInUser();
+        final JavaCMUser user = loggedInUser();
         userFile.setSaveWith(user);
         userFile.save(applicationContext, getSuccessFileCreationListener(userFile), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults(20);

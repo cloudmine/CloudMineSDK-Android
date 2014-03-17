@@ -3,7 +3,7 @@ package com.cloudmine.api.rest;
 import android.content.Context;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.cloudmine.api.ACMUser;
+import com.cloudmine.api.CMUser;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.LibrarySpecificClassCreator;
@@ -50,7 +50,7 @@ public class AndroidCMPaymentsIntegrationTest extends ServiceTestBase {
 
     @Test
     public void testChargeCardRequest() {
-        ACMUser user = new ACMUser("test@test.com", "testing");
+        CMUser user = new CMUser("test@test.com", "testing");
         LoginResponse response = service.login(user);
         assertTrue(response.wasSuccess());
         String cartJson = "{\n" +
