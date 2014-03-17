@@ -47,13 +47,18 @@ public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
     private static final String CLASS_SELECT_WHERE = CLASS_NAME_COLUMN + "=?";
     private static final String[] COLUMNS = {OBJECT_ID_COLUMN, CLASS_NAME_COLUMN, JSON_COLUMN, SAVED_DATE_COLUMN, SYNCED_DATE_COLUMN};
 
+    private static final Object syncSingleton = new Object();
     private static CMObjectDBOpenHelper cmObjectDBOpenHelper;
     static synchronized CMObjectDBOpenHelper getCMObjectDBHelper(Context context) {
         if(cmObjectDBOpenHelper == null) {
-            cmObjectDBOpenHelper = new CMObjectDBOpenHelper(context.getApplicationContext());
+            synchronized (syncSingleton) {
+                if(cmObjectDBOpenHelper != null) cmObjectDBOpenHelper = new CMObjectDBOpenHelper(context.getApplicationContext());
+            }
         }
         return cmObjectDBOpenHelper;
     }
+
+    private final Object syncDb = new Object();
 
     public CMObjectDBOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -74,109 +79,124 @@ public class CMObjectDBOpenHelper extends SQLiteOpenHelper {
     //TODO this just always updates right now - should we not insert older objects, how much processing power are we willing to devote to that?
     public boolean insertCMObjectIfNewer(BaseLocallySavableCMObject cmObject) {
         if(cmObject == null) return false;
-        SQLiteDatabase db = getWritableDatabase();
-        try {
-            boolean wasInsertedOrUpdated;
-            ContentValues contentValues = cmObject.toContentValues();
+        synchronized (syncDb) {
+            SQLiteDatabase db = getWritableDatabase();
+            try {
+                boolean wasInsertedOrUpdated;
+                ContentValues contentValues = cmObject.toContentValues();
 
-            int numUpdated = db.update(CM_OBJECT_TABLE, contentValues, OBJECT_ID_WHERE,
-                    new String[]{cmObject.getObjectId()});
-            wasInsertedOrUpdated = numUpdated > 0;
-            if(!wasInsertedOrUpdated) {
-                long insertResult = db.insert(CM_OBJECT_TABLE, null, contentValues);
-                wasInsertedOrUpdated = insertResult > 0;
+                int numUpdated = db.update(CM_OBJECT_TABLE, contentValues, OBJECT_ID_WHERE,
+                        new String[]{cmObject.getObjectId()});
+                wasInsertedOrUpdated = numUpdated > 0;
+                if(!wasInsertedOrUpdated) {
+                    long insertResult = db.insert(CM_OBJECT_TABLE, null, contentValues);
+                    wasInsertedOrUpdated = insertResult > 0;
+                }
+
+                return wasInsertedOrUpdated;
+            } finally {
+                db.close();
             }
-
-            return wasInsertedOrUpdated;
-        } finally {
-            db.close();
         }
     }
 
     public <OBJECT_TYPE extends BaseLocallySavableCMObject> OBJECT_TYPE loadObjectById(String objectId) {
         if(Strings.isEmpty(objectId)) return null;
 
-        SQLiteDatabase db = getReadableDatabase();
-        try {
-            Cursor cursor = db.query(CM_OBJECT_TABLE, new String[]{JSON_COLUMN}, OBJECT_ID_WHERE, new String[]{objectId}, null, null, null);
-            if(!cursor.moveToNext()) return null;
-            return fromCursor(cursor);
-        }finally {
-            db.close();
+        synchronized (syncDb) {
+            SQLiteDatabase db = getReadableDatabase();
+            try {
+                Cursor cursor = db.query(CM_OBJECT_TABLE, new String[]{JSON_COLUMN}, OBJECT_ID_WHERE, new String[]{objectId}, null, null, null);
+                if(!cursor.moveToNext()) return null;
+                return fromCursor(cursor);
+            }finally {
+                db.close();
+            }
         }
     }
 
     public List<BaseLocallySavableCMObject> loadAllObjects() {
-        SQLiteDatabase db = getReadableDatabase();
-        List<BaseLocallySavableCMObject> allObjects = new ArrayList<BaseLocallySavableCMObject>();
-        try {
-            Cursor cursor = db.query(CM_OBJECT_TABLE, new String[] {JSON_COLUMN}, null, null, null, null, null);
-            while (cursor.moveToNext()) {
-                BaseLocallySavableCMObject object = fromCursor(cursor);
-                allObjects.add(object);
+        synchronized (syncDb) {
+            SQLiteDatabase db = getReadableDatabase();
+            List<BaseLocallySavableCMObject> allObjects = new ArrayList<BaseLocallySavableCMObject>();
+            try {
+                Cursor cursor = db.query(CM_OBJECT_TABLE, new String[] {JSON_COLUMN}, null, null, null, null, null);
+                while (cursor.moveToNext()) {
+                    BaseLocallySavableCMObject object = fromCursor(cursor);
+                    allObjects.add(object);
+                }
+            } finally {
+                db.close();
             }
-        } finally {
-            db.close();
+            return allObjects;
         }
-        return allObjects;
     }
 
     public int deleteObjectById(String objectId) {
         if(Strings.isEmpty(objectId)) return 0;
 
-        SQLiteDatabase db = getWritableDatabase();
-        try {
-            return db.delete(CM_OBJECT_TABLE, OBJECT_ID_WHERE, new String[]{objectId});
-        }finally {
-            db.close();
+        synchronized (syncDb) {
+            SQLiteDatabase db = getWritableDatabase();
+            try {
+                return db.delete(CM_OBJECT_TABLE, OBJECT_ID_WHERE, new String[]{objectId});
+            }finally {
+                db.close();
+            }
         }
     }
 
     public Map<String, String> loadObjectJsonById(Collection <String> objectIds) {
         Map<String, String> objectIdsToJson = new HashMap<String, String>();
 
-        SQLiteDatabase db = getReadableDatabase();
-        try {
-            StringBuilder queryBuilder = new StringBuilder(OBJECT_ID_COLUMN).append(" IN (").append(collectionToCsv(objectIds)).append(")");
-            Cursor cursor = db.query(CM_OBJECT_TABLE, new String[] {JSON_COLUMN, OBJECT_ID_COLUMN}, queryBuilder.toString(), null, null, null, null);
+        synchronized (syncDb) {
+            SQLiteDatabase db = getReadableDatabase();
+            try {
+                StringBuilder queryBuilder = new StringBuilder(OBJECT_ID_COLUMN).append(" IN (").append(collectionToCsv(objectIds)).append(")");
+                Cursor cursor = db.query(CM_OBJECT_TABLE, new String[] {JSON_COLUMN, OBJECT_ID_COLUMN}, queryBuilder.toString(), null, null, null, null);
 
-            int jsonIndex = cursor.getColumnIndex(JSON_COLUMN);
-            int objectIdIndex = cursor.getColumnIndex(OBJECT_ID_COLUMN);
-            while (cursor.moveToNext()) {
-                String json = cursor.getString(jsonIndex);
-                String objectId = cursor.getString(objectIdIndex);
-                objectIdsToJson.put(objectId, json);
+                int jsonIndex = cursor.getColumnIndex(JSON_COLUMN);
+                int objectIdIndex = cursor.getColumnIndex(OBJECT_ID_COLUMN);
+
+                while (!cursor.isClosed() && cursor.moveToNext()) {
+                    String json = cursor.getString(jsonIndex);
+                    String objectId = cursor.getString(objectIdIndex);
+                    objectIdsToJson.put(objectId, json);
+                }
             }
-        }finally {
-            db.close();
+            finally {
+                db.close();
+            }
         }
-
         return objectIdsToJson;
     }
 
     public <TYPE> int deleteObjectsByClass(Class<TYPE> klass) {
         String[] args = {ClassNameRegistry.forClass(klass)};
-        SQLiteDatabase writableDatabase = getWritableDatabase();
-        try {
-            return writableDatabase.delete(CM_OBJECT_TABLE, CLASS_SELECT_WHERE, args);
-        } catch (Throwable t) {} finally {
-            writableDatabase.close();
-            return 0;
+        synchronized (syncDb) {
+            SQLiteDatabase writableDatabase = getWritableDatabase();
+            try {
+                return writableDatabase.delete(CM_OBJECT_TABLE, CLASS_SELECT_WHERE, args);
+            } catch (Throwable t) {} finally {
+                writableDatabase.close();
+                return 0;
+            }
         }
     }
 
     public <TYPE extends BaseLocallySavableCMObject> List<TYPE> loadObjectsByClass(Class <TYPE> klass) {
         String[] args = {ClassNameRegistry.forClass(klass)};
-        SQLiteDatabase readableDatabase = getReadableDatabase();
-        try {
-            Cursor results = readableDatabase.query(CM_OBJECT_TABLE, COLUMNS, CLASS_SELECT_WHERE, args, null, null, null, null);
-            List<TYPE> resultList = new ArrayList<TYPE>();
-            while (results.moveToNext()) {
-                resultList.add((TYPE)fromCursor(results));
+        synchronized (syncDb) {
+            SQLiteDatabase readableDatabase = getReadableDatabase();
+            try {
+                Cursor results = readableDatabase.query(CM_OBJECT_TABLE, COLUMNS, CLASS_SELECT_WHERE, args, null, null, null, null);
+                List<TYPE> resultList = new ArrayList<TYPE>();
+                while (results.moveToNext()) {
+                    resultList.add((TYPE)fromCursor(results));
+                }
+                return resultList;
+            }finally{
+                readableDatabase.close();
             }
-            return resultList;
-        }finally{
-            readableDatabase.close();
         }
     }
 

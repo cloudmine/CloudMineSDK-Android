@@ -7,7 +7,6 @@ import android.net.http.AndroidHttpClient;
 import android.os.Build;
 import com.android.volley.Network;
 import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.HttpStack;
@@ -66,6 +65,7 @@ public class SharedRequestQueueHolders {
         Network network = new CMNetwork(stack);
 
         RequestQueue queue = new RequestQueue(new DiskBasedCache(cacheDir), network);
+
         queue.start();
 
         return queue;
