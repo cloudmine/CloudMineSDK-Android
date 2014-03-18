@@ -152,7 +152,7 @@ public class CMImageLoader extends ImageLoader {
         // The request is not already in flight. Send the new request to the network and
         // track it.
         Request<?> newRequest =
-                new com.cloudmine.api.rest.ImageLoadRequest(requestUrl, maxWidth, maxHeight,Bitmap.Config.RGB_565, new Response.Listener<Bitmap>() {
+                new com.cloudmine.api.rest.BaseImageLoadRequest(requestUrl, null, null, maxWidth, maxHeight,Bitmap.Config.RGB_565, new Response.Listener<Bitmap>() {
                     @Override
                     public void onResponse(Bitmap response) {
                         onGetImageSuccess(cacheKey, response);
