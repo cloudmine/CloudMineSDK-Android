@@ -78,7 +78,7 @@ public class AndroidCMPaymentsIntegrationTest extends ServiceTestBase {
                 "}\n";
         //cartJson = "{\"items\":[{\"mid\":\"24\",\"vend\":{\"minutes\":\"20\"}}],\"discounts\":{\"loyalty\":0},\"location\":{\"lat\":37.785834,\"lon\":-122.406417},\"payment\":{\"cc_id\":\"0\",\"cc_last4\":\"2040\"},\"custid\":\"cleanshow\",\"locid\":\"1\"}";
         CloudMineRequest.setCachingEnabled(false);
-        CloudMineRequest request = new BaseChargeCardRequest(0, cartJson, response.getSessionToken(), testCallback(new Response.Listener<PaymentResponse>() {
+        CloudMineRequest request = new BaseChargeCardRequest(0, cartJson, response.getSessionToken(), null, testCallback(new Response.Listener<PaymentResponse>() {
             @Override
             public void onResponse(PaymentResponse response) {
                 assertTrue(response.wasSuccess());

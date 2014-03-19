@@ -1,6 +1,7 @@
 package com.cloudmine.api.db;
 
 import android.content.ContentValues;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.LibrarySpecificClassCreator;
 import com.cloudmine.api.Strings;
 import org.apache.http.Header;
@@ -71,12 +72,12 @@ public class RequestDBObject {
     }
 
     public static RequestDBObject createApplicationObjectRequest(String objectId) {
-        RequestDBObject request = new RequestDBObject(RequestConstants.APP_SAVE_URL, Verb.PUT, (String)null, objectId, -1, SyncStatus.UNSYNCED, new ArrayList<Header>(LibrarySpecificClassCreator.getCreator().getHeaderFactory().getCloudMineHeaders()));
+        RequestDBObject request = new RequestDBObject(RequestConstants.APP_SAVE_URL, Verb.PUT, (String)null, objectId, -1, SyncStatus.UNSYNCED, new ArrayList<Header>(LibrarySpecificClassCreator.getCreator().getHeaderFactory().getCloudMineHeaders(CMApiCredentials.getApplicationApiKey())));
         return request;
     }
 
     public static RequestDBObject createApplicationFileRequest(String fileId) {
-        RequestDBObject request = new RequestDBObject(RequestConstants.APP_SAVE_FILE_URL.copy().binary(fileId).asUrlString(), Verb.PUT, null, null, fileId, -1, SyncStatus.UNSYNCED, new ArrayList<Header>(LibrarySpecificClassCreator.getCreator().getHeaderFactory().getCloudMineHeaders()));
+        RequestDBObject request = new RequestDBObject(RequestConstants.APP_SAVE_FILE_URL.copy().binary(fileId).asUrlString(), Verb.PUT, null, null, fileId, -1, SyncStatus.UNSYNCED, new ArrayList<Header>(LibrarySpecificClassCreator.getCreator().getHeaderFactory().getCloudMineHeaders(CMApiCredentials.getApplicationApiKey())));
         return request;
     }
 

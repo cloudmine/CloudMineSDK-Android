@@ -117,6 +117,7 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
     private long softTtl = applicationSoftTtl;
     private long ttl = applicationTtl;
     private Response.Listener<RESPONSE> responseListener;
+    private String apiKey;
     private String body;
     private String sessionTokenString;
     private Handler handler;
@@ -127,13 +128,17 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
         else                       return url;
     }
 
-    protected static String getUrl(String url) {
-        return new StringBuilder(BASE_URL).append(CMApiCredentials.getApplicationIdentifier()).append(url).toString();
+    protected static String getUrl(CMApiCredentials apiCredentials, String url) {
+        String baseUrl = apiCredentials.getBaseUrl();
+        StringBuilder urlBuilder = new StringBuilder(baseUrl);
+        if(!baseUrl.endsWith("/")) urlBuilder.append("/");
+        return urlBuilder.append(apiCredentials.getIdentifier()).append(url).toString();
     }
 
     public CloudMineRequest(int method, CMURLBuilder url, CMServerFunction serverFunction, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
         this(method, url, null, null, serverFunction, successListener, errorListener);
     }
+
 
     public CloudMineRequest(int method, CMURLBuilder url, CMSessionToken sessionToken, CMServerFunction serverFunction, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
         this(method, url, null, sessionToken, serverFunction, successListener, errorListener);
@@ -151,14 +156,18 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
         this(method, addServerFunction(url, serverFunction), body, sessionToken, successListener, errorListener);
     }
 
-    public CloudMineRequest(int method, String url, String body, CMSessionToken sessionToken, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
-        super(method, getUrl(url), errorListener);
+    public CloudMineRequest(int method, String url, String body, CMSessionToken sessionToken, CMApiCredentials apiCredentials, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
+        super(method, getUrl(apiCredentials, url), errorListener);
+        this.apiKey = apiCredentials == null ? CMApiCredentials.getApplicationApiKey() : apiCredentials.getApiKey();
         this.body = body;
         responseListener = successListener;
         boolean isValidSessionToken = !(sessionToken == null || CMSessionToken.FAILED.equals(sessionToken));
         if(isValidSessionToken) sessionTokenString = sessionToken.getSessionToken();
         setTag(REQUEST_TAG);
-//        System.out.println("url=" + getUrl(url) + " valid session? " + isValidSessionToken + (isValidSessionToken ? ", sessionToken: " + sessionToken : "") + " with body: " + body);
+    }
+
+    public CloudMineRequest(int method, String url, String body, CMSessionToken sessionToken, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
+        this(method, url, body, sessionToken, CMApiCredentials.getCredentials(), successListener, errorListener);
     }
 
     @Override
@@ -229,7 +238,7 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
     }
 
     public Map<String, String> getHeaders() throws AuthFailureError {
-        Map<String, String> headerMapping = AndroidHeaderFactory.getHeaderMapping(sessionTokenString);
+        Map<String, String> headerMapping = AndroidHeaderFactory.getHeaderMapping(sessionTokenString, apiKey);
         return headerMapping;
     }
 
