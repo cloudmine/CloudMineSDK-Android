@@ -1,7 +1,6 @@
 package com.cloudmine.api.db;
 
 import android.content.Context;
-import android.os.Handler;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -236,23 +235,10 @@ public class BaseLocallySavableCMAccessList extends BaseLocallySavableCMObject {
         CloudMineRequest request;
         JavaCMUser user = getUser();
         if(user != null && user.getSessionToken() != null) {
-            request = new BaseAccessListModificationRequest(this, null, successListener, errorListener);
+            request = new BaseAccessListModificationRequest(this, null, null, successListener, errorListener);
         } else {
             if(errorListener != null) errorListener.onErrorResponse(new VolleyError("Can't save user level object when the associated user is not logged in"));
             request = CloudMineRequest.FAKE_REQUEST;
-        }
-        return request;
-    }
-
-    public CloudMineRequest save(Context context, Handler handler) {
-        RequestQueue queue = getRequestQueue(context);
-
-        JavaCMUser user = getUser();
-        CloudMineRequest request = new BaseAccessListModificationRequest(this, null, handler);
-        if(user.getSessionToken() == null) {
-           request.deliverError(new VolleyError("Can't save user level object when the associated user is not logged in"));
-        } else {
-            queue.add(request);
         }
         return request;
     }

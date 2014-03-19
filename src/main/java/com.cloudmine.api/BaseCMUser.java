@@ -61,7 +61,7 @@ public class BaseCMUser extends JavaCMUser {
      * @return
      */
     @Expand(isStatic = true)
-    public static CloudMineRequest searchUserProfiles(Context context, String searchString, @Expand CMApiCredentials apiCredentials, CMServerFunction serverFunction, @Optional Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener) {
+    public static CloudMineRequest searchUserProfiles(Context context, String searchString, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener) {
         BaseLoadUserProfilesRequest loadUserProfilesRequest = new BaseLoadUserProfilesRequest(searchString, apiCredentials, serverFunction, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(loadUserProfilesRequest);
         return loadUserProfilesRequest;
@@ -233,7 +233,7 @@ public class BaseCMUser extends JavaCMUser {
      * @return
      */
     @Expand
-    public CloudMineRequest changePassword(Context context, String currentPassword, String newPassword,  @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Expand Response.Listener<CMResponse> successListener, @Expand Response.ErrorListener errorListener) {
+    public CloudMineRequest changePassword(Context context, String currentPassword, String newPassword,  @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener) {
         CloudMineRequest request = new BaseChangeUserPasswordRequest(getUserIdentifier(), currentPassword, newPassword, apiCredentials, serverFunction, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
         setPassword(newPassword);
