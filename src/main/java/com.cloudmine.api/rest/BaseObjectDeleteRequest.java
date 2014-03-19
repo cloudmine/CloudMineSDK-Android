@@ -32,7 +32,7 @@ public class BaseObjectDeleteRequest extends CloudMineRequest<ObjectModification
      * @param errorListener
      */
     @Expand
-    public BaseObjectDeleteRequest(@Single Collection<String> objectIds, @Optional CMApiCredentials apiCredentials, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ObjectModificationResponse> responseListener, @Optional Response.ErrorListener errorListener) {
+    public BaseObjectDeleteRequest(@Single Collection<String> objectIds, @Optional CMSessionToken sessionToken, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ObjectModificationResponse> responseListener, @Optional Response.ErrorListener errorListener) {
         super(Method.DELETE, new CMURLBuilder("", true).delete(objectIds).user(sessionToken).serverFunction(serverFunction).asUrlString(), null, sessionToken, apiCredentials, responseListener, errorListener);
     }
 
