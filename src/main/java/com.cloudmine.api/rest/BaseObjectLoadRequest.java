@@ -32,6 +32,7 @@ public class BaseObjectLoadRequest extends CloudMineRequest<CMObjectResponse> {
      * Create a new BaseObjectLoadRequest that loads the objects specified by the ids
      * @param objectIds The objectIds to load. If null, all objects will be loaded
      * @param sessionToken an optional sessionToken. If present, the objects will be loaded at the user level
+     * @param apiCredentials
      * @param serverFunction
      * @param successListener
      * @param errorListener

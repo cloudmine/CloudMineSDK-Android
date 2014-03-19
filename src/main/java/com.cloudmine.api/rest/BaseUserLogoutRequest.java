@@ -2,6 +2,7 @@ package com.cloudmine.api.rest;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.CMResponse;
@@ -28,8 +29,8 @@ public class BaseUserLogoutRequest extends CloudMineRequest<CMResponse> {
      * @param errorListener
      */
     @Expand
-    public BaseUserLogoutRequest(String sessionToken, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        this(new CMSessionToken(sessionToken, new Date()), serverFunction, successListener, errorListener);
+    public BaseUserLogoutRequest(String sessionToken, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        this(new CMSessionToken(sessionToken, new Date()), apiCredentials, serverFunction, successListener, errorListener);
     }
 
     /**
@@ -40,8 +41,8 @@ public class BaseUserLogoutRequest extends CloudMineRequest<CMResponse> {
      * @param errorListener
      */
     @Expand
-    public BaseUserLogoutRequest(CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.POST, "/account/logout", (String)null, sessionToken, serverFunction, successListener, errorListener);
+    public BaseUserLogoutRequest(CMSessionToken sessionToken, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.POST, "/account/logout", (String)null, sessionToken, apiCredentials, serverFunction, successListener, errorListener);
     }
 
     @Override

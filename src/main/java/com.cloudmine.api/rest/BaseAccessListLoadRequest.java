@@ -2,6 +2,7 @@ package com.cloudmine.api.rest;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.CMObjectResponse;
@@ -23,12 +24,13 @@ public class BaseAccessListLoadRequest extends CloudMineRequest<CMObjectResponse
      * sessionToken is passed in
      * @param sessionToken a valid sessionToken for the user whose ACL information is to be fetched
      * @param serverFunction
+     * @param apiCredentials optional credentials; if unspecified, defaults from CMApiCredentials.getCredentials are used
      * @param successListener
      * @param errorListener
      */
     @Expand
-    public BaseAccessListLoadRequest(CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.GET, BASE_URL, (String)null, sessionToken, serverFunction, successListener, errorListener);
+    public BaseAccessListLoadRequest(CMSessionToken sessionToken, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.GET, BASE_URL, (String)null, sessionToken, apiCredentials, serverFunction, successListener, errorListener);
     }
 
     @Override

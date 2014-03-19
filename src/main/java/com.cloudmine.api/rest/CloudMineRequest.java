@@ -156,6 +156,10 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
         this(method, addServerFunction(url, serverFunction), body, sessionToken, successListener, errorListener);
     }
 
+    public CloudMineRequest(int method, String url, String body, CMSessionToken sessionToken, CMApiCredentials apiCredentials, CMServerFunction serverFunction, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
+        this(method, addServerFunction(url, serverFunction), body, sessionToken, apiCredentials, successListener, errorListener);
+    }
+
     public CloudMineRequest(int method, String url, String body, CMSessionToken sessionToken, CMApiCredentials apiCredentials, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
         super(method, getUrl(apiCredentials, url), errorListener);
         this.apiKey = apiCredentials == null ? CMApiCredentials.getApplicationApiKey() : apiCredentials.getApiKey();

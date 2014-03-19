@@ -3,6 +3,7 @@ package com.cloudmine.api.rest;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.LibrarySpecificClassCreator;
 import com.cloudmine.api.Strings;
 import com.cloudmine.api.rest.options.CMServerFunction;
@@ -33,8 +34,8 @@ public class BaseChangeUserIdentifierRequest extends CloudMineRequest<CMResponse
      * @return
      */
     @Expand(isStatic = true)
-    public static CloudMineRequest changeUserEmail(String currentEmail, String password, String newEmail, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener){
-        return new BaseChangeUserIdentifierRequest(currentEmail, password, newEmail, null, serverFunction, successListener, errorListener);
+    public static CloudMineRequest changeUserEmail(String currentEmail, String password, String newEmail, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener){
+        return new BaseChangeUserIdentifierRequest(currentEmail, password, newEmail, null, apiCredentials, serverFunction, successListener, errorListener);
     }
 
     /**
@@ -48,8 +49,8 @@ public class BaseChangeUserIdentifierRequest extends CloudMineRequest<CMResponse
      * @return
      */
     @Expand(isStatic = true)
-    public static CloudMineRequest changeUserName(String userName, String password, String newUserName, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener){
-        return new BaseChangeUserIdentifierRequest(userName, password, null, newUserName, serverFunction, successListener, errorListener);
+    public static CloudMineRequest changeUserName(String userName, String password, String newUserName, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener){
+        return new BaseChangeUserIdentifierRequest(userName, password, null, newUserName, apiCredentials, serverFunction, successListener, errorListener);
     }
 
     private static String getJsonBody(String newEmail, String newUserName) {
@@ -79,8 +80,8 @@ public class BaseChangeUserIdentifierRequest extends CloudMineRequest<CMResponse
      * @param errorListener
      */
     @Expand
-    public BaseChangeUserIdentifierRequest(String userIdentifier, String password, String newEmail, String newUserName, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.POST, "/account/credentials", getJsonBody(newEmail, newUserName), null, serverFunction, successListener, errorListener);
+    public BaseChangeUserIdentifierRequest(String userIdentifier, String password, String newEmail, String newUserName, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.POST, "/account/credentials", getJsonBody(newEmail, newUserName), null, apiCredentials, serverFunction, successListener, errorListener);
         this.userIdentifier = userIdentifier;
         this.password = password;
     }
