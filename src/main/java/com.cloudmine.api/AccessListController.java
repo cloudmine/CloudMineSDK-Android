@@ -28,7 +28,7 @@ public class AccessListController extends JavaAccessListController {
      * @return
      */
     public static CloudMineRequest load(Context context, CMSessionToken sessionToken, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
-        BaseAccessListLoadRequest request = new BaseAccessListLoadRequest(sessionToken,  null, successListener,  errorListener);
+        BaseAccessListLoadRequest request = new BaseAccessListLoadRequest(sessionToken, null, null, successListener,  errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
         return request;
     }
@@ -73,8 +73,8 @@ public class AccessListController extends JavaAccessListController {
         }
         CMSessionToken sessionToken = user.getSessionToken();
         if(sessionToken == null || sessionToken.getSessionToken().equals(CMSessionToken.INVALID_TOKEN)) {
-            if(user instanceof CMUser) {
-                ((CMUser)user).login(context, new Response.Listener<LoginResponse>() {
+            if(user instanceof BaseCMUser) {
+                ((BaseCMUser)user).login(context, new Response.Listener<LoginResponse>() {
                     @Override
                     public void onResponse(LoginResponse loginResponse) {
                         save(context, loginResponse.getSessionToken(), successListener, errorListener);

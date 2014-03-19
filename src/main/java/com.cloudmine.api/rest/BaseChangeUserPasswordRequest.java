@@ -3,6 +3,7 @@ package com.cloudmine.api.rest;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.LibrarySpecificClassCreator;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.CMResponse;
@@ -33,8 +34,8 @@ public class BaseChangeUserPasswordRequest extends CloudMineRequest<CMResponse> 
      * @param errorListener
      */
     @Expand
-    public BaseChangeUserPasswordRequest(String emailOrUsername, String oldPassword, String newPassword, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.POST, "/account/password/change", "{\"password\":\"" + newPassword + "\"}", null, serverFunction, successListener, errorListener);
+    public BaseChangeUserPasswordRequest(String emailOrUsername, String oldPassword, String newPassword, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.POST, "/account/password/change", "{\"password\":\"" + newPassword + "\"}", null, apiCredentials, serverFunction, successListener, errorListener);
         this.emailOrUsername = emailOrUsername;
         this.oldPassword = oldPassword;
 

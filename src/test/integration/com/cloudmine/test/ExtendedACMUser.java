@@ -1,13 +1,13 @@
 package com.cloudmine.test;
 
-import com.cloudmine.api.CMUser;
+import com.cloudmine.api.BaseCMUser;
 
 /**
  * <br>
  * Copyright CloudMine LLC. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
-public class ExtendedACMUser extends CMUser {
+public class ExtendedACMUser extends BaseCMUser {
 
     private boolean hasProperty;
     private int points;

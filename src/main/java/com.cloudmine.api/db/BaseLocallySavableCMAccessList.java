@@ -70,7 +70,7 @@ public class BaseLocallySavableCMAccessList extends BaseLocallySavableCMObject {
     public BaseLocallySavableCMAccessList(JavaCMUser owner) {
         super();
         if(owner == null)
-            throw new NullPointerException("Cannot instantiate a new CMAccessList from a null CMUser");
+            throw new NullPointerException("Cannot instantiate a new CMAccessList from a null BaseCMUser");
         setSaveWith(owner);
     }
 
