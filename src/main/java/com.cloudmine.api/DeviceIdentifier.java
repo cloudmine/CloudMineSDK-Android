@@ -40,7 +40,7 @@ public class DeviceIdentifier {
 //                new VolleyAsynchronousHttpClient(context.getApplicationContext())));
         //Deserialize all geopoints as locally savable objects
         ClassNameRegistry.register(CMGeoPointInterface.GEOPOINT_CLASS, LocallySavableCMGeoPoint.class);
-        ClassNameRegistry.register(JavaCMUser.CLASS_NAME, BaseCMUser.class);
+        ClassNameRegistry.register(JavaCMUser.CLASS_NAME, com.cloudmine.api.CMUser.class);
         SharedPreferences preferences = context.getSharedPreferences("CLOUDMINE_PREFERENCES", Context.MODE_PRIVATE);
         boolean isNotSet = !preferences.contains(UNIQUE_ID_KEY);
         if(isNotSet) {

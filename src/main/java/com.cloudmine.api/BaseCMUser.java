@@ -106,7 +106,7 @@ public class BaseCMUser extends JavaCMUser {
     }
 
     @Expand
-    protected BaseCMUser() {}
+    public BaseCMUser() {}
 
     @Expand
     public BaseCMUser(String email, String userName, String password) {

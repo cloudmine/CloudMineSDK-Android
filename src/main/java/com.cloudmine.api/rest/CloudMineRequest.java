@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Message;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Cache;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -27,6 +28,8 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
 
     public static final String REQUEST_TAG = "CloudMineRequest";
 
+
+    private static final int RETRY_TIME_MS = 35000;
     protected static String BASE_URL = "https://api.cloudmine.me/v1/app/";
     protected static String API_EXTENSION = "v1/app/";
     protected static String USER = "/user";
@@ -170,6 +173,7 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
         boolean isValidSessionToken = !(sessionToken == null || CMSessionToken.FAILED.equals(sessionToken));
         if(isValidSessionToken) sessionTokenString = sessionToken.getSessionToken();
         setTag(REQUEST_TAG);
+        setRetryPolicy(new DefaultRetryPolicy(RETRY_TIME_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     }
 
     public CloudMineRequest(int method, String url, String body, CMSessionToken sessionToken, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
