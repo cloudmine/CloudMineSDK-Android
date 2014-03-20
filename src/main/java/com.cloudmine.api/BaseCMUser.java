@@ -46,7 +46,7 @@ public class BaseCMUser extends JavaCMUser {
      * @return
      */
     @Expand(isStatic = true)
-    public static CloudMineRequest loadAllUserProfiles(Context context, @Optional CMApiCredentials apiCredentials, CMServerFunction serverFunction, @Optional Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener) {
+    public static CloudMineRequest loadAllUserProfiles(Context context, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener) {
         BaseLoadUserProfilesRequest loadUserProfilesRequest = new BaseLoadUserProfilesRequest(apiCredentials, serverFunction, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(loadUserProfilesRequest);
         return loadUserProfilesRequest;
@@ -73,8 +73,8 @@ public class BaseCMUser extends JavaCMUser {
      * @param password
      * @return
      */
-    public static BaseCMUser CMUserWithUserName(String userName, String password) {
-        return new BaseCMUser(null, userName, password);
+    public static com.cloudmine.api.CMUser CMUserWithUserName(String userName, String password) {
+        return new com.cloudmine.api.CMUser(null, userName, password);
     }
 
     /**
@@ -82,8 +82,8 @@ public class BaseCMUser extends JavaCMUser {
      * @param userName
      * @return
      */
-    public static BaseCMUser CMUserWithUserName(String userName) {
-        return new BaseCMUser(null, userName, "");
+    public static com.cloudmine.api.CMUser CMUserWithUserName(String userName) {
+        return new com.cloudmine.api.CMUser(null, userName, "");
     }
 
     /**
@@ -92,8 +92,8 @@ public class BaseCMUser extends JavaCMUser {
      * @param password
      * @return
      */
-    public static BaseCMUser CMUserWithEmail(String email, String password) {
-        return new BaseCMUser(email, password);
+    public static com.cloudmine.api.CMUser CMUserWithEmail(String email, String password) {
+        return new com.cloudmine.api.CMUser(email, password);
     }
 
     /**
@@ -101,16 +101,19 @@ public class BaseCMUser extends JavaCMUser {
      * @param email
      * @return
      */
-    public static BaseCMUser CMUserWithEmail(String email) {
-        return new BaseCMUser(email, "");
+    public static com.cloudmine.api.CMUser CMUserWithEmail(String email) {
+        return new com.cloudmine.api.CMUser(email, "");
     }
 
+    @Expand
     protected BaseCMUser() {}
 
+    @Expand
     public BaseCMUser(String email, String userName, String password) {
         super(email, userName, password);
     }
 
+    @Expand
     public BaseCMUser(String email, String password) {
         super(email, password);
     }

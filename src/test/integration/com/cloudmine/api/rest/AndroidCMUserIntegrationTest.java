@@ -2,9 +2,9 @@ package com.cloudmine.api.rest;
 
 import android.content.Context;
 import com.android.volley.Response;
-import com.cloudmine.api.BaseCMUser;
 import com.cloudmine.api.CMCreditCard;
 import com.cloudmine.api.CMObject;
+import com.cloudmine.api.CMUser;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.integration.CMUserIntegrationTest;
 import com.cloudmine.api.rest.response.CMObjectResponse;
@@ -49,7 +49,7 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
     @Test
     public void testPaymentMethodAdding() {
         String password = randomString();
-        BaseCMUser user = new BaseCMUser(randomEmail(), password);
+        CMUser user = new CMUser(randomEmail(), password);
         assertTrue(service.insert(user).wasSuccess());
         user.login(hasSuccess);
         waitThenAssertTestResults();
@@ -75,7 +75,7 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
     @Test
     public void testPaymentMethodRemoving() {
         String password = randomString();
-        BaseCMUser user = new BaseCMUser(randomEmail(), password);
+        CMUser user = new CMUser(randomEmail(), password);
         assertTrue(service.insert(user).wasSuccess());
         user.login(hasSuccess);
         waitThenAssertTestResults();
@@ -129,14 +129,14 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
 
         testCreateAndLogin(user);
 
-        BaseCMUser usernameUser = new BaseCMUser(null, randomString(), randomString());
+        CMUser usernameUser = new CMUser(null, randomString(), randomString());
         testCreateAndLogin(usernameUser);
     }
 
     @Test
     public void testLogout() {
         String password = randomString();
-        BaseCMUser user = new BaseCMUser(randomEmail(), password);
+        CMUser user = new CMUser(randomEmail(), password);
         testCreateAndLogin(user);
         user.logout(applicationContext, ResponseCallbackTuple.<CMResponse>hasSuccess(), defaultFailureListener);
         waitThenAssertTestResults();
@@ -178,7 +178,7 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
         assertEquals(10000, user.getPoints());
 
         final String userObjectId = user.getObjectId();
-        BaseCMUser.loadAllUserProfiles(applicationContext, ResponseCallbackTuple.testCallback(new Response.Listener<CMObjectResponse>() {
+        CMUser.loadAllUserProfiles(applicationContext, ResponseCallbackTuple.testCallback(new Response.Listener<CMObjectResponse>() {
             @Override
             public void onResponse(CMObjectResponse response) {
                 CMObject object = response.getCMObject(userObjectId);
@@ -188,7 +188,7 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
         }), defaultFailureListener);
         waitThenAssertTestResults();
 
-        BaseCMUser.searchUserProfiles(applicationContext, "[points = 10000]", testCallback(new Response.Listener<CMObjectResponse>() {
+        CMUser.searchUserProfiles(applicationContext, "[points = 10000]", testCallback(new Response.Listener<CMObjectResponse>() {
             @Override
             public void onResponse(CMObjectResponse response) {
                 CMObject object = response.getCMObject(userObjectId);
@@ -202,7 +202,7 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
     @Test
     public void testChangePassword() {
         String password = randomString();
-        BaseCMUser user = new BaseCMUser(randomEmail(), password);
+        CMUser user = new CMUser(randomEmail(), password);
         CMWebService.getService().insert(user);
 
         user.changePassword(applicationContext, password, "newPassword", ResponseCallbackTuple.<CMResponse>hasSuccess(), defaultFailureListener);
@@ -215,7 +215,7 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
     public void testChangeUserName() {
         String userName = randomString();
         String password = randomString();
-        BaseCMUser user = BaseCMUser.CMUserWithUserName(userName, password);
+        CMUser user = CMUser.CMUserWithUserName(userName, password);
         assertTrue(service.insert(user).wasSuccess());
 
         String newUserName = randomString();
@@ -231,7 +231,7 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
     public void testChangeEmail() {
         String email = randomEmail();
         String password = randomString();
-        BaseCMUser user = BaseCMUser.CMUserWithEmail(email, password);
+        CMUser user = CMUser.CMUserWithEmail(email, password);
         assertTrue(service.insert(user).wasSuccess());
 
         String newEmail = randomEmail();
@@ -243,7 +243,7 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
         waitThenAssertTestResults();
     }
 
-    private void testCreateAndLogin(BaseCMUser user) {
+    private void testCreateAndLogin(CMUser user) {
         user.create(applicationContext, ResponseCallbackTuple.<CreationResponse>hasSuccess(), defaultFailureListener);
         waitThenAssertTestResults();
 

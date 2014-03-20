@@ -3,7 +3,7 @@ package com.cloudmine.api.rest;
 import android.content.Context;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMGeoPointInterface;
-import com.cloudmine.api.db.BaseLocallySavableCMGeoPoint;
+import com.cloudmine.api.db.LocallySavableCMGeoPoint;
 import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.integration.CMGeoPointIntegrationTest;
 import com.cloudmine.api.persistance.ClassNameRegistry;
@@ -40,8 +40,8 @@ public class AndroidCMGeoPointIntegrationTest extends CMGeoPointIntegrationTest 
 
     @Test
     public void testLoadingGeoThroughVolley() {
-        ClassNameRegistry.register(CMGeoPointInterface.GEOPOINT_CLASS, BaseLocallySavableCMGeoPoint.class);
-        BaseLocallySavableCMGeoPoint geoPoint = new BaseLocallySavableCMGeoPoint(33, 44);
+        ClassNameRegistry.register(CMGeoPointInterface.GEOPOINT_CLASS, LocallySavableCMGeoPoint.class);
+        LocallySavableCMGeoPoint geoPoint = new LocallySavableCMGeoPoint(33, 44);
         geoPoint.saveLocally(applicationContext);
         geoPoint.save(applicationContext, ResponseCallbackTuple.<ObjectModificationResponse>hasSuccess(), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();

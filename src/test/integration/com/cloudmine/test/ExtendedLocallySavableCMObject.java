@@ -1,6 +1,6 @@
 package com.cloudmine.test;
 
-import com.cloudmine.api.db.BaseLocallySavableCMObject;
+import com.cloudmine.api.db.LocallySavableCMObject;
 
 /**
  * Created with IntelliJ IDEA.
@@ -9,7 +9,7 @@ import com.cloudmine.api.db.BaseLocallySavableCMObject;
  * Time: 5:22 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ExtendedLocallySavableCMObject extends BaseLocallySavableCMObject {
+public class ExtendedLocallySavableCMObject extends LocallySavableCMObject {
 
     private String name;
     private boolean isAwesome;

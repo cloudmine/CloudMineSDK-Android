@@ -28,6 +28,7 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
     public static final String REQUEST_TAG = "CloudMineRequest";
 
     protected static String BASE_URL = "https://api.cloudmine.me/v1/app/";
+    protected static String API_EXTENSION = "v1/app/";
     protected static String USER = "/user";
     public static final CloudMineRequest FAKE_REQUEST = new CloudMineRequest(Method.DEPRECATED_GET_OR_POST, new CMURLBuilder("", true), null, null, null) {
         public static final int FAKE_REQUEST_TYPE = -1;
@@ -129,10 +130,11 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
     }
 
     protected static String getUrl(CMApiCredentials apiCredentials, String url) {
+        if(apiCredentials == null) apiCredentials = CMApiCredentials.getCredentials();
         String baseUrl = apiCredentials.getBaseUrl();
         StringBuilder urlBuilder = new StringBuilder(baseUrl);
         if(!baseUrl.endsWith("/")) urlBuilder.append("/");
-        return urlBuilder.append(apiCredentials.getIdentifier()).append(url).toString();
+        return urlBuilder.append(API_EXTENSION).append(apiCredentials.getIdentifier()).append(url).toString();
     }
 
     public CloudMineRequest(int method, CMURLBuilder url, CMServerFunction serverFunction, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
