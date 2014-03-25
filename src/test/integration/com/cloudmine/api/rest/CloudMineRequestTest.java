@@ -23,16 +23,16 @@ public class CloudMineRequestTest {
     @Test
     public void testCMApiCredentials() throws Exception{
         DeviceIdentifier.initialize(Robolectric.application);
-        CMApiCredentials.initialize("appid", "apikey", "https://vz.api.cloudmine.me");
+        CMApiCredentials.initialize("appid", "apikey", "https://testing.api.cloudmine.me");
         CloudMineRequest request = new BaseObjectLoadRequest(Arrays.asList("objId"), null, null, null, null);
-        assertContainsCredentials(request, "vz.api.cloudmine.me", "appid", "apikey");
+        assertContainsCredentials(request, "testing.api.cloudmine.me", "appid", "apikey");
 
         CMApiCredentials apiCredentials = new CMApiCredentials("difApp", "difApi", "https://rs.api.cloudmine.me/");
         request = new BaseObjectLoadRequest(Arrays.asList("objId"), null, apiCredentials, null, null, null);
         assertContainsCredentials(request, apiCredentials);
 
         request = new BaseObjectLoadRequest(Arrays.asList("objId"), null, null, null, null);
-        assertContainsCredentials(request, "vz.api.cloudmine.me", "appid", "apikey");
+        assertContainsCredentials(request, "testing.api.cloudmine.me", "appid", "apikey");
     }
 
     protected void assertContainsCredentials(CloudMineRequest request,  CMApiCredentials credentials) throws AuthFailureError {
