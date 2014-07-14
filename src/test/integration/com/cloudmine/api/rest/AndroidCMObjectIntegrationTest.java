@@ -77,16 +77,16 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
 
     @Test
     public void testCMObjectSaving() {
-        CMApiCredentials credentials = new CMApiCredentials(APP_ID, API_KEY, "http://54.198.200.220");
+
         ExtendedLocallySavableCMObject object = new ExtendedLocallySavableCMObject("John", true, 55);
-        object.save(applicationContext, credentials, ResponseCallbackTuple.wasCreated(object.getObjectId()), ResponseCallbackTuple.defaultFailureListener);
+        object.save(applicationContext, ResponseCallbackTuple.wasCreated(object.getObjectId()), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
 
         JavaCMUser user = loggedInUser();
         object = new ExtendedLocallySavableCMObject("FFF", false, 1);
 
 
-        object.save(applicationContext, user.getSessionToken(), credentials, ResponseCallbackTuple.wasCreated(object.getObjectId()), ResponseCallbackTuple.defaultFailureListener);
+        object.save(applicationContext, user.getSessionToken(), ResponseCallbackTuple.wasCreated(object.getObjectId()), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
     }
 
@@ -110,7 +110,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
                 assertTrue(modificationResponse.wasModified(userObject.getObjectId()));
             }
         });
-        queue.add(new ObjectModificationRequest(userObject, user.getSessionToken(), objectModificationResponseResponseCallbackTuple, defaultFailureListener));
+        queue.add(new com.cloudmine.api.rest.ObjectModificationRequest(userObject, user.getSessionToken(), objectModificationResponseResponseCallbackTuple, defaultFailureListener));
         waitThenAssertTestResults();
 
         assertUserHasObject(userObject, user);
@@ -314,7 +314,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
         objects.add(new ExtendedCMObject("Chris", new Date(),  1));
         Iterator<CMObject> iterator = objects.iterator();
         String[] objectIds = { iterator.next().getObjectId(), iterator.next().getObjectId() };
-        ObjectModificationRequest request = new ObjectModificationRequest(objects, wasCreated(objectIds), defaultFailureListener);
+        com.cloudmine.api.rest.ObjectModificationRequest request = new com.cloudmine.api.rest.ObjectModificationRequest(objects, wasCreated(objectIds), defaultFailureListener);
         queue.add(request);
         waitThenAssertTestResults();
     }
