@@ -46,12 +46,6 @@ public class AndroidHeaderFactory extends JavaHeaderFactory {
         return deviceHeaderValue;
     }
 
-    @Override
-    public Set<Header> getCloudMineHeaders() {
-        Set<Header> headers = super.getCloudMineHeaders();
-        return headers;
-    }
-
     protected String getDeviceIdentifier() {
         return DeviceIdentifier.getUniqueId();
     }
