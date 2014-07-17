@@ -4,11 +4,9 @@ import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.Strings;
-import org.apache.http.Header;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * <br>
@@ -16,7 +14,7 @@ import java.util.Set;
  * See LICENSE file included with SDK for details.
  */
 public class AndroidHeaderFactory extends JavaHeaderFactory {
-    public static final String CLOUD_MINE_AGENT = "Android/0.6";
+    public static final String CLOUD_MINE_AGENT = "Android/0.6.1";
 
     private static Map<String, String> DEFAULT_HEADERS = new HashMap<String, String>();
     static {

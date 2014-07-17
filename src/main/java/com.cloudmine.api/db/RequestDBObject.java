@@ -1,6 +1,7 @@
 package com.cloudmine.api.db;
 
 import android.content.ContentValues;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.LibrarySpecificClassCreator;
 import com.cloudmine.api.Strings;
 import com.cloudmine.api.CMApiCredentials;

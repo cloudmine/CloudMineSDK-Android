@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.cloudmine.api</groupId>
     <artifactId>cloudmine-android</artifactId>
-    <version>0.6</version>
+    <version>0.6.1</version>
     <packaging>jar</packaging>
 
     <build>
