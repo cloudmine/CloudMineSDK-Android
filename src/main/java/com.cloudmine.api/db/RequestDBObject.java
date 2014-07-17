@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.LibrarySpecificClassCreator;
 import com.cloudmine.api.Strings;
+import com.cloudmine.api.CMApiCredentials;
 import org.apache.http.Header;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
