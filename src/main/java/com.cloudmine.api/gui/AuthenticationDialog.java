@@ -14,11 +14,13 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import com.cloudmine.api.CMSessionToken;
+import com.cloudmine.api.exceptions.NetworkException;
 import com.cloudmine.api.rest.CMSocial;
 import com.cloudmine.api.rest.CMURLBuilder;
 import com.cloudmine.api.rest.CMWebService;
 import com.cloudmine.api.rest.callbacks.Callback;
 import com.cloudmine.api.rest.response.CMSocialLoginResponse;
+
 import java.util.Map;
 import java.util.UUID;
 
@@ -51,22 +53,6 @@ public class AuthenticationDialog
             } catch(Throwable t) {
                 callback.onFailure(t, "Trouble making auth redirect");
             }
-
-        }
-
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            // on successful authentication we should get the redirect url
-            if (needsManualCompletion(url)) {
-                AuthenticationDialog.this.dismiss();
-                completeAuthentication();
-
-                // we handled the url ourselves, don't load the page in the web view
-                return true;
-            }
-
-            // any other page, load it into the web view
-            return false;
         }
 
         @Override
@@ -75,7 +61,7 @@ public class AuthenticationDialog
 
             // finish the activity on error
             super.onReceivedError(view, errorCode, description, failingUrl);
-
+            callback.onFailure(new NetworkException("Webview received errorcode: " + errorCode + " with description: " + description + " while loading URL: " + failingUrl), failingUrl);
             // dismiss any progress dialog
             progressDialog.dismiss();
         }
