@@ -65,7 +65,6 @@ public class SharedRequestQueueHolders {
         Network network = new CMNetwork(stack);
 
         RequestQueue queue = new RequestQueue(new DiskBasedCache(cacheDir), network);
-
         queue.start();
 
         return queue;
