@@ -45,30 +45,6 @@ public class AuthenticationDialog
     private class AuthenticationWebViewClient
              extends WebViewClient {
 
-        protected void completeAuthentication() {
-            try {
-                CMWebService.getService().asyncCompleteSocialLogin(challenge, callback);
-            } catch(Throwable t) {
-                callback.onFailure(t, "Trouble making auth redirect");
-            }
-
-        }
-
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            // on successful authentication we should get the redirect url
-            if (needsManualCompletion(url)) {
-                AuthenticationDialog.this.dismiss();
-                completeAuthentication();
-
-                // we handled the url ourselves, don't load the page in the web view
-                return true;
-            }
-
-            // any other page, load it into the web view
-            return false;
-        }
-
         @Override
         public void onReceivedError(WebView view, int errorCode,
                                     String description, String failingUrl) {
@@ -89,9 +65,20 @@ public class AuthenticationDialog
 
             if (needsManualCompletion(url)) {
                 AuthenticationDialog.this.dismiss();
-                completeAuthentication();
+                completeAuthentication(challenge);
             }
         }
+    }
+    protected void completeAuthentication(String challenge) {
+        try {
+            CMWebService.getService().asyncCompleteSocialLogin(challenge, callback);
+        } catch(Throwable t) {
+            failureCallback(t, "Trouble making auth redirect");
+        }
+    }
+
+    protected void failureCallback(Throwable throwable,  String msg) {
+        callback.onFailure(throwable, msg);
     }
 
     private boolean needsManualCompletion(String url) {
@@ -142,6 +129,11 @@ public class AuthenticationDialog
         this.callback = callback;
     }
 
+    AuthenticationDialog(Context context, CMSocial.Service service, CMSessionToken userSessionToken, Map<String, Object> params) {
+        super(context, android.R.style.Theme_Translucent_NoTitleBar);
+        this.context = context;
+        this.authUrl = getAuthenticationUrl(service, userSessionToken == null ? null : userSessionToken.getSessionToken(), params);
+    }
 
     private String getAuthenticationUrl(CMSocial.Service service) {
         return getAuthenticationUrl(service, null);

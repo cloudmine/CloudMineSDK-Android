@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Handler;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.cloudmine.api.gui.VolleyAuthenticationDialog;
 import com.cloudmine.api.rest.BaseAddPaymentMethodRequest;
 import com.cloudmine.api.rest.BaseChangeUserIdentifierRequest;
 import com.cloudmine.api.rest.BaseChangeUserPasswordRequest;
@@ -15,10 +17,12 @@ import com.cloudmine.api.rest.BaseRemovePaymentMethodRequest;
 import com.cloudmine.api.rest.BaseUserCreationRequest;
 import com.cloudmine.api.rest.BaseUserLoginRequest;
 import com.cloudmine.api.rest.BaseUserLogoutRequest;
+import com.cloudmine.api.rest.CMSocial;
 import com.cloudmine.api.rest.CloudMineRequest;
 import com.cloudmine.api.rest.SharedRequestQueueHolders;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.CMResponse;
+import com.cloudmine.api.rest.response.CMSocialLoginResponse;
 import com.cloudmine.api.rest.response.CreationResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
 import com.cloudmine.api.rest.response.PaymentResponse;
@@ -28,6 +32,7 @@ import me.cloudmine.annotations.Optional;
 import me.cloudmine.annotations.Single;
 
 import java.util.Collection;
+import java.util.Map;
 
 import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
 
@@ -39,6 +44,29 @@ import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
  */
 @EmptyConstructor
 public class BaseCMUser extends JavaCMUser {
+
+    /**
+     * Switch from the current Activity to the log in page for the given service. On completion, the current Activity
+     * will be shown. If the user has already logged into this application with the specified service, their user profile
+     * and a session token is passed into the given callback. If they have not, a new user is created. The newly created
+     * user and their session token will be passed into the given callback. If a session token is specified, the social
+     * user will be linked to the logged in user's account
+     * @param context Activity context
+     * @param service the service to log in to
+     * @param sessionToken Optional session token, to link an existing user to a social service
+     * @param params Optional to pass into auth call, such as scope
+     * @param successListener optional success callback, to receive the login response
+     * @param errorListener optional error callback, in case the login fails
+     */
+    @Expand(isStatic = true)
+    public static void loginThroughSocial(Context context, CMSocial.Service service, @Optional CMSessionToken sessionToken, @Optional Map<String, Object> params, @Optional Response.Listener<CMSocialLoginResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        try {
+            VolleyAuthenticationDialog dialog = new VolleyAuthenticationDialog(context, service, sessionToken, params, successListener, errorListener);
+            dialog.show();
+        }catch(Exception e) {
+            if(errorListener != null) errorListener.onErrorResponse(new VolleyError(e));
+        }
+    }
 
     /**
      * Load all of the user profiles. Requires the use of your master key
