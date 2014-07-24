@@ -101,6 +101,14 @@ public class AndroidCMFileIntegrationTest extends CMFileIntegrationTest {
 
         file.delete(applicationContext, ResponseCallbackTuple.<ObjectModificationResponse>hasSuccess(), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
+
+        JavaCMUser user = loggedInUser();
+        file.save(applicationContext, user.getSessionToken(), getSuccessFileCreationListener(file), ResponseCallbackTuple.defaultFailureListener);
+        waitThenAssertTestResults();
+
+        file.delete(applicationContext, user.getSessionToken(), ResponseCallbackTuple.<ObjectModificationResponse>hasSuccess(), ResponseCallbackTuple.defaultFailureListener);
+        waitThenAssertTestResults();
+
     }
 
     @Test
