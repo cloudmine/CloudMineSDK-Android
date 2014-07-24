@@ -183,7 +183,6 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
 
     @Override
     protected void deliverResponse(RESPONSE response) {
-        System.out.println("Delivering response " + response);
         if(handler != null) {
             synchronized (handlerLock) { //see deliver error for why we check this twice
                 if(handler != null) {
