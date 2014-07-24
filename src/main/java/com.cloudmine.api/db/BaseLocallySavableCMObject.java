@@ -45,14 +45,14 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
     private static final Logger LOG = LoggerFactory.getLogger(BaseLocallySavableCMObject.class);
 
     @Expand(isStatic = true)
-    public static CloudMineRequest saveObjects(Context context, Collection <CMObject> objects, @Optional CMSessionToken token, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ObjectModificationResponse> listener, @Optional Response.ErrorListener errorListener) {
+    public static CloudMineRequest saveObjects(Context context, Collection <? extends CMObject> objects, @Optional CMSessionToken token, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ObjectModificationResponse> listener, @Optional Response.ErrorListener errorListener) {
         CloudMineRequest request = new BaseObjectModificationRequest(CMObject.massTransportable(objects), token, serverFunction, listener, errorListener);
         getRequestQueue(context).add(request);
         return request;
     }
 
     @Expand(isStatic = true)
-    public static CloudMineRequest saveObjects(Context context, Collection <CMObject> objects, @Optional CMSessionToken token, @Optional CMServerFunction serverFunction, Handler handler) {
+    public static CloudMineRequest saveObjects(Context context, Collection <? extends CMObject> objects, @Optional CMSessionToken token, @Optional CMServerFunction serverFunction, Handler handler) {
         CloudMineRequest request = new BaseObjectModificationRequest(CMObject.massTransportable(objects), token, serverFunction, null, null);
         request.setHandler(handler);
         getRequestQueue(context).add(request);
