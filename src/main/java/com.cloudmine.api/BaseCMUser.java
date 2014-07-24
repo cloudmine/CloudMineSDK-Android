@@ -12,11 +12,13 @@ import com.cloudmine.api.rest.BaseLoadUserProfilesRequest;
 import com.cloudmine.api.rest.BaseProfileLoadRequest;
 import com.cloudmine.api.rest.BaseProfileUpdateRequest;
 import com.cloudmine.api.rest.BaseRemovePaymentMethodRequest;
+import com.cloudmine.api.rest.BaseResetPasswordRequest;
 import com.cloudmine.api.rest.BaseUserCreationRequest;
 import com.cloudmine.api.rest.BaseUserLoginRequest;
 import com.cloudmine.api.rest.BaseUserLogoutRequest;
 import com.cloudmine.api.rest.CloudMineRequest;
 import com.cloudmine.api.rest.SharedRequestQueueHolders;
+import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.CMResponse;
 import com.cloudmine.api.rest.response.CreationResponse;
@@ -39,6 +41,13 @@ import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
  */
 @EmptyConstructor
 public class BaseCMUser extends JavaCMUser {
+
+    @Expand(isStatic = true)
+    public static CloudMineRequest resetPasswordWithEmail(Context context, String email, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        BaseResetPasswordRequest request = new BaseResetPasswordRequest(email,  null,serverFunction, successListener,errorListener);
+        SharedRequestQueueHolders.getRequestQueue(context).add(request);
+        return request;
+    }
 
     /**
      * Load all of the user profiles. Requires the use of your master key

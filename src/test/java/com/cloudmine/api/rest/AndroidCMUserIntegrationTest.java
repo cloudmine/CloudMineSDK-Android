@@ -249,6 +249,17 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
         waitThenAssertTestResults();
     }
 
+    @Test
+    public void testEmailReset() {
+        String email = randomEmail();
+        String password = randomString();
+        CMUser user = new CMUser(email, password);
+        CreationResponse response = CMWebService.getService().insert(user);
+        assertTrue(response.wasSuccess());
+        CMUser.resetPasswordWithEmail(applicationContext, email, ResponseCallbackTuple.<CMResponse>hasSuccess(), defaultFailureListener);
+        waitThenAssertTestResults();
+    }
+
     private void testCreateAndLogin(CMUser user) {
         user.create(applicationContext, ResponseCallbackTuple.<CreationResponse>hasSuccess(), defaultFailureListener);
         waitThenAssertTestResults();
