@@ -3,6 +3,7 @@ package com.cloudmine.api.rest;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.JavaCMUser;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.LoginResponse;
@@ -31,8 +32,8 @@ public class BaseUserLoginRequest extends CloudMineRequest<LoginResponse> {
      * @param errorListener
      */
     @Expand
-    public BaseUserLoginRequest(JavaCMUser user,  @Optional CMServerFunction serverFunction, Response.Listener<LoginResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        this(user.getUserIdentifier(), user.getPassword(), serverFunction, successListener, errorListener);
+    public BaseUserLoginRequest(JavaCMUser user,  @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, Response.Listener<LoginResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        this(user.getUserIdentifier(), user.getPassword(),apiCredentials, serverFunction, successListener, errorListener);
     }
     /**
      * Create a new request for logging a user in
@@ -43,8 +44,8 @@ public class BaseUserLoginRequest extends CloudMineRequest<LoginResponse> {
      * @param errorListener
      */
     @Expand
-    public BaseUserLoginRequest(String userIdentifier, String password, @Optional CMServerFunction serverFunction, Response.Listener<LoginResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.POST, ENDPOINT, null, null, serverFunction, successListener, errorListener);
+    public BaseUserLoginRequest(String userIdentifier, String password, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, Response.Listener<LoginResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.POST, ENDPOINT, null, null, apiCredentials, serverFunction, successListener, errorListener);
         credentials = "Basic " + JavaCMUser.encode(userIdentifier, password);
     }
 

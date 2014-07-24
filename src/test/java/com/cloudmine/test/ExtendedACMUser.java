@@ -12,7 +12,9 @@ public class ExtendedACMUser extends CMUser {
     private boolean hasProperty;
     private int points;
 
-    private ExtendedACMUser() {}
+    private ExtendedACMUser() {
+        super(null, null, null);
+    }
 
     public ExtendedACMUser(String username, String password) {
         this(username, password, true, 1000);

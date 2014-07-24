@@ -2,6 +2,7 @@ package com.cloudmine.api.rest;
 
 import android.content.Context;
 import com.android.volley.Response;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMSortOptions;
 import com.cloudmine.api.rest.response.CMObjectResponse;
@@ -16,6 +17,7 @@ public class ObjectLoadRequestBuilder extends RequestBuilder<ObjectLoadRequestBu
 
     private CMURLBuilder urlBuilder = BaseObjectLoadRequest.BASE_URL.copy();
 
+    private CMApiCredentials credentials = null;
 
 
     public ObjectLoadRequestBuilder(CMSessionToken sessionToken, Response.Listener<CMObjectResponse> success) {
@@ -36,7 +38,7 @@ public class ObjectLoadRequestBuilder extends RequestBuilder<ObjectLoadRequestBu
 
     @Override
     public BaseObjectLoadRequest build() {
-        return new BaseObjectLoadRequest(urlBuilder, sessionToken, serverFunction, successListener, errorListener);
+        return new BaseObjectLoadRequest(urlBuilder, sessionToken, credentials, serverFunction, successListener, errorListener);
     }
 
     public ObjectLoadRequestBuilder search(String searchQuery) {
@@ -72,6 +74,11 @@ public class ObjectLoadRequestBuilder extends RequestBuilder<ObjectLoadRequestBu
 
     public ObjectLoadRequestBuilder getShared() {
         urlBuilder.addQuery("shared", "true");
+        return this;
+    }
+
+    public ObjectLoadRequestBuilder useCredentials(CMApiCredentials credentials) {
+        this.credentials = credentials;
         return this;
     }
 

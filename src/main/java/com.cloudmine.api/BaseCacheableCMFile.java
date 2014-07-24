@@ -19,6 +19,7 @@ import com.cloudmine.api.rest.BaseFileDeleteRequest;
 import com.cloudmine.api.rest.BaseFileLoadRequest;
 import com.cloudmine.api.rest.CloudMineRequest;
 import com.cloudmine.api.rest.SharedRequestQueueHolders;
+import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.FileCreationResponse;
 import com.cloudmine.api.rest.response.FileLoadResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
@@ -54,14 +55,16 @@ public class BaseCacheableCMFile extends CMFile implements LocallySavable{
      * @param context
      * @param fileId
      * @param sessionToken if specified, will load a user level file with the given id
+     * @param apiCredentials
+     * @param serverFunction
      * @param successListener
      * @param errorListener
      * @return
      */
     @Expand(isStatic = true)
-    public static CloudMineRequest loadFile(Context context, String fileId, @Optional CMSessionToken sessionToken, @Optional Response.Listener<FileLoadResponse> successListener, @Optional Response.ErrorListener errorListener) {
+    public static CloudMineRequest loadFile(Context context, String fileId, @Optional CMSessionToken sessionToken, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<FileLoadResponse> successListener, @Optional Response.ErrorListener errorListener) {
         RequestQueue queue = getRequestQueue(context);
-        BaseFileLoadRequest request = new BaseFileLoadRequest(fileId, sessionToken, null, successListener, errorListener);
+        BaseFileLoadRequest request = new BaseFileLoadRequest(fileId, sessionToken, apiCredentials, serverFunction, successListener, errorListener);
         queue.add(request);
         return request;
     }
@@ -71,13 +74,15 @@ public class BaseCacheableCMFile extends CMFile implements LocallySavable{
      * @param context
      * @param ids all the ids of the files to delete
      * @param sessionToken if specified, will delete user level files with the given ids
+     * @param apiCredentials
+     * @param serverFunction
      * @param successListener
      * @param errorListener
      * @return
      */
     @Expand(isStatic = true)
-    public static CloudMineRequest delete(Context context, @Single Collection<String> ids, @Optional CMSessionToken sessionToken, @Optional Response.Listener<ObjectModificationResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        CloudMineRequest request = new BaseFileDeleteRequest(ids, sessionToken, null, successListener, errorListener);
+    public static CloudMineRequest delete(Context context, @Single Collection<String> ids, @Optional CMSessionToken sessionToken, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ObjectModificationResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        CloudMineRequest request = new BaseFileDeleteRequest(ids, sessionToken, apiCredentials, serverFunction, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
         return request;
     }
@@ -94,8 +99,8 @@ public class BaseCacheableCMFile extends CMFile implements LocallySavable{
     }
 
     @Expand(isStatic = true)
-    public static void populateImageViewFromLocalOrNetwork(final Context context, final ImageView imageView, @Optional final int errorDisplay, final String fileId, @Optional CMSessionToken sessionToken) {
-        populateImageViewFromLocalOrNetwork(context, imageView, errorDisplay, fileId, sessionToken, shouldUseExternalStorage(context));
+    public static void populateImageViewFromLocalOrNetwork(final Context context, final ImageView imageView, @Optional final int errorDisplay, final String fileId, @Optional CMSessionToken sessionToken, @Optional CMApiCredentials apiCredentials,  @Optional CMServerFunction serverFunction) {
+        populateImageViewFromLocalOrNetwork(context, imageView, errorDisplay, fileId, sessionToken, apiCredentials, serverFunction, shouldUseExternalStorage(context));
     }
 
     /**
@@ -108,12 +113,12 @@ public class BaseCacheableCMFile extends CMFile implements LocallySavable{
      * @param fromExternalStorage
      */
     @Expand(isStatic = true)
-    public static void populateImageViewFromLocalOrNetwork(final Context context, final ImageView imageView, @Optional final int errorResourceId, final String fileId, @Optional CMSessionToken sessionToken, final boolean fromExternalStorage) {
+    public static void populateImageViewFromLocalOrNetwork(final Context context, final ImageView imageView, @Optional final int errorResourceId, final String fileId, @Optional CMSessionToken sessionToken, @Optional CMApiCredentials apiCredentials, CMServerFunction serverFunction, final boolean fromExternalStorage) {
         BaseCacheableCMFile file = fromExternalStorage ?
                 loadLocalFileFromExternalStorage(fileId) :
                 loadLocalFileFromInternalStorage(context, fileId);
         if(file == null) {
-            loadFile(context, fileId, sessionToken,
+            loadFile(context, fileId, sessionToken, apiCredentials, serverFunction,
                     new Response.Listener<FileLoadResponse>() {
                         @Override
                         public void onResponse(FileLoadResponse response) {
@@ -226,27 +231,20 @@ public class BaseCacheableCMFile extends CMFile implements LocallySavable{
         super(contents, fileId, contentType);
     }
 
-    public CloudMineRequest delete(Context context, CMSessionToken token, Response.Listener<ObjectModificationResponse> successListener, Response.ErrorListener errorListener) {
+    @Expand
+    public CloudMineRequest delete(Context context, @Optional CMSessionToken token, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ObjectModificationResponse> successListener, @Optional Response.ErrorListener errorListener) {
         RequestQueue queue = SharedRequestQueueHolders.getRequestQueue(context);
-        BaseFileDeleteRequest deleteRequest = new BaseFileDeleteRequest(Arrays.asList(getFileId()), token, null, successListener, errorListener);
+        BaseFileDeleteRequest deleteRequest = new BaseFileDeleteRequest(Arrays.asList(getObjectId()), token, apiCredentials, serverFunction, successListener, errorListener);
         queue.add(deleteRequest);
         return deleteRequest;
     }
 
-    public CloudMineRequest delete(Context context, Response.Listener<ObjectModificationResponse> successListener, Response.ErrorListener errorListener) {
-        return delete(context, null, successListener, errorListener);
-    }
-
-    public CloudMineRequest save(Context context, CMSessionToken token, Response.Listener<FileCreationResponse> successListener, Response.ErrorListener errorListener) {
+    @Expand
+    public CloudMineRequest save(Context context, @Optional CMSessionToken token,  @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<FileCreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
         RequestQueue queue = SharedRequestQueueHolders.getRequestQueue(context);
-        BaseFileCreationRequest request = new BaseFileCreationRequest(this, token, null, successListener, errorListener);
+        BaseFileCreationRequest request = new BaseFileCreationRequest(this, token, apiCredentials, serverFunction, successListener, errorListener);
         queue.add(request);
         return request;
-    }
-
-    public CloudMineRequest save(Context context, Response.Listener<FileCreationResponse> successListener, Response.ErrorListener errorListener) {
-        CMSessionToken token = getUser() == null ? null : getUser().getSessionToken();
-        return save(context, token, successListener, errorListener);
     }
 
     public static boolean saveLocally(Context context, CMFile file) {

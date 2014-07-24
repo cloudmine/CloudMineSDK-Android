@@ -2,6 +2,7 @@ package com.cloudmine.api.rest;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
@@ -31,8 +32,8 @@ public class BaseFileDeleteRequest extends CloudMineRequest<ObjectModificationRe
      * @param errorListener
      */
     @Expand
-    public BaseFileDeleteRequest(@Single Collection<String> fileIds, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, Response.Listener<ObjectModificationResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.DELETE, BASE_URL.copy().user(sessionToken).objectIds(fileIds), sessionToken, serverFunction, successListener, errorListener);
+    public BaseFileDeleteRequest(@Single Collection<String> fileIds, @Optional CMSessionToken sessionToken, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, Response.Listener<ObjectModificationResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.DELETE, BASE_URL.copy().user(sessionToken).objectIds(fileIds).serverFunction(serverFunction).asUrlString(), null, sessionToken, apiCredentials, successListener, errorListener);
     }
 
     @Override

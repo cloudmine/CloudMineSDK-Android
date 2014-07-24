@@ -1,8 +1,8 @@
 package com.cloudmine.api.rest;
 
-import android.os.Handler;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.db.BaseLocallySavableCMAccessList;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.CreationResponse;
@@ -19,13 +19,8 @@ public class BaseAccessListModificationRequest extends CloudMineRequest<Creation
     private static final String URL = "/user/access";
 
     @Expand
-    public BaseAccessListModificationRequest(BaseLocallySavableCMAccessList accessList, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.POST, URL, accessList.transportableRepresentation(), accessList.getUser().getSessionToken(), serverFunction, successListener, errorListener);
-    }
-
-    public BaseAccessListModificationRequest(BaseLocallySavableCMAccessList accessList, @Optional CMServerFunction serverFunction, Handler handler) {
-        this(accessList, serverFunction, null,null);
-        setHandler(handler);
+    public BaseAccessListModificationRequest(BaseLocallySavableCMAccessList accessList, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.POST, URL, accessList.transportableRepresentation(), accessList.getUser().getSessionToken(), apiCredentials, serverFunction, successListener, errorListener);
     }
 
     @Override

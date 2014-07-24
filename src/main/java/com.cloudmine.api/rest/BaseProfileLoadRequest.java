@@ -2,6 +2,7 @@ package com.cloudmine.api.rest;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.CMObjectResponse;
@@ -25,8 +26,8 @@ public class BaseProfileLoadRequest extends CloudMineRequest<CMObjectResponse> {
      * @param errorListener
      */
     @Expand
-    public BaseProfileLoadRequest(CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.GET, "/account/mine", null, sessionToken, serverFunction, successListener,  errorListener);
+    public BaseProfileLoadRequest(CMSessionToken sessionToken, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.GET, "/account/mine", null, sessionToken, apiCredentials, serverFunction, successListener,  errorListener);
     }
 
     @Override

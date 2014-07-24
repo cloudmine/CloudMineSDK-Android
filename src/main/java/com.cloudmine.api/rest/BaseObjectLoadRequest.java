@@ -2,6 +2,7 @@ package com.cloudmine.api.rest;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.CMObjectResponse;
@@ -23,21 +24,26 @@ public class BaseObjectLoadRequest extends CloudMineRequest<CMObjectResponse> {
     static final String BASE_ENDPOINT = "/text";
     static final CMURLBuilder BASE_URL = new CMURLBuilder(BASE_ENDPOINT, true);
 
+
+    public BaseObjectLoadRequest(@Single @Optional Collection<String> objectIds, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        this(objectIds, sessionToken, CMApiCredentials.getCredentials(), serverFunction, successListener, errorListener);
+    }
     /**
      * Create a new BaseObjectLoadRequest that loads the objects specified by the ids
      * @param objectIds The objectIds to load. If null, all objects will be loaded
      * @param sessionToken an optional sessionToken. If present, the objects will be loaded at the user level
+     * @param apiCredentials
      * @param serverFunction
      * @param successListener
      * @param errorListener
      */
     @Expand
-    public BaseObjectLoadRequest(@Single @Optional Collection<String> objectIds, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        this(BASE_URL.copy().objectIds(objectIds), sessionToken, serverFunction, successListener, errorListener);
+    public BaseObjectLoadRequest(@Single @Optional Collection<String> objectIds, @Optional CMSessionToken sessionToken, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        this(BASE_URL.copy().objectIds(objectIds), sessionToken, apiCredentials, serverFunction, successListener, errorListener);
     }
 
-    BaseObjectLoadRequest(CMURLBuilder url, CMSessionToken sessionToken, CMServerFunction serverFunction, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
-        super(Method.GET, url.user(sessionToken), sessionToken, serverFunction, successListener, errorListener);
+    BaseObjectLoadRequest(CMURLBuilder url, CMSessionToken sessionToken, CMApiCredentials apiCredentials, CMServerFunction serverFunction, Response.Listener<CMObjectResponse> successListener, Response.ErrorListener errorListener) {
+        super(Method.GET, url.user(sessionToken).serverFunction(serverFunction).asUrlString(), null, sessionToken, apiCredentials,successListener, errorListener);
     }
 
     @Override

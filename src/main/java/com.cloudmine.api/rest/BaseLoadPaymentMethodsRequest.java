@@ -2,6 +2,7 @@ package com.cloudmine.api.rest;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.PaymentResponse;
@@ -21,13 +22,14 @@ public class BaseLoadPaymentMethodsRequest extends CloudMineRequest<PaymentRespo
     /**
      * Load all of the payment methods associated with the user whose sessionToken is passed in
      * @param sessionToken A valid session token from the user whose payment methods are being retrieved
+     * @param apiCredentials optional Credentials to use instead of the default ones
      * @param serverFunction A nullable server function to be called after the payment methods are loaded
      * @param successListener callback called if the call succeeds on the server
      * @param errorListener callback called if the call fails (error response from server, no Internet, some other exception)
      */
     @Expand
-    public BaseLoadPaymentMethodsRequest(CMSessionToken sessionToken,  @Optional CMServerFunction serverFunction, Response.Listener<PaymentResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.GET, URL, "", sessionToken, serverFunction, successListener, errorListener);
+    public BaseLoadPaymentMethodsRequest(CMSessionToken sessionToken, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, Response.Listener<PaymentResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.GET, URL, "", sessionToken, apiCredentials, serverFunction, successListener, errorListener);
     }
 
     @Override

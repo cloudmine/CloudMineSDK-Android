@@ -2,6 +2,7 @@ package com.cloudmine.api.rest;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.JavaCMUser;
 import com.cloudmine.api.rest.options.CMServerFunction;
@@ -26,8 +27,8 @@ public class BaseProfileUpdateRequest extends CloudMineRequest<CreationResponse>
      * @param errorListener
      */
     @Expand
-    public BaseProfileUpdateRequest(JavaCMUser user, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        this(user.profileTransportRepresentation(), user.getSessionToken(), serverFunction, successListener,  errorListener);
+    public BaseProfileUpdateRequest(JavaCMUser user, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        this(user.profileTransportRepresentation(), user.getSessionToken(), apiCredentials, serverFunction, successListener,  errorListener);
     }
 
     /**
@@ -39,8 +40,8 @@ public class BaseProfileUpdateRequest extends CloudMineRequest<CreationResponse>
      * @param errorListener
      */
     @Expand
-    public BaseProfileUpdateRequest(String userProfile, CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.POST, "/account", userProfile, sessionToken, serverFunction, successListener,  errorListener);
+    public BaseProfileUpdateRequest(String userProfile, CMSessionToken sessionToken, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CreationResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.POST, "/account", userProfile, sessionToken, apiCredentials, serverFunction, successListener,  errorListener);
     }
 
     @Override

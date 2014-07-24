@@ -2,6 +2,7 @@ package com.cloudmine.api.rest;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.PaymentResponse;
@@ -27,8 +28,8 @@ public class BaseRemovePaymentMethodRequest extends CloudMineRequest<PaymentResp
      * @param errorListener callback called if the call fails (error response from server, no Internet, some other exception)
      */
     @Expand
-    public BaseRemovePaymentMethodRequest(int cardIndex, CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, Response.Listener<PaymentResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.DELETE, URL + cardIndex, null, sessionToken, serverFunction, successListener, errorListener);
+    public BaseRemovePaymentMethodRequest(int cardIndex, CMSessionToken sessionToken, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, Response.Listener<PaymentResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.DELETE, URL + cardIndex, null, sessionToken, apiCredentials, serverFunction, successListener, errorListener);
 
     }
 

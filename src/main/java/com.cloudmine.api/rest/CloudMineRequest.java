@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Message;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Cache;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -27,7 +28,10 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
 
     public static final String REQUEST_TAG = "CloudMineRequest";
 
+
+    private static final int RETRY_TIME_MS = 35000;
     protected static String BASE_URL = "https://api.cloudmine.me/v1/app/";
+    protected static String API_EXTENSION = "v1/app/";
     protected static String USER = "/user";
     public static final CloudMineRequest FAKE_REQUEST = new CloudMineRequest(Method.DEPRECATED_GET_OR_POST, new CMURLBuilder("", true), null, null, null) {
         public static final int FAKE_REQUEST_TYPE = -1;
@@ -117,6 +121,7 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
     private long softTtl = applicationSoftTtl;
     private long ttl = applicationTtl;
     private Response.Listener<RESPONSE> responseListener;
+    private String apiKey;
     private String body;
     private String sessionTokenString;
     private Handler handler;
@@ -127,13 +132,18 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
         else                       return url;
     }
 
-    protected static String getUrl(String url) {
-        return new StringBuilder(BASE_URL).append(CMApiCredentials.getApplicationIdentifier()).append(url).toString();
+    protected static String getUrl(CMApiCredentials apiCredentials, String url) {
+        if(apiCredentials == null) apiCredentials = CMApiCredentials.getCredentials();
+        String baseUrl = apiCredentials.getBaseUrl();
+        StringBuilder urlBuilder = new StringBuilder(baseUrl);
+        if(!baseUrl.endsWith("/")) urlBuilder.append("/");
+        return urlBuilder.append(API_EXTENSION).append(apiCredentials.getIdentifier()).append(url).toString();
     }
 
     public CloudMineRequest(int method, CMURLBuilder url, CMServerFunction serverFunction, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
         this(method, url, null, null, serverFunction, successListener, errorListener);
     }
+
 
     public CloudMineRequest(int method, CMURLBuilder url, CMSessionToken sessionToken, CMServerFunction serverFunction, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
         this(method, url, null, sessionToken, serverFunction, successListener, errorListener);
@@ -151,14 +161,23 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
         this(method, addServerFunction(url, serverFunction), body, sessionToken, successListener, errorListener);
     }
 
-    public CloudMineRequest(int method, String url, String body, CMSessionToken sessionToken, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
-        super(method, getUrl(url), errorListener);
+    public CloudMineRequest(int method, String url, String body, CMSessionToken sessionToken, CMApiCredentials apiCredentials, CMServerFunction serverFunction, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
+        this(method, addServerFunction(url, serverFunction), body, sessionToken, apiCredentials, successListener, errorListener);
+    }
+
+    public CloudMineRequest(int method, String url, String body, CMSessionToken sessionToken, CMApiCredentials apiCredentials, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
+        super(method, getUrl(apiCredentials, url), errorListener);
+        this.apiKey = apiCredentials == null ? CMApiCredentials.getApplicationApiKey() : apiCredentials.getApiKey();
         this.body = body;
         responseListener = successListener;
         boolean isValidSessionToken = !(sessionToken == null || CMSessionToken.FAILED.equals(sessionToken));
         if(isValidSessionToken) sessionTokenString = sessionToken.getSessionToken();
         setTag(REQUEST_TAG);
-//        System.out.println("url=" + getUrl(url) + " valid session? " + isValidSessionToken + (isValidSessionToken ? ", sessionToken: " + sessionToken : "") + " with body: " + body);
+        setRetryPolicy(new DefaultRetryPolicy(RETRY_TIME_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+    }
+
+    public CloudMineRequest(int method, String url, String body, CMSessionToken sessionToken, Response.Listener<RESPONSE> successListener, Response.ErrorListener errorListener) {
+        this(method, url, body, sessionToken, CMApiCredentials.getCredentials(), successListener, errorListener);
     }
 
     @Override
@@ -228,7 +247,7 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
     }
 
     public Map<String, String> getHeaders() throws AuthFailureError {
-        Map<String, String> headerMapping = AndroidHeaderFactory.getHeaderMapping(sessionTokenString);
+        Map<String, String> headerMapping = AndroidHeaderFactory.getHeaderMapping(sessionTokenString, apiKey);
         return headerMapping;
     }
 
