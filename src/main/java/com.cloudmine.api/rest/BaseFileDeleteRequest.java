@@ -32,7 +32,7 @@ public class BaseFileDeleteRequest extends CloudMineRequest<ObjectModificationRe
      */
     @Expand
     public BaseFileDeleteRequest(@Single Collection<String> fileIds, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, Response.Listener<ObjectModificationResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.DELETE, BASE_URL.copy().user(sessionToken).objectIds(fileIds), serverFunction, successListener, errorListener);
+        super(Method.DELETE, BASE_URL.copy().user(sessionToken).objectIds(fileIds), sessionToken, serverFunction, successListener, errorListener);
     }
 
     @Override

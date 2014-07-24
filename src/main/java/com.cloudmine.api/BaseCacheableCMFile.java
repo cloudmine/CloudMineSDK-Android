@@ -228,7 +228,7 @@ public class BaseCacheableCMFile extends CMFile implements LocallySavable{
 
     public CloudMineRequest delete(Context context, CMSessionToken token, Response.Listener<ObjectModificationResponse> successListener, Response.ErrorListener errorListener) {
         RequestQueue queue = SharedRequestQueueHolders.getRequestQueue(context);
-        BaseFileDeleteRequest deleteRequest = new BaseFileDeleteRequest(Arrays.asList(getObjectId()), token, null, successListener, errorListener);
+        BaseFileDeleteRequest deleteRequest = new BaseFileDeleteRequest(Arrays.asList(getFileId()), token, null, successListener, errorListener);
         queue.add(deleteRequest);
         return deleteRequest;
     }
