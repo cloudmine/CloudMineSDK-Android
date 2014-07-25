@@ -20,3 +20,4 @@ src/gen/
 target
 .DS_Store
 cloudmine-android-v*.zip
+dropbox_upload_test.txt
