@@ -2,9 +2,9 @@ package com.cloudmine.api.rest;
 
 import android.content.Context;
 import com.android.volley.Response;
-import com.cloudmine.api.CMUser;
 import com.cloudmine.api.CMCreditCard;
 import com.cloudmine.api.CMObject;
+import com.cloudmine.api.CMUser;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.integration.CMUserIntegrationTest;
 import com.cloudmine.api.rest.response.CMObjectResponse;
@@ -220,7 +220,8 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
     public void testChangeUserName() {
         String userName = randomString();
         String password = randomString();
-        CMUser user = CMUser.CMUserWithUserName(userName, password);
+
+        CMUser user = new CMUser(null, userName, password);
         assertTrue(service.insert(user).wasSuccess());
 
         String newUserName = randomString();
@@ -236,7 +237,7 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
     public void testChangeEmail() {
         String email = randomEmail();
         String password = randomString();
-        CMUser user = CMUser.CMUserWithEmail(email, password);
+        CMUser user = new CMUser(email, password);
         assertTrue(service.insert(user).wasSuccess());
 
         String newEmail = randomEmail();
@@ -245,6 +246,17 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
         waitThenAssertTestResults();
 
         user.login(applicationContext, ResponseCallbackTuple.<LoginResponse>hasSuccess(), defaultFailureListener);
+        waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testEmailReset() {
+        String email = randomEmail();
+        String password = randomString();
+        CMUser user = new CMUser(email, password);
+        CreationResponse response = CMWebService.getService().insert(user);
+        assertTrue(response.wasSuccess());
+        CMUser.resetPasswordWithEmail(applicationContext, email, ResponseCallbackTuple.<CMResponse>hasSuccess(), defaultFailureListener);
         waitThenAssertTestResults();
     }
 

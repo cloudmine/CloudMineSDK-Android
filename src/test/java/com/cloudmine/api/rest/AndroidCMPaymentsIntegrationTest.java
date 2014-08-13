@@ -3,7 +3,7 @@ package com.cloudmine.api.rest;
 import android.content.Context;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.cloudmine.api.CMUser;
+import com.cloudmine.api.BaseCMUser;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.LibrarySpecificClassCreator;
@@ -50,7 +50,7 @@ public class AndroidCMPaymentsIntegrationTest extends ServiceTestBase {
 
     @Test
     public void testChargeCardRequest() {
-        CMUser user = new CMUser("test@test.com", "testing");
+        BaseCMUser user = new BaseCMUser("test@test.com", "testing");
         LoginResponse response = service.login(user);
         assertTrue(response.wasSuccess());
         String cartJson = "{\n" +
@@ -78,7 +78,7 @@ public class AndroidCMPaymentsIntegrationTest extends ServiceTestBase {
                 "}\n";
         //cartJson = "{\"items\":[{\"mid\":\"24\",\"vend\":{\"minutes\":\"20\"}}],\"discounts\":{\"loyalty\":0},\"location\":{\"lat\":37.785834,\"lon\":-122.406417},\"payment\":{\"cc_id\":\"0\",\"cc_last4\":\"2040\"},\"custid\":\"cleanshow\",\"locid\":\"1\"}";
         CloudMineRequest.setCachingEnabled(false);
-        CloudMineRequest request = new BaseChargeCardRequest(0, cartJson, response.getSessionToken(), testCallback(new Response.Listener<PaymentResponse>() {
+        CloudMineRequest request = new BaseChargeCardRequest(0, cartJson, response.getSessionToken(), null, null, testCallback(new Response.Listener<PaymentResponse>() {
             @Override
             public void onResponse(PaymentResponse response) {
                 assertTrue(response.wasSuccess());

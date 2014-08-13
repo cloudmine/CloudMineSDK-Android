@@ -2,7 +2,9 @@ package com.cloudmine.api.rest;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMSessionToken;
+import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.CMResponse;
 import me.cloudmine.annotations.Expand;
 import me.cloudmine.annotations.Optional;
@@ -41,8 +43,8 @@ public class BaseSnippetRequest extends CloudMineRequest<CMResponse> {
      * @param errorListener
      */
     @Expand
-    public BaseSnippetRequest(String snippetName, @Optional Map< String, String> extraParams, @Optional CMSessionToken sessionToken, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.GET, getSnippetUrl(snippetName, extraParams), null, sessionToken, null, successListener, errorListener);
+    public BaseSnippetRequest(String snippetName, @Optional Map< String, String> extraParams, @Optional CMSessionToken sessionToken, @Optional CMApiCredentials apiCredentials, @Optional Response.Listener<CMResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.GET, getSnippetUrl(snippetName, extraParams), null, sessionToken, apiCredentials, (CMServerFunction)null, successListener, errorListener);
     }
 
     @Override

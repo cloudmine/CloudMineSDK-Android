@@ -2,6 +2,7 @@ package com.cloudmine.api.rest;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import me.cloudmine.annotations.Expand;
@@ -18,13 +19,14 @@ public class BaseLoadUserProfilesRequest extends CloudMineRequest<CMObjectRespon
 
     /**
      * Create a new Request for loading all user profiles
+     * @param apiCredentials nullable API credentials to use instead of the default
      * @param serverFunction
      * @param successListener
      * @param errorListener
      */
     @Expand
-    public BaseLoadUserProfilesRequest(@Optional CMServerFunction serverFunction, @Optional Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener){
-        super(Method.GET, "/account", null, null, serverFunction, successListener, errorListener);
+    public BaseLoadUserProfilesRequest(@Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener){
+        super(Method.GET, "/account", null, null, apiCredentials, serverFunction, successListener, errorListener);
     }
 
     /**
@@ -35,8 +37,8 @@ public class BaseLoadUserProfilesRequest extends CloudMineRequest<CMObjectRespon
      * @param errorListener
      */
     @Expand
-    public BaseLoadUserProfilesRequest(String searchString, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener){
-        super(Method.GET, "/account/search?p=" + CMURLBuilder.encode(searchString), null, null, serverFunction, successListener, errorListener);
+    public BaseLoadUserProfilesRequest(String searchString, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMObjectResponse> successListener, @Optional Response.ErrorListener errorListener){
+        super(Method.GET, "/account/search?p=" + CMURLBuilder.encode(searchString), null, null, apiCredentials, serverFunction, successListener, errorListener);
     }
 
     @Override

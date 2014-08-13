@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Response;
 import com.android.volley.toolbox.ImageRequest;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import me.cloudmine.annotations.Expand;
@@ -40,8 +41,8 @@ public class BaseImageLoadRequest extends ImageRequest {
      * @param errorListener
      */
     @Expand
-    public BaseImageLoadRequest(String fileId, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional("sizing") int maxWidth, @Optional("sizing") int maxHeight, Bitmap.Config decodeConfig, Response.Listener<Bitmap> listener, @Optional Response.ErrorListener errorListener) {
-        super(CloudMineRequest.getUrl(CloudMineRequest.addServerFunction(addUser(sessionToken) + "/binary/" + fileId, serverFunction)),
+    public BaseImageLoadRequest(String fileId, @Optional CMSessionToken sessionToken, @Optional CMApiCredentials credentials, @Optional CMServerFunction serverFunction, @Optional("sizing") int maxWidth, @Optional("sizing") int maxHeight, Bitmap.Config decodeConfig, Response.Listener<Bitmap> listener, @Optional Response.ErrorListener errorListener) {
+        super(CloudMineRequest.getUrl((credentials == null ? CMApiCredentials.getCredentials() : credentials), CloudMineRequest.addServerFunction(addUser(sessionToken) + "/binary/" + fileId, serverFunction)),
                 listener, maxWidth, maxHeight, decodeConfig, errorListener);
         sessionTokenString = sessionToken == null ? "" : sessionToken.getSessionToken();
     }
@@ -52,7 +53,7 @@ public class BaseImageLoadRequest extends ImageRequest {
 
 
     public Map<String, String> getHeaders() throws AuthFailureError {
-        return AndroidHeaderFactory.getHeaderMapping(sessionTokenString);
+        return AndroidHeaderFactory.getHeaderMapping(sessionTokenString, CMApiCredentials.getApplicationApiKey());
     }
 
 }

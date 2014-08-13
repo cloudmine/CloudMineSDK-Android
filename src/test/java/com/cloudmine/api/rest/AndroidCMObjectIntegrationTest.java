@@ -10,11 +10,11 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.HurlStack;
-import com.cloudmine.api.JavaAccessListController;
 import com.cloudmine.api.CMAccessPermission;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.DeviceIdentifier;
+import com.cloudmine.api.JavaAccessListController;
 import com.cloudmine.api.JavaCMUser;
 import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.integration.CMObjectIntegrationTest;
@@ -77,12 +77,15 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
 
     @Test
     public void testCMObjectSaving() {
+
         ExtendedLocallySavableCMObject object = new ExtendedLocallySavableCMObject("John", true, 55);
         object.save(applicationContext, ResponseCallbackTuple.wasCreated(object.getObjectId()), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
 
         JavaCMUser user = loggedInUser();
         object = new ExtendedLocallySavableCMObject("FFF", false, 1);
+
+
         object.save(applicationContext, user.getSessionToken(), ResponseCallbackTuple.wasCreated(object.getObjectId()), ResponseCallbackTuple.defaultFailureListener);
         waitThenAssertTestResults();
     }
@@ -107,7 +110,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
                 assertTrue(modificationResponse.wasModified(userObject.getObjectId()));
             }
         });
-        queue.add(new BaseObjectModificationRequest(userObject, user.getSessionToken(), null, objectModificationResponseResponseCallbackTuple, defaultFailureListener));
+        queue.add(new com.cloudmine.api.rest.ObjectModificationRequest(userObject, user.getSessionToken(), objectModificationResponseResponseCallbackTuple, defaultFailureListener));
         waitThenAssertTestResults();
 
         assertUserHasObject(userObject, user);
@@ -311,7 +314,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
         objects.add(new ExtendedCMObject("Chris", new Date(),  1));
         Iterator<CMObject> iterator = objects.iterator();
         String[] objectIds = { iterator.next().getObjectId(), iterator.next().getObjectId() };
-        BaseObjectModificationRequest request = new BaseObjectModificationRequest(objects, null, null, wasCreated(objectIds), defaultFailureListener);
+        com.cloudmine.api.rest.ObjectModificationRequest request = new com.cloudmine.api.rest.ObjectModificationRequest(objects, wasCreated(objectIds), defaultFailureListener);
         queue.add(request);
         waitThenAssertTestResults();
     }

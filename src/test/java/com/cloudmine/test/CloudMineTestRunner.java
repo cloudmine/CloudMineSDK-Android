@@ -10,7 +10,7 @@ import java.io.File;
 
 /**
  * <br>Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
- * CMUser: johnmccarthy
+ * BaseCMUser: johnmccarthy
  * Date: 6/6/12, 4:30 PM
  */
 public class CloudMineTestRunner extends RobolectricTestRunner {

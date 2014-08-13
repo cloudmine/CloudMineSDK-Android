@@ -12,7 +12,7 @@ import com.cloudmine.api.JavaCMUser;
 import com.cloudmine.api.SearchQuery;
 import com.cloudmine.api.SimpleCMObject;
 import com.cloudmine.api.db.BaseLocallySavableCMAccessList;
-import com.cloudmine.api.db.BaseLocallySavableCMObject;
+import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.integration.CMAccessListIntegrationTest;
 import com.cloudmine.api.rest.callbacks.CMObjectResponseCallback;
 import com.cloudmine.api.rest.options.CMRequestOptions;
@@ -79,12 +79,12 @@ public class AndroidCMAccessListIntegrationTest extends CMAccessListIntegrationT
         waitThenAssertTestResults();
 
         ExtendedLocallySavableCMObject object = new ExtendedLocallySavableCMObject("euth", false, 3);
-        queue.add(new BaseObjectModificationRequest(object, user.getSessionToken(), null, wasCreated(object.getObjectId()), defaultFailureListener));
+        queue.add(new ObjectModificationRequest(object, user.getSessionToken(), wasCreated(object.getObjectId()), defaultFailureListener));
         waitThenAssertTestResults();
 
         JavaCMUser anotherUser = randomLoggedInUser();
 
-        BaseLocallySavableCMObject.loadObject(applicationContext, object.getObjectId(), anotherUser.getSessionToken(), null, ResponseCallbackTuple.testCallback(new Response.Listener<CMObjectResponse>() {
+        LocallySavableCMObject.loadObject(applicationContext, object.getObjectId(), anotherUser.getSessionToken(), ResponseCallbackTuple.testCallback(new Response.Listener<CMObjectResponse>() {
             @Override
             public void onResponse(CMObjectResponse response) {
                 assertTrue(response.wasSuccess());
@@ -94,7 +94,7 @@ public class AndroidCMAccessListIntegrationTest extends CMAccessListIntegrationT
         waitThenAssertTestResults();
 
         object.grantAccess(cmAccessList);
-        queue.add(new BaseObjectModificationRequest(object, user.getSessionToken(), null, wasCreatedOrUpdated(object.getObjectId()), defaultFailureListener));
+        queue.add(new ObjectModificationRequest(object, user.getSessionToken(), wasCreatedOrUpdated(object.getObjectId()), defaultFailureListener));
         waitThenAssertTestResults();
         queue.add(new ObjectLoadRequestBuilder(user.getSessionToken(), wasLoaded(object), defaultFailureListener).search(SearchQuery.filter(ExtendedLocallySavableCMObject.class).searchQuery()).getShared().build());
 

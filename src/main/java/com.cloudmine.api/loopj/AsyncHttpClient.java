@@ -179,9 +179,9 @@ public class AsyncHttpClient {
     }
 
     /**
-     * Sets the CMUser-Agent header to be sent with each request. By default,
+     * Sets the BaseCMUser-Agent header to be sent with each request. By default,
      * "Android Asynchronous Http Client/VERSION (http://loopj.com/android-async-http/)" is used.
-     * @param userAgent the string to use in the CMUser-Agent header.
+     * @param userAgent the string to use in the BaseCMUser-Agent header.
      */
     public void setUserAgent(String userAgent) {
         HttpProtocolParams.setUserAgent(this.httpClient.getParams(), userAgent);

@@ -2,6 +2,7 @@ package com.cloudmine.api.rest;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
@@ -25,13 +26,14 @@ public class BaseObjectDeleteRequest extends CloudMineRequest<ObjectModification
      * Delete all of the objects with the given ids
      * @param objectIds the ids of the objects to delete
      * @param sessionToken an optional sessionToken. If specified, it is assumed the objects are user level
+     * @param apiCredentials
      * @param serverFunction
      * @param responseListener
      * @param errorListener
      */
     @Expand
-    public BaseObjectDeleteRequest(@Single Collection<String> objectIds, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ObjectModificationResponse> responseListener, @Optional Response.ErrorListener errorListener) {
-        super(Method.DELETE, new CMURLBuilder("", true).delete(objectIds).user(sessionToken), sessionToken, serverFunction, responseListener, errorListener);
+    public BaseObjectDeleteRequest(@Single Collection<String> objectIds, @Optional CMSessionToken sessionToken, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ObjectModificationResponse> responseListener, @Optional Response.ErrorListener errorListener) {
+        super(Method.DELETE, new CMURLBuilder("", true).delete(objectIds).user(sessionToken).serverFunction(serverFunction).asUrlString(), null, sessionToken, apiCredentials, responseListener, errorListener);
     }
 
     /**
@@ -39,15 +41,16 @@ public class BaseObjectDeleteRequest extends CloudMineRequest<ObjectModification
      * if deleteAll is equal to false
      * @param deleteAll True to delete all objects; if false, the request has no effect
      * @param sessionToken An optional session token. If specified, deletes all user level data for the user who is logged in
+     * @param apiCredentials
      * @param serverFunction
      * @param responseListener
      * @param errorListener
      */
     @Expand
-    public BaseObjectDeleteRequest(boolean deleteAll, @Optional CMSessionToken sessionToken, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ObjectModificationResponse> responseListener, @Optional Response.ErrorListener errorListener) {
+    public BaseObjectDeleteRequest(boolean deleteAll, @Optional CMSessionToken sessionToken, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ObjectModificationResponse> responseListener, @Optional Response.ErrorListener errorListener) {
         super(Method.DELETE,
-                deleteAll ? BASE_URL.copy().deleteAll().user(sessionToken) : BASE_URL.copy().user(sessionToken),
-                sessionToken, serverFunction, responseListener, errorListener);
+                deleteAll ? BASE_URL.copy().deleteAll().user(sessionToken).serverFunction(serverFunction).asUrlString() : BASE_URL.copy().user(sessionToken).serverFunction(serverFunction).asUrlString(),
+                null, sessionToken, apiCredentials, responseListener, errorListener);
     }
 
     @Override

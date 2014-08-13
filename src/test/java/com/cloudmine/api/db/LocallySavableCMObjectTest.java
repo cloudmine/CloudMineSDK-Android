@@ -36,10 +36,10 @@ public class LocallySavableCMObjectTest extends ServiceTestBase {
 
     @Test
     public void testBaseCMGeoPoint() {
-        BaseLocallySavableCMGeoPoint geoPoint = new BaseLocallySavableCMGeoPoint(33, 44);
+        LocallySavableCMGeoPoint geoPoint = new LocallySavableCMGeoPoint(33, 44);
         String json = geoPoint.transportableRepresentation();
-        ClassNameRegistry.register(CMGeoPointInterface.GEOPOINT_CLASS, BaseLocallySavableCMGeoPoint.class);
-        BaseLocallySavableCMGeoPoint deserialized = (BaseLocallySavableCMGeoPoint) JsonUtilities.jsonToClassMap(json).get(geoPoint.getObjectId());
+        ClassNameRegistry.register(CMGeoPointInterface.GEOPOINT_CLASS, LocallySavableCMGeoPoint.class);
+        LocallySavableCMGeoPoint deserialized = (LocallySavableCMGeoPoint) JsonUtilities.jsonToClassMap(json).get(geoPoint.getObjectId());
         assertEquals(geoPoint, deserialized);
     }
 
