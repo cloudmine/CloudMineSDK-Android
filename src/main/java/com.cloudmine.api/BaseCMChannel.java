@@ -27,11 +27,17 @@ import java.util.List;
 public class BaseCMChannel extends JavaCMChannel {
 
     @Expand
+    public static CloudMineRequest<PushChannelResponse> subscribeUsers(Context context, String channelName, @Single Collection<UserRepresentation> users, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        BaseChannelAddSubscribersRequest request = new BaseChannelAddSubscribersRequest(channelName, BaseChannelAddSubscribersRequest.SubscriberType.NAME, UserRepresentation.toBodyJson(users), apiCredentials, serverFunction, successListener, errorListener);
+        SharedRequestQueueHolders.getRequestQueue(context).add(request);
+        return request;
+    }
+
+    @Expand
     public static CloudMineRequest<PushChannelResponse> subscribeDeviceIds(Context context, String channelName, @Single Collection<String> deviceIds, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, @Optional Response.ErrorListener errorListener) {
         BaseChannelAddSubscribersRequest request = new BaseChannelAddSubscribersRequest(channelName, BaseChannelAddSubscribersRequest.SubscriberType.DEVICE_ID, JsonUtilities.objectToJson(deviceIds), apiCredentials, serverFunction, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
         return request;
-
     }
 
     @Expand
