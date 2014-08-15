@@ -4,10 +4,12 @@ import android.content.Context;
 import com.android.volley.Response;
 import com.cloudmine.api.rest.BaseChannelAddSubscribersRequest;
 import com.cloudmine.api.rest.BaseChannelCreationRequest;
+import com.cloudmine.api.rest.BaseChannelListRequest;
 import com.cloudmine.api.rest.CloudMineRequest;
 import com.cloudmine.api.rest.JsonUtilities;
 import com.cloudmine.api.rest.SharedRequestQueueHolders;
 import com.cloudmine.api.rest.options.CMServerFunction;
+import com.cloudmine.api.rest.response.ListOfValuesResponse;
 import com.cloudmine.api.rest.response.PushChannelResponse;
 import me.cloudmine.annotations.EmptyConstructor;
 import me.cloudmine.annotations.Expand;
@@ -26,21 +28,35 @@ import java.util.List;
 @EmptyConstructor
 public class BaseCMChannel extends JavaCMChannel {
 
-    @Expand
+    @Expand(isStatic = true)
+    public static CloudMineRequest<ListOfValuesResponse<String>> loadChannelNamesByDeviceId(Context context, String deviceId, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ListOfValuesResponse<String>> successListener, @Optional Response.ErrorListener errorListener) {
+        BaseChannelListRequest request = new BaseChannelListRequest(deviceId, apiCredentials, serverFunction, successListener, errorListener);
+        SharedRequestQueueHolders.getRequestQueue(context).add(request);
+        return request;
+    }
+
+    @Expand(isStatic = true)
+    public static CloudMineRequest<ListOfValuesResponse<String>> loadChannelNamesBySessionToken(Context context, CMSessionToken sessionToken, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<ListOfValuesResponse<String>> successListener, @Optional Response.ErrorListener errorListener) {
+        BaseChannelListRequest request = new BaseChannelListRequest(sessionToken, apiCredentials, serverFunction, successListener, errorListener);
+        SharedRequestQueueHolders.getRequestQueue(context).add(request);
+        return request;
+    }
+
+    @Expand(isStatic = true)
     public static CloudMineRequest<PushChannelResponse> subscribeUsers(Context context, String channelName, @Single Collection<UserRepresentation> users, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, @Optional Response.ErrorListener errorListener) {
         BaseChannelAddSubscribersRequest request = new BaseChannelAddSubscribersRequest(channelName, BaseChannelAddSubscribersRequest.SubscriberType.NAME, UserRepresentation.toBodyJson(users), apiCredentials, serverFunction, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
         return request;
     }
 
-    @Expand
+    @Expand(isStatic = true)
     public static CloudMineRequest<PushChannelResponse> subscribeDeviceIds(Context context, String channelName, @Single Collection<String> deviceIds, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, @Optional Response.ErrorListener errorListener) {
         BaseChannelAddSubscribersRequest request = new BaseChannelAddSubscribersRequest(channelName, BaseChannelAddSubscribersRequest.SubscriberType.DEVICE_ID, JsonUtilities.objectToJson(deviceIds), apiCredentials, serverFunction, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
         return request;
     }
 
-    @Expand
+    @Expand(isStatic = true)
     public static CloudMineRequest<PushChannelResponse> subscribeDeviceId(Context context, String channelName, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, @Optional Response.ErrorListener errorListener) {
         return subscribeDeviceIds(context, channelName, Arrays.asList(DeviceIdentifier.getUniqueId()), apiCredentials, serverFunction, successListener, errorListener);
     }

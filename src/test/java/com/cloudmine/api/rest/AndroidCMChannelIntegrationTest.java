@@ -139,18 +139,47 @@ public class AndroidCMChannelIntegrationTest extends CMChannelIntegrationTest {
         final JavaCMUser[] users = {randomLoggedInUser(), randomLoggedInUser(), randomLoggedInUser()};
 
         BaseCMChannel.subscribeUsers(applicationController, name, Arrays.asList(UserRepresentation.emailRepresentation(users[0].getEmail()),
-                                                                                UserRepresentation.usernameRepresentation(users[1].getUserName()),
-                                                                                UserRepresentation.useridRepresentation(users[2].getObjectId())),
+                UserRepresentation.usernameRepresentation(users[1].getUserName()),
+                UserRepresentation.useridRepresentation(users[2].getObjectId())),
                 null, null, testCallback(new Response.Listener<PushChannelResponse>() {
 
             @Override
             public void onResponse(PushChannelResponse pushChannelResponse) {
                 assertTrue(pushChannelResponse.wasSuccess());
-                for(JavaCMUser user : users) {
+                for (JavaCMUser user : users) {
                     assertTrue(pushChannelResponse.getUserIds().contains(user.getObjectId()));
                 }
             }
         }), defaultFailureListener);
         waitThenAssertTestResults();
+    }
+    
+    @Test
+    public void testGetChannels() {
+
+        final String name = randomString();
+        BaseCMChannel channel = new CMChannel(name);
+        JavaCMUser user = randomLoggedInUser();
+        final String deviceId = randomString();
+        channel.addUser(user);
+        channel.addDeviceId(deviceId);
+        channel.create(applicationController, null,null,ResponseCallbackTuple.<PushChannelResponse>hasSuccess(), defaultFailureListener);
+        waitThenAssertTestResults();
+
+        BaseCMChannel.loadChannelNamesByDeviceId(applicationController, deviceId, null, null, testCallback(new Response.Listener<ListOfValuesResponse<String>>() {
+            @Override
+            public void onResponse(ListOfValuesResponse<String> stringListOfValuesResponse) {
+                assertTrue(stringListOfValuesResponse.getValues().contains(name));
+            }
+        }), defaultFailureListener);
+        waitThenAssertTestResults();
+
+        BaseCMChannel.loadChannelNamesBySessionToken(applicationController, user.getSessionToken(), null, null,  testCallback(new Response.Listener<ListOfValuesResponse<String>>() {
+            @Override
+            public void onResponse(ListOfValuesResponse<String> stringListOfValuesResponse) {
+                assertTrue(stringListOfValuesResponse.getValues().contains(name));
+            }
+        }), defaultFailureListener);
+
     }
 }
