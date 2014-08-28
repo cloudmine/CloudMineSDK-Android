@@ -9,6 +9,7 @@ import com.cloudmine.api.rest.BaseAddPaymentMethodRequest;
 import com.cloudmine.api.rest.BaseChangeUserIdentifierRequest;
 import com.cloudmine.api.rest.BaseChangeUserPasswordRequest;
 import com.cloudmine.api.rest.BaseChannelAddSubscribersRequest;
+import com.cloudmine.api.rest.BaseChannelDeleteSubscribersRequest;
 import com.cloudmine.api.rest.BaseLoadPaymentMethodsRequest;
 import com.cloudmine.api.rest.BaseLoadUserProfilesRequest;
 import com.cloudmine.api.rest.BaseProfileLoadRequest;
@@ -391,8 +392,15 @@ public class BaseCMUser extends JavaCMUser {
         return request;
     }
 
+    @Expand
     public CloudMineRequest subscribeToChannel(Context context, String channel, boolean allDevices, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, @Optional Response.ErrorListener errorListener) {
         CloudMineRequest request = new BaseChannelAddSubscribersRequest(channel, getSessionToken(), allDevices, apiCredentials, serverFunction, successListener, errorListener);
+        SharedRequestQueueHolders.getRequestQueue(context).add(request);
+        return request;
+    }
+
+    public CloudMineRequest unsubscribeFromChannel(Context context, String channel, boolean allDevices, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, @Optional Response.ErrorListener errorListener) {
+        CloudMineRequest request = new BaseChannelDeleteSubscribersRequest(channel,  getSessionToken(), allDevices, apiCredentials, serverFunction, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
         return request;
     }

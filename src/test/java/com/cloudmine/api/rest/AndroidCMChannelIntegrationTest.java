@@ -258,6 +258,7 @@ public class AndroidCMChannelIntegrationTest extends CMChannelIntegrationTest {
         channel.create(applicationContext, null,null,ResponseCallbackTuple.<PushChannelResponse>hasSuccess(), defaultFailureListener);
         waitThenAssertTestResults();
 
-        user.unsubscribeFromChannel();
+        user.unsubscribeFromChannel(applicationContext, name, false, null, null, ResponseCallbackTuple.<PushChannelResponse>hasSuccess(), defaultFailureListener);
+        waitThenAssertTestResults();
     }
 }

@@ -4,6 +4,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.cloudmine.api.BaseCMChannel;
 import com.cloudmine.api.CMApiCredentials;
+import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.PushChannelResponse;
 import me.cloudmine.annotations.Expand;
@@ -36,6 +37,11 @@ public class BaseChannelDeleteSubscribersRequest extends CloudMineRequest<PushCh
     public BaseChannelDeleteSubscribersRequest(String channel, BaseCMChannel.SubscriberType type, Collection<String> ids, @Optional CMApiCredentials credentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, Response.ErrorListener errorListener) {
         super(Method.DELETE, "/push/channel/" + channel + "/" + typeUrl(type) + "?" + idsUrl(ids), null, null, credentials, serverFunction, successListener, errorListener);
     }
+
+    public BaseChannelDeleteSubscribersRequest(String channel, CMSessionToken sessionToken, boolean allDevices, @Optional CMApiCredentials credentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, Response.ErrorListener errorListener) {
+        super(Method.POST, "/push/channel/" + channel + "/unsubscribe", allDevices ? "{\"user\":true}" : null, sessionToken, credentials, serverFunction, successListener, errorListener);
+    }
+
 
     @Override
     protected Response<PushChannelResponse> parseNetworkResponse(NetworkResponse networkResponse) {
