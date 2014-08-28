@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
 import static com.cloudmine.test.ResponseCallbackTuple.defaultFailureListener;
@@ -40,12 +41,12 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(CloudMineTestRunner.class)
 public class AndroidCMChannelIntegrationTest extends CMChannelIntegrationTest {
 
-    private Context applicationController;
+    private Context applicationContext;
 
     @Before
     public void setUp() {
-        applicationController = Robolectric.application.getApplicationContext();
-        CMApiCredentials.initialize(APP_ID, API_KEY, applicationController);
+        applicationContext = Robolectric.application.getApplicationContext();
+        CMApiCredentials.initialize(APP_ID, API_KEY, applicationContext);
         CloudMineRequest.setCachingEnabled(false);
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
 
@@ -89,7 +90,7 @@ public class AndroidCMChannelIntegrationTest extends CMChannelIntegrationTest {
         final String deviceId = "devId";
         final String name = randomString();
         BaseCMChannel channel = new BaseCMChannel(name, Arrays.asList(objectId), Arrays.asList(deviceId));
-        channel.create(applicationController, null, null, testCallback(new Response.Listener<PushChannelResponse>() {
+        channel.create(applicationContext, null, null, testCallback(new Response.Listener<PushChannelResponse>() {
             @Override
             public void onResponse(PushChannelResponse response) {
                 assertTrue(response.wasSuccess());
@@ -105,10 +106,10 @@ public class AndroidCMChannelIntegrationTest extends CMChannelIntegrationTest {
     public void testSubscribeDevices() {
         final String name = randomString();
         BaseCMChannel channel = new CMChannel(name);
-        channel.create(applicationController, null,null,ResponseCallbackTuple.<PushChannelResponse>hasSuccess(), defaultFailureListener);
+        channel.create(applicationContext, null,null,ResponseCallbackTuple.<PushChannelResponse>hasSuccess(), defaultFailureListener);
         waitThenAssertTestResults();
 
-        BaseCMChannel.subscribeDeviceId(applicationController, name, null, null, testCallback(new Response.Listener<PushChannelResponse>() {
+        BaseCMChannel.subscribeDeviceId(applicationContext, name, null, null, testCallback(new Response.Listener<PushChannelResponse>() {
             @Override
             public void onResponse(PushChannelResponse pushChannelResponse) {
                 assertTrue(pushChannelResponse.wasSuccess());
@@ -117,7 +118,7 @@ public class AndroidCMChannelIntegrationTest extends CMChannelIntegrationTest {
         }), defaultFailureListener);
         waitThenAssertTestResults();
 
-        BaseCMChannel.subscribeDeviceIds(applicationController, name, Arrays.asList("a", "b", "c"), null, null,  testCallback(new Response.Listener<PushChannelResponse>() {
+        BaseCMChannel.subscribeDeviceIds(applicationContext, name, Arrays.asList("a", "b", "c"), null, null,  testCallback(new Response.Listener<PushChannelResponse>() {
             @Override
             public void onResponse(PushChannelResponse pushChannelResponse) {
                 assertTrue(pushChannelResponse.wasSuccess());
@@ -134,11 +135,11 @@ public class AndroidCMChannelIntegrationTest extends CMChannelIntegrationTest {
 
         final String name = randomString();
         BaseCMChannel channel = new CMChannel(name);
-        channel.create(applicationController, null,null,ResponseCallbackTuple.<PushChannelResponse>hasSuccess(), defaultFailureListener);
+        channel.create(applicationContext, null,null,ResponseCallbackTuple.<PushChannelResponse>hasSuccess(), defaultFailureListener);
         waitThenAssertTestResults();
         final JavaCMUser[] users = {randomLoggedInUser(), randomLoggedInUser(), randomLoggedInUser()};
 
-        BaseCMChannel.subscribeUsers(applicationController, name, Arrays.asList(UserRepresentation.emailRepresentation(users[0].getEmail()),
+        BaseCMChannel.subscribeUsers(applicationContext, name, Arrays.asList(UserRepresentation.emailRepresentation(users[0].getEmail()),
                 UserRepresentation.usernameRepresentation(users[1].getUserName()),
                 UserRepresentation.useridRepresentation(users[2].getObjectId())),
                 null, null, testCallback(new Response.Listener<PushChannelResponse>() {
@@ -163,10 +164,10 @@ public class AndroidCMChannelIntegrationTest extends CMChannelIntegrationTest {
         final String deviceId = randomString();
         channel.addUser(user);
         channel.addDeviceId(deviceId);
-        channel.create(applicationController, null,null,ResponseCallbackTuple.<PushChannelResponse>hasSuccess(), defaultFailureListener);
+        channel.create(applicationContext, null,null,ResponseCallbackTuple.<PushChannelResponse>hasSuccess(), defaultFailureListener);
         waitThenAssertTestResults();
 
-        BaseCMChannel.loadChannelNamesByDeviceId(applicationController, deviceId, null, null, testCallback(new Response.Listener<ListOfValuesResponse<String>>() {
+        BaseCMChannel.loadChannelNamesByDeviceId(applicationContext, deviceId, null, null, testCallback(new Response.Listener<ListOfValuesResponse<String>>() {
             @Override
             public void onResponse(ListOfValuesResponse<String> stringListOfValuesResponse) {
                 assertTrue(stringListOfValuesResponse.getValues().contains(name));
@@ -174,12 +175,52 @@ public class AndroidCMChannelIntegrationTest extends CMChannelIntegrationTest {
         }), defaultFailureListener);
         waitThenAssertTestResults();
 
-        BaseCMChannel.loadChannelNamesBySessionToken(applicationController, user.getSessionToken(), null, null,  testCallback(new Response.Listener<ListOfValuesResponse<String>>() {
+        BaseCMChannel.loadChannelNamesBySessionToken(applicationContext, user.getSessionToken(), null, null,  testCallback(new Response.Listener<ListOfValuesResponse<String>>() {
             @Override
             public void onResponse(ListOfValuesResponse<String> stringListOfValuesResponse) {
                 assertTrue(stringListOfValuesResponse.getValues().contains(name));
             }
         }), defaultFailureListener);
 
+    }
+
+    @Test
+    public void testBulkUnsubscribe() {
+
+        final String name = randomString();
+        BaseCMChannel channel = new CMChannel(name);
+        final JavaCMUser[] users = {randomLoggedInUser(), randomLoggedInUser(), randomLoggedInUser()};
+        final String[] deviceIds = {randomString(), randomString(), randomString()};
+        for(JavaCMUser user : users) {
+            channel.addUser(user);
+        }
+        for(String deviceId : deviceIds) {
+            channel.addDeviceId(deviceId);
+        }
+        channel.create(applicationContext, null,null,ResponseCallbackTuple.<PushChannelResponse>hasSuccess(), defaultFailureListener);
+        waitThenAssertTestResults();
+
+        BaseCMChannel.unsubscribeDeviceIds(applicationContext, name, Arrays.asList(deviceIds[0], deviceIds[2]), null, null, testCallback(new Response.Listener<PushChannelResponse>() {
+            @Override
+            public void onResponse(PushChannelResponse pushChannelResponse) {
+                assertEquals(name, pushChannelResponse.getChannelName());
+                List<String> remainingDeviceIds = pushChannelResponse.getDeviceIds();
+                assertTrue(remainingDeviceIds.contains(deviceIds[1]));
+                assertEquals(1, remainingDeviceIds.size());
+            }
+        }), defaultFailureListener);
+        waitThenAssertTestResults();
+
+        BaseCMChannel.unsubscribeUsersById(applicationContext, name, Arrays.asList(users[1].getObjectId(), users[2].getObjectId()), null, null, testCallback(new Response.Listener<PushChannelResponse>() {
+            @Override
+            public void onResponse(PushChannelResponse pushChannelResponse) {
+                assertEquals(name, pushChannelResponse.getChannelName());
+                List<String> remainingUserIds = pushChannelResponse.getUserIds();
+                assertTrue(remainingUserIds.contains(users[0].getObjectId()));
+                assertEquals(1, remainingUserIds.size());
+
+            }
+        }), defaultFailureListener);
+        waitThenAssertTestResults();
     }
 }
