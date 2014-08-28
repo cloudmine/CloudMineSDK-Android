@@ -4,11 +4,13 @@ import android.content.Context;
 import com.android.volley.Response;
 import com.cloudmine.EnvironmentVariables;
 import com.cloudmine.api.BaseCMChannel;
+import com.cloudmine.api.BaseCMPushNotification;
 import com.cloudmine.api.BaseCMUser;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMChannel;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.JavaCMChannel;
+import com.cloudmine.api.JavaCMPushNotification;
 import com.cloudmine.api.JavaCMUser;
 import com.cloudmine.api.UserRepresentation;
 import com.cloudmine.api.integration.CMChannelIntegrationTest;
@@ -260,5 +262,32 @@ public class AndroidCMChannelIntegrationTest extends CMChannelIntegrationTest {
 
         user.unsubscribeFromChannel(applicationContext, name, false, null, null, ResponseCallbackTuple.<PushChannelResponse>hasSuccess(), defaultFailureListener);
         waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testSendPush() {
+
+        final String objectId = "userId";
+        final String deviceId = "devId";
+        final String name = randomString();
+        BaseCMChannel channel = new BaseCMChannel(name, Arrays.asList(objectId), Arrays.asList(deviceId));
+        channel.create(applicationContext, null, null, testCallback(new Response.Listener<PushChannelResponse>() {
+            @Override
+            public void onResponse(PushChannelResponse response) {
+            }
+        }), defaultFailureListener);
+        waitThenAssertTestResults();
+
+        BaseCMPushNotification notification = new BaseCMPushNotification("Hello everyone!", name);
+        notification.addMessageRecipient(new JavaCMPushNotification.UserIdTarget(objectId));
+        notification.addMessageRecipient(new JavaCMPushNotification.DeviceTarget(deviceId));
+        notification.send(applicationContext, null, null, testCallback(new Response.Listener<CMResponse>() {
+            @Override
+            public void onResponse(CMResponse cmResponse) {
+                assertTrue(cmResponse.wasSuccess());
+            }
+        }), defaultFailureListener);
+        waitThenAssertTestResults();
+
     }
 }
