@@ -3,6 +3,7 @@ package com.cloudmine.api.rest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import com.android.volley.Response;
+import com.cloudmine.EnvironmentVariables;
 import com.cloudmine.api.BaseCacheableCMFile;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMFile;
@@ -42,7 +43,7 @@ public class AndroidCMFileIntegrationTest extends CMFileIntegrationTest {
     @Before
     public void setUp() {
         applicationContext = Robolectric.application.getApplicationContext();
-        CMApiCredentials.initialize(APP_ID, API_KEY, applicationContext);
+        CMApiCredentials.initialize(EnvironmentVariables.getCredentials().getIdentifier(), EnvironmentVariables.getCredentials().getApiKey(), applicationContext);
         CloudMineRequest.setCachingEnabled(false);
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         super.setUp();

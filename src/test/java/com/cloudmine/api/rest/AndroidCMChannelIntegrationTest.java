@@ -2,7 +2,9 @@ package com.cloudmine.api.rest;
 
 import android.content.Context;
 import com.android.volley.Response;
+import com.cloudmine.EnvironmentVariables;
 import com.cloudmine.api.BaseCMChannel;
+import com.cloudmine.api.BaseCMUser;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMChannel;
 import com.cloudmine.api.DeviceIdentifier;
@@ -15,6 +17,7 @@ import com.cloudmine.api.rest.callbacks.ListOfStringsCallback;
 import com.cloudmine.api.rest.callbacks.PushChannelResponseCallback;
 import com.cloudmine.api.rest.response.CMResponse;
 import com.cloudmine.api.rest.response.ListOfValuesResponse;
+import com.cloudmine.api.rest.response.LoginResponse;
 import com.cloudmine.api.rest.response.PushChannelResponse;
 import com.cloudmine.test.CloudMineTestRunner;
 import com.cloudmine.test.ResponseCallbackTuple;
@@ -46,7 +49,8 @@ public class AndroidCMChannelIntegrationTest extends CMChannelIntegrationTest {
     @Before
     public void setUp() {
         applicationContext = Robolectric.application.getApplicationContext();
-        CMApiCredentials.initialize(APP_ID, API_KEY, applicationContext);
+
+        CMApiCredentials.initialize(EnvironmentVariables.getCredentials().getIdentifier(), EnvironmentVariables.getCredentials().getApiKey(), applicationContext);
         CloudMineRequest.setCachingEnabled(false);
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
 
@@ -137,6 +141,20 @@ public class AndroidCMChannelIntegrationTest extends CMChannelIntegrationTest {
         BaseCMChannel channel = new CMChannel(name);
         channel.create(applicationContext, null,null,ResponseCallbackTuple.<PushChannelResponse>hasSuccess(), defaultFailureListener);
         waitThenAssertTestResults();
+
+
+        final BaseCMUser user = new BaseCMUser(randomEmail(),randomString());
+        service.insert(user);
+        LoginResponse response = service.login(user);
+        user.setSessionToken(response.getSessionToken());
+        user.subscribeToChannel(applicationContext, name, true, null, null, testCallback(new Response.Listener<PushChannelResponse>() {
+            @Override
+            public void onResponse(PushChannelResponse pushChannelResponse) {
+                assertTrue(pushChannelResponse.wasSuccess());
+            }
+        }), defaultFailureListener);
+        waitThenAssertTestResults();
+
         final JavaCMUser[] users = {randomLoggedInUser(), randomLoggedInUser(), randomLoggedInUser()};
 
         BaseCMChannel.subscribeUsers(applicationContext, name, Arrays.asList(UserRepresentation.emailRepresentation(users[0].getEmail()),
@@ -153,6 +171,8 @@ public class AndroidCMChannelIntegrationTest extends CMChannelIntegrationTest {
             }
         }), defaultFailureListener);
         waitThenAssertTestResults();
+
+
     }
     
     @Test
@@ -222,5 +242,22 @@ public class AndroidCMChannelIntegrationTest extends CMChannelIntegrationTest {
             }
         }), defaultFailureListener);
         waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testUnsubscribeSelf() {
+        final String name = randomString();
+        BaseCMChannel channel = new CMChannel(name);
+        BaseCMUser user = new BaseCMUser(randomEmail(),randomString());
+        service.insert(user);
+        LoginResponse response = service.login(user);
+        user.setSessionToken(response.getSessionToken());
+        final String deviceId = randomString();
+        channel.addUser(user);
+        channel.addDeviceId(deviceId);
+        channel.create(applicationContext, null,null,ResponseCallbackTuple.<PushChannelResponse>hasSuccess(), defaultFailureListener);
+        waitThenAssertTestResults();
+
+        user.unsubscribeFromChannel();
     }
 }

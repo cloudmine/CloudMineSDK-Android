@@ -1,5 +1,6 @@
 package com.cloudmine.api.rest;
 
+import com.cloudmine.EnvironmentVariables;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.DeviceIdentifier;
 import com.cloudmine.api.integration.CloudMineWebServiceIntegrationTest;
@@ -27,7 +28,7 @@ public class AndroidCMWebServiceIntegrationTest extends CloudMineWebServiceInteg
 
     @Before
     public void setUp() {
-        CMApiCredentials.initialize(APP_ID, API_KEY, Robolectric.application);
+        CMApiCredentials.initialize(EnvironmentVariables.getCredentials().getIdentifier(), EnvironmentVariables.getCredentials().getApiKey(), Robolectric.application);
         CloudMineRequest.setCachingEnabled(false);
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
         DeviceIdentifier.initialize(Robolectric.application.getApplicationContext());

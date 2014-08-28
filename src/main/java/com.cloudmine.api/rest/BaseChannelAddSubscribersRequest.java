@@ -4,6 +4,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.cloudmine.api.BaseCMChannel;
 import com.cloudmine.api.CMApiCredentials;
+import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.PushChannelResponse;
 import me.cloudmine.annotations.Expand;
@@ -20,6 +21,11 @@ public class BaseChannelAddSubscribersRequest extends CloudMineRequest<PushChann
     @Expand
     public BaseChannelAddSubscribersRequest(String channel, BaseCMChannel.SubscriberType type, String body, @Optional CMApiCredentials credentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, Response.ErrorListener errorListener) {
         super(Method.POST, "/push/channel/" + channel + "/" + type.url, body, null, credentials, serverFunction, successListener, errorListener);
+    }
+
+    @Expand
+    public BaseChannelAddSubscribersRequest(String channel, CMSessionToken sessionToken, boolean allDevices, @Optional CMApiCredentials credentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, Response.ErrorListener errorListener) {
+        super(Method.POST, "/push/channel/" + channel + "/subscribe", allDevices ? "{\"user\":true}" : null, sessionToken, serverFunction, successListener, errorListener);
     }
 
     @Override
