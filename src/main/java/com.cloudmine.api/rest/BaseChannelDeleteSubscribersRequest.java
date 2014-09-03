@@ -18,7 +18,8 @@ import java.util.Collection;
  */
 public class BaseChannelDeleteSubscribersRequest extends CloudMineRequest<PushChannelResponse> {
     public static final int REQUEST_TYPE = 427;
-    private static final String idsUrl(Collection<String> ids) {
+
+    private static final String createIdsUrl(Collection<String> ids) {
         if(ids == null || ids.isEmpty()) return "";
         StringBuilder listBuilder = new StringBuilder("ids=");
         String comma = "";
@@ -35,11 +36,11 @@ public class BaseChannelDeleteSubscribersRequest extends CloudMineRequest<PushCh
 
     @Expand
     public BaseChannelDeleteSubscribersRequest(String channel, BaseCMChannel.SubscriberType type, Collection<String> ids, @Optional CMApiCredentials credentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, Response.ErrorListener errorListener) {
-        super(Method.DELETE, "/push/channel/" + channel + "/" + typeUrl(type) + "?" + idsUrl(ids), null, null, credentials, serverFunction, successListener, errorListener);
+        super(Method.DELETE, URLStrings.PUSH_CHANNEL + "/" + channel + "/" + typeUrl(type) + "?" + createIdsUrl(ids), null, null, credentials, serverFunction, successListener, errorListener);
     }
 
     public BaseChannelDeleteSubscribersRequest(String channel, CMSessionToken sessionToken, boolean allDevices, @Optional CMApiCredentials credentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, Response.ErrorListener errorListener) {
-        super(Method.POST, "/push/channel/" + channel + "/unsubscribe", allDevices ? "{\"user\":true}" : null, sessionToken, credentials, serverFunction, successListener, errorListener);
+        super(Method.POST, URLStrings.PUSH_CHANNEL + "/" + channel + URLStrings.UNSUBSCRIBE, allDevices ? "{\"user\":true}" : null, sessionToken, credentials, serverFunction, successListener, errorListener);
     }
 
 

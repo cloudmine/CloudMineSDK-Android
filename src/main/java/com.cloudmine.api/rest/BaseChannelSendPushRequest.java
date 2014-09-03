@@ -19,7 +19,7 @@ public class BaseChannelSendPushRequest extends CloudMineRequest<CMResponse> {
 
     @Expand
     public BaseChannelSendPushRequest(JavaCMPushNotification notification, @Optional CMApiCredentials credentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<CMResponse> successListener, Response.ErrorListener errorListener) {
-        super(Method.POST, "/push", notification.transportableRepresentation(), null, credentials, serverFunction, successListener, errorListener);
+        super(Method.POST, URLStrings.PUSH, notification.transportableRepresentation(), null, credentials, serverFunction, successListener, errorListener);
     }
 
     @Override

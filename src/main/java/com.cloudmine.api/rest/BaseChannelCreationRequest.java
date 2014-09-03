@@ -18,7 +18,7 @@ public class BaseChannelCreationRequest extends CloudMineRequest<PushChannelResp
 
     @Expand
     public BaseChannelCreationRequest(JavaCMChannel channel, @Optional CMApiCredentials credentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, Response.ErrorListener errorListener) {
-        super(Method.POST, "/push/channel", channel.transportableRepresentation(), null, credentials, serverFunction, successListener, errorListener);
+        super(Method.POST, URLStrings.PUSH_CHANNEL, channel.transportableRepresentation(), null, credentials, serverFunction, successListener, errorListener);
     }
 
     @Override
