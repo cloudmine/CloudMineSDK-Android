@@ -15,7 +15,6 @@ import com.cloudmine.api.rest.response.PushChannelResponse;
 import me.cloudmine.annotations.EmptyConstructor;
 import me.cloudmine.annotations.Expand;
 import me.cloudmine.annotations.Optional;
-import me.cloudmine.annotations.Single;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +54,7 @@ public class BaseCMChannel extends JavaCMChannel {
     }
 
     @Expand(isStatic = true)
-    public static CloudMineRequest<PushChannelResponse> subscribeUsers(Context context, String channelName, @Single Collection<UserRepresentation> users, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, @Optional Response.ErrorListener errorListener) {
+    public static CloudMineRequest<PushChannelResponse> subscribeUsers(Context context, String channelName, Collection<UserRepresentation> users, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, @Optional Response.ErrorListener errorListener) {
         BaseChannelAddSubscribersRequest request = new BaseChannelAddSubscribersRequest(channelName, SubscriberType.NAME, UserRepresentation.toBodyJson(users), apiCredentials, serverFunction, successListener, errorListener);
         SharedRequestQueueHolders.getRequestQueue(context).add(request);
         return request;
@@ -63,7 +62,7 @@ public class BaseCMChannel extends JavaCMChannel {
 
 
     @Expand(isStatic = true)
-    public static CloudMineRequest<PushChannelResponse> subscribeUsers(Context context, String channelName, UserRepresentation user, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, @Optional Response.ErrorListener errorListener) {
+    public static CloudMineRequest<PushChannelResponse> subscribeUser(Context context, String channelName, UserRepresentation user, @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, @Optional Response.ErrorListener errorListener) {
         return subscribeUsers(context, channelName, Arrays.asList(user), apiCredentials, serverFunction, successListener, errorListener);
     }
 
@@ -91,7 +90,7 @@ public class BaseCMChannel extends JavaCMChannel {
         return unsubscribeDeviceIds(context, channelName, Arrays.asList(deviceId), apiCredentials, serverFunction, successListener, errorListener);
     }
 
-        @Expand
+        @Expand(isStatic = true)
     public static CloudMineRequest<PushChannelResponse> unsubscribeCurrentDevice(Context context, String channelName,  @Optional CMApiCredentials apiCredentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, @Optional Response.ErrorListener errorListener) {
         return unsubscribeDeviceIds(context, channelName, Arrays.asList(DeviceIdentifier.getUniqueId()), apiCredentials, serverFunction, successListener, errorListener);
     }
