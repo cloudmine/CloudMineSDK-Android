@@ -10,6 +10,7 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.HurlStack;
+import com.cloudmine.EnvironmentVariables;
 import com.cloudmine.api.CMAccessPermission;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMObject;
@@ -62,7 +63,7 @@ public class AndroidCMObjectIntegrationTest extends CMObjectIntegrationTest{
     @Before
     public void setUp() {
         applicationContext = Robolectric.application.getApplicationContext();
-        CMApiCredentials.initialize(APP_ID, API_KEY, applicationContext);
+        CMApiCredentials.initialize(EnvironmentVariables.getCredentials().getIdentifier(), EnvironmentVariables.getCredentials().getApiKey(), applicationContext);
         CloudMineRequest.setCachingEnabled(false);
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
 
