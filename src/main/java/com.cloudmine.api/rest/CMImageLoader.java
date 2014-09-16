@@ -185,7 +185,7 @@ public class CMImageLoader extends ImageLoader {
      * @param cacheKey The cache key that is associated with the image request.
      * @param response The bitmap that was returned from the network.
      */
-    private void onGetImageSuccess(String cacheKey, Bitmap response) {
+    protected void onGetImageSuccess(String cacheKey, Bitmap response) {
         // cache the image that was fetched.
         mCache.putBitmap(cacheKey, response);
 
@@ -205,7 +205,7 @@ public class CMImageLoader extends ImageLoader {
      * Handler for when an image failed to load.
      * @param cacheKey The cache key that is associated with the image request.
      */
-    private void onGetImageError(String cacheKey, VolleyError error) {
+    protected void onGetImageError(String cacheKey, VolleyError error) {
         // Notify the requesters that something failed via a null result.
         // Remove this request from the list of in-flight requests.
         BatchedImageRequest request = mInFlightRequests.remove(cacheKey);

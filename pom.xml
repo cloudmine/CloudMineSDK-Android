@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.cloudmine.api</groupId>
     <artifactId>cloudmine-android</artifactId>
-    <version>0.6.3</version>
+    <version>0.6.4</version>
     <packaging>jar</packaging>
 
     <build>
@@ -46,6 +46,10 @@
 
     <repositories>
         <repository>
+            <id>cloudmine-releases</id>
+            <url>https://github.com/cloudmine/maven/raw/master/releases</url>
+        </repository>
+        <repository>
             <id>central</id>
             <name>Maven Central</name>
             <url>http://repo1.maven.org/maven2/</url>
@@ -60,12 +64,12 @@
         <dependency>
             <groupId>com.cloudmine.api</groupId>
             <artifactId>cloudmine-javasdk</artifactId>
-            <version>0.6.3</version>
+            <version>0.6.4</version>
         </dependency>
         <dependency>
             <groupId>com.cloudmine.api</groupId>
             <artifactId>cloudmine-javasdk</artifactId>
-            <version>0.6.1</version>
+            <version>0.6.4</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>        
@@ -96,15 +100,9 @@
           <version>4.0.1</version>
         </dependency>
         <dependency>
-            <groupId>com.google.android</groupId>
-            <artifactId>gcm</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
           <groupId>com.android</groupId>
             <artifactId>volley</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
+            <version>1.0</version>
         </dependency>
         <dependency>
           <groupId>com.squareup.okhttp</groupId>
@@ -135,11 +133,11 @@
         <version>1.0-SNAPSHOT</version>
         <scope>compile</scope>
       </dependency>
-        <dependency>
-            <groupId>com.google.okhttp</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>20120626</version>
-        </dependency>
+      <dependency>
+          <groupId>com.google.okhttp</groupId>
+          <artifactId>okhttp</artifactId>
+          <version>20120626</version>
+      </dependency>
 
 
     </dependencies>
