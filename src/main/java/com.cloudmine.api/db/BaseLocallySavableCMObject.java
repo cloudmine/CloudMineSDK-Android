@@ -21,6 +21,7 @@ import com.cloudmine.api.rest.SharedRequestQueueHolders;
 import com.cloudmine.api.rest.options.CMServerFunction;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import me.cloudmine.annotations.Expand;
 import me.cloudmine.annotations.Optional;
 import me.cloudmine.annotations.Single;
@@ -145,6 +146,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
         return CMObjectDBOpenHelper.getCMObjectDBHelper(context).loadAllObjects();
     }
 
+    @JsonIgnore
     private Date lastLocalSaveDate;
 
     /**
@@ -237,15 +239,18 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
      * Get the last time this object was stored locally. Returns 0 if the object has never been stored locally
      * @return
      */
+    @JsonIgnore
     public int getLastLocalSavedDateAsSeconds() {
         if(lastLocalSaveDate == null) return 0;
         return (int) (lastLocalSaveDate.getTime() / 1000);
     }
 
+    @JsonIgnore
     public Date getLastLocalSaveDate() {
         return lastLocalSaveDate;
     }
 
+    @JsonIgnore
     protected void setLastLocalSaveDate(Date lastSaveDate) {
         this.lastLocalSaveDate = lastSaveDate;
     }
