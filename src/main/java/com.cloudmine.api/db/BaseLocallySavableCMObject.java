@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import me.cloudmine.annotations.Expand;
 import me.cloudmine.annotations.Optional;
 import me.cloudmine.annotations.Single;
+import org.jdom.Content;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,18 +183,25 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
                 request = RequestDBObject.createUserObjectRequest(getObjectId(), sessionToken);
             } else
                 request = RequestDBObject.createApplicationObjectRequest(getObjectId());
-            try {
-                RequestDBOpenHelper.getRequestDBOpenHelper(context).insertRequest(request);
-                wasCreated = true;
-                LOG.debug("Request was inserted");
-            } catch (Exception e) {
-                wasCreated = false;
-                LOG.error("Failed", e);
-            }
-            if(wasCreated) {
-                context.startService(new Intent(context, RequestPerformerService.class));
-            }
+            wasCreated = saveEventually(context, request);
         }
+        return wasCreated;
+    }
+
+    boolean saveEventually(Context context, RequestDBObject request) {
+        boolean wasCreated = false;
+        try {
+            RequestDBOpenHelper.getRequestDBOpenHelper(context).insertRequest(request);
+            wasCreated = true;
+            LOG.debug("Request was inserted");
+        } catch (Exception e) {
+            wasCreated = false;
+            LOG.error("Failed", e);
+        }
+        if(wasCreated) {
+            context.startService(new Intent(context, RequestPerformerService.class));
+        }
+
         return wasCreated;
     }
 

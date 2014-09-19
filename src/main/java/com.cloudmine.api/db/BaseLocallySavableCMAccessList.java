@@ -5,7 +5,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.cloudmine.api.CMAccessPermission;
+import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.JavaCMUser;
+import com.cloudmine.api.exceptions.InvalidRequestException;
 import com.cloudmine.api.rest.BaseAccessListModificationRequest;
 import com.cloudmine.api.rest.CloudMineRequest;
 import com.cloudmine.api.rest.JsonUtilities;
@@ -87,6 +89,27 @@ public class BaseLocallySavableCMAccessList extends BaseLocallySavableCMObject {
 
     protected BaseLocallySavableCMAccessList() {
         //for jackson
+    }
+
+    @Deprecated
+    public boolean saveEventually(Context context) throws InvalidRequestException{
+        throw new InvalidRequestException("Cannot save an ACL without a session token");
+    }
+
+    /**
+     * Save this object to local storage, then eventually save it to the server. When the object is sent to the server,
+     * the most recent version from the database is used - so calls to saveEventually or saveLocally that occur before
+     * the request is sent will be sent to the server
+     * @param context activity context
+     * @return true if the request was inserted correctly and will eventually be saved
+     */
+    public boolean saveEventually(Context context, CMSessionToken sessionToken) {
+        boolean wasCreated = saveLocally(context);
+        if(wasCreated) {
+            RequestDBObject request = RequestDBObject.createAccessListControllerRequest(getObjectId(), sessionToken);
+            wasCreated = saveEventually(context, request);
+        }
+        return wasCreated;
     }
 
     /**

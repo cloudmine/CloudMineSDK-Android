@@ -84,6 +84,15 @@ public class RequestDBObject {
         return request;
     }
 
+
+    public static RequestDBObject createAccessListControllerRequest(String objectId, CMSessionToken sessionToken) {
+        HeaderFactory headerFactory = LibrarySpecificClassCreator.getCreator().getHeaderFactory();
+        Set<Header> cloudMineHeaders = headerFactory.getCloudMineHeaders(CMApiCredentials.getApplicationApiKey());
+        cloudMineHeaders.add(headerFactory.getUserCloudMineHeader(sessionToken));
+        RequestDBObject request = new RequestDBObject(RequestConstants.USER_SAVE_URL, Verb.PUT, (String)null, objectId, -1, SyncStatus.UNSYNCED, new ArrayList<Header>(cloudMineHeaders));
+        return request;
+    }
+
     public static RequestDBObject createUserObjectRequest(String objectId, CMSessionToken sessionToken) {
         HeaderFactory headerFactory = LibrarySpecificClassCreator.getCreator().getHeaderFactory();
         Set<Header> cloudMineHeaders = headerFactory.getCloudMineHeaders(CMApiCredentials.getApplicationApiKey());
