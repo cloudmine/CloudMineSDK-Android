@@ -316,11 +316,19 @@ public class BaseCacheableCMFile extends CMFile implements LocallySavable{
         return saveToInternalStorage(context, this);
     }
 
-    @Override
     public boolean saveEventually(Context context) {
+        return saveEventually(context, null);
+    }
+
+    public boolean saveEventually(Context context, CMSessionToken sessionToken) {
         boolean wasCreated = saveLocally(context);
         if(wasCreated) {
-            RequestDBObject request = RequestDBObject.createApplicationFileRequest(getFileId());
+            RequestDBObject request;
+            if(sessionToken == null) {
+                request = RequestDBObject.createApplicationFileRequest(getFileId());
+            } else {
+                request = RequestDBObject.createUserFileRequest(getFileId(), sessionToken);
+            }
             try {
             RequestDBOpenHelper.getRequestDBOpenHelper(context).insertRequest(request);
             wasCreated = true;

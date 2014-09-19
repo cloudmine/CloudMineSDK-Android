@@ -167,11 +167,19 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
      * @return true if the request was inserted correctly and will eventually be saved
      */
     public boolean saveEventually(Context context) {
+        return saveEventually(context,  null);
+    }
+
+    public boolean saveEventually(Context context, CMSessionToken sessionToken) {
         boolean wasCreated = saveLocally(context);
         LOG.debug("Was saved locally? " + wasCreated);
 
         if(wasCreated) {
-            RequestDBObject request = RequestDBObject.createApplicationObjectRequest(getObjectId());
+            RequestDBObject request;
+            if(sessionToken != null) {
+                request = RequestDBObject.createUserObjectRequest(getObjectId(), sessionToken);
+            } else
+                request = RequestDBObject.createApplicationObjectRequest(getObjectId());
             try {
                 RequestDBOpenHelper.getRequestDBOpenHelper(context).insertRequest(request);
                 wasCreated = true;

@@ -2,9 +2,10 @@ package com.cloudmine.api.db;
 
 import android.content.ContentValues;
 import com.cloudmine.api.CMApiCredentials;
+import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.LibrarySpecificClassCreator;
 import com.cloudmine.api.Strings;
-import com.cloudmine.api.CMApiCredentials;
+import com.cloudmine.api.rest.HeaderFactory;
 import org.apache.http.Header;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
@@ -15,6 +16,7 @@ import org.apache.http.entity.StringEntity;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static com.cloudmine.api.db.RequestDBOpenHelper.*;
 
@@ -79,6 +81,22 @@ public class RequestDBObject {
 
     public static RequestDBObject createApplicationFileRequest(String fileId) {
         RequestDBObject request = new RequestDBObject(RequestConstants.APP_SAVE_FILE_URL.copy().binary(fileId).asUrlString(), Verb.PUT, null, null, fileId, -1, SyncStatus.UNSYNCED, new ArrayList<Header>(LibrarySpecificClassCreator.getCreator().getHeaderFactory().getCloudMineHeaders(CMApiCredentials.getApplicationApiKey())));
+        return request;
+    }
+
+    public static RequestDBObject createUserObjectRequest(String objectId, CMSessionToken sessionToken) {
+        HeaderFactory headerFactory = LibrarySpecificClassCreator.getCreator().getHeaderFactory();
+        Set<Header> cloudMineHeaders = headerFactory.getCloudMineHeaders(CMApiCredentials.getApplicationApiKey());
+        cloudMineHeaders.add(headerFactory.getUserCloudMineHeader(sessionToken));
+        RequestDBObject request = new RequestDBObject(RequestConstants.USER_SAVE_URL, Verb.PUT, (String)null, objectId, -1, SyncStatus.UNSYNCED, new ArrayList<Header>(cloudMineHeaders));
+        return request;
+    }
+
+    public static RequestDBObject createUserFileRequest(String fileId, CMSessionToken sessionToken) {
+        HeaderFactory headerFactory = LibrarySpecificClassCreator.getCreator().getHeaderFactory();
+        Set<Header> cloudMineHeaders = headerFactory.getCloudMineHeaders(CMApiCredentials.getApplicationApiKey());
+        cloudMineHeaders.add(headerFactory.getUserCloudMineHeader(sessionToken));
+        RequestDBObject request = new RequestDBObject(RequestConstants.USER_SAVE_FILE_URL.copy().binary(fileId).asUrlString(), Verb.PUT, null, null, fileId, -1, SyncStatus.UNSYNCED, new ArrayList<Header>(LibrarySpecificClassCreator.getCreator().getHeaderFactory().getCloudMineHeaders(CMApiCredentials.getApplicationApiKey())));
         return request;
     }
 
