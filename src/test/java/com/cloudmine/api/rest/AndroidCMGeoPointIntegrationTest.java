@@ -1,6 +1,7 @@
 package com.cloudmine.api.rest;
 
 import android.content.Context;
+import com.cloudmine.EnvironmentVariables;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMGeoPointInterface;
 import com.cloudmine.api.db.LocallySavableCMGeoPoint;
@@ -30,7 +31,7 @@ public class AndroidCMGeoPointIntegrationTest extends CMGeoPointIntegrationTest 
     @Before
     public void setUp() {
         applicationContext = Robolectric.application.getApplicationContext();
-        CMApiCredentials.initialize(APP_ID, API_KEY, applicationContext);
+        CMApiCredentials.initialize(EnvironmentVariables.getCredentials().getIdentifier(), EnvironmentVariables.getCredentials().getApiKey(), applicationContext);
         CloudMineRequest.setCachingEnabled(false);
         Robolectric.getFakeHttpLayer().interceptHttpRequests(false);
 

@@ -128,7 +128,12 @@ public abstract class CloudMineRequest<RESPONSE> extends Request<RESPONSE>  impl
     private final Object handlerLock = new Object();
 
     protected static String addServerFunction(String url, CMServerFunction serverFunction) {
-        if(serverFunction != null) return url + "?" + serverFunction.asUrlString();
+        if(serverFunction != null) {
+            String separator;
+            if(url.contains("?")) separator = "&";
+            else                  separator = "?";;
+            return url + separator + serverFunction.asUrlString();
+        }
         else                       return url;
     }
 

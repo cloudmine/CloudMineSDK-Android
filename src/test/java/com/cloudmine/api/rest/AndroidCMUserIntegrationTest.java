@@ -54,6 +54,7 @@ public class AndroidCMUserIntegrationTest extends CMUserIntegrationTest{
         user.login(hasSuccess);
         waitThenAssertTestResults();
         final CMCreditCard card = new CMCreditCard("Smith", randomString(), "0215", "3333", "visa");
+
         user.addPaymentMethod(applicationContext, card, testCallback(new Response.Listener<PaymentResponse>() {
             @Override
             public void onResponse(PaymentResponse response) {
