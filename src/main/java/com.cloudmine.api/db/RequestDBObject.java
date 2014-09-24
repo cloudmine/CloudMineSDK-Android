@@ -75,7 +75,10 @@ public class RequestDBObject {
     }
 
     public static RequestDBObject createApplicationObjectRequest(String objectId) {
-        RequestDBObject request = new RequestDBObject(RequestConstants.APP_SAVE_URL, Verb.PUT, (String)null, objectId, -1, SyncStatus.UNSYNCED, new ArrayList<Header>(LibrarySpecificClassCreator.getCreator().getHeaderFactory().getCloudMineHeaders(CMApiCredentials.getApplicationApiKey())));
+        List<Header> requestHeaders = new ArrayList<Header>(
+                LibrarySpecificClassCreator.getCreator().getHeaderFactory().getCloudMineHeaders(CMApiCredentials.getApplicationApiKey()));
+        RequestDBObject request = new RequestDBObject(RequestConstants.APP_SAVE_URL, Verb.PUT, (String)null, objectId, -1,
+                SyncStatus.UNSYNCED, requestHeaders);
         return request;
     }
 
@@ -89,7 +92,8 @@ public class RequestDBObject {
         HeaderFactory headerFactory = LibrarySpecificClassCreator.getCreator().getHeaderFactory();
         Set<Header> cloudMineHeaders = headerFactory.getCloudMineHeaders(CMApiCredentials.getApplicationApiKey());
         cloudMineHeaders.add(headerFactory.getUserCloudMineHeader(sessionToken));
-        RequestDBObject request = new RequestDBObject(RequestConstants.USER_SAVE_URL, Verb.PUT, (String)null, objectId, -1, SyncStatus.UNSYNCED, new ArrayList<Header>(cloudMineHeaders));
+        RequestDBObject request = new RequestDBObject(RequestConstants.USER_SAVE_URL, Verb.PUT, (String)null, objectId, -1,
+                SyncStatus.UNSYNCED, new ArrayList<Header>(cloudMineHeaders));
         return request;
     }
 
@@ -97,7 +101,8 @@ public class RequestDBObject {
         HeaderFactory headerFactory = LibrarySpecificClassCreator.getCreator().getHeaderFactory();
         Set<Header> cloudMineHeaders = headerFactory.getCloudMineHeaders(CMApiCredentials.getApplicationApiKey());
         cloudMineHeaders.add(headerFactory.getUserCloudMineHeader(sessionToken));
-        RequestDBObject request = new RequestDBObject(RequestConstants.USER_SAVE_URL, Verb.PUT, (String)null, objectId, -1, SyncStatus.UNSYNCED, new ArrayList<Header>(cloudMineHeaders));
+        RequestDBObject request = new RequestDBObject(RequestConstants.USER_SAVE_URL, Verb.PUT, (String)null, objectId, -1,
+                SyncStatus.UNSYNCED, new ArrayList<Header>(cloudMineHeaders));
         return request;
     }
 
@@ -105,7 +110,9 @@ public class RequestDBObject {
         HeaderFactory headerFactory = LibrarySpecificClassCreator.getCreator().getHeaderFactory();
         Set<Header> cloudMineHeaders = headerFactory.getCloudMineHeaders(CMApiCredentials.getApplicationApiKey());
         cloudMineHeaders.add(headerFactory.getUserCloudMineHeader(sessionToken));
-        RequestDBObject request = new RequestDBObject(RequestConstants.USER_SAVE_FILE_URL.copy().binary(fileId).asUrlString(), Verb.PUT, null, null, fileId, -1, SyncStatus.UNSYNCED, new ArrayList<Header>(LibrarySpecificClassCreator.getCreator().getHeaderFactory().getCloudMineHeaders(CMApiCredentials.getApplicationApiKey())));
+        ArrayList<Header> headerList = new ArrayList<Header>(cloudMineHeaders);
+        RequestDBObject request = new RequestDBObject(RequestConstants.USER_SAVE_FILE_URL.copy().binary(fileId).asUrlString(),
+                Verb.PUT, null, null, fileId, -1, SyncStatus.UNSYNCED, headerList);
         return request;
     }
 
