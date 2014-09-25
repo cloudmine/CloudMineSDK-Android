@@ -34,19 +34,26 @@ public class BaseChannelDeleteSubscribersRequest extends CloudMineRequest<PushCh
         return type == BaseCMChannel.SubscriberType.DEVICE_ID ? "device_ids" : "user_ids";
     }
 
+    private static String getBodyForAllDevices(boolean allDevices) {
+        return allDevices ? "{\"user\":true}" : null;
+    }
+
     @Expand
     public BaseChannelDeleteSubscribersRequest(String channel, BaseCMChannel.SubscriberType type, Collection<String> ids, @Optional CMApiCredentials credentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, Response.ErrorListener errorListener) {
-        super(Method.DELETE, URLStrings.PUSH_CHANNEL + "/" + channel + "/" + typeUrl(type) + "?" + createIdsUrl(ids), null, null, credentials, serverFunction, successListener, errorListener);
+        super(Method.DELETE, URLStrings.PUSH_CHANNEL + "/" + channel + "/" + typeUrl(type) + "?" + createIdsUrl(ids), null,
+                null, credentials, serverFunction, successListener, errorListener);
     }
 
     public BaseChannelDeleteSubscribersRequest(String channel, CMSessionToken sessionToken, boolean allDevices, @Optional CMApiCredentials credentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, Response.ErrorListener errorListener) {
-        super(Method.POST, URLStrings.PUSH_CHANNEL + "/" + channel + URLStrings.UNSUBSCRIBE, allDevices ? "{\"user\":true}" : null, sessionToken, credentials, serverFunction, successListener, errorListener);
+        super(Method.POST, URLStrings.PUSH_CHANNEL + "/" + channel + URLStrings.UNSUBSCRIBE, getBodyForAllDevices(allDevices),
+                sessionToken, credentials, serverFunction, successListener, errorListener);
     }
 
 
     @Override
     protected Response<PushChannelResponse> parseNetworkResponse(NetworkResponse networkResponse) {
-        return Response.success(new PushChannelResponse(new String(networkResponse.data), networkResponse.statusCode), getCacheEntry(networkResponse));
+        return Response.success(new PushChannelResponse(new String(networkResponse.data), networkResponse.statusCode),
+                getCacheEntry(networkResponse));
     }
 
     @Override

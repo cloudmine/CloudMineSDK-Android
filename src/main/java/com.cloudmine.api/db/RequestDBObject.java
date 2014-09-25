@@ -15,6 +15,7 @@ import org.apache.http.entity.StringEntity;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -75,41 +76,58 @@ public class RequestDBObject {
     }
 
     public static RequestDBObject createApplicationObjectRequest(String objectId) {
+        return createApplicationObjectRequest(objectId, CMApiCredentials.getCredentials());
+    }
+
+    public static RequestDBObject createApplicationObjectRequest(String objectId, CMApiCredentials apiCredentials) {
         List<Header> requestHeaders = new ArrayList<Header>(
-                LibrarySpecificClassCreator.getCreator().getHeaderFactory().getCloudMineHeaders(CMApiCredentials.getApplicationApiKey()));
+                LibrarySpecificClassCreator.getCreator().getHeaderFactory().getCloudMineHeaders(apiCredentials.getApiKey()));
         RequestDBObject request = new RequestDBObject(RequestConstants.APP_SAVE_URL, Verb.PUT, (String)null, objectId, -1,
                 SyncStatus.UNSYNCED, requestHeaders);
         return request;
     }
 
     public static RequestDBObject createApplicationFileRequest(String fileId) {
-        RequestDBObject request = new RequestDBObject(RequestConstants.APP_SAVE_FILE_URL.copy().binary(fileId).asUrlString(), Verb.PUT, null, null, fileId, -1, SyncStatus.UNSYNCED, new ArrayList<Header>(LibrarySpecificClassCreator.getCreator().getHeaderFactory().getCloudMineHeaders(CMApiCredentials.getApplicationApiKey())));
+        return createApplicationFileRequest(fileId, CMApiCredentials.getCredentials());
+    }
+
+    public static RequestDBObject createApplicationFileRequest(String fileId, CMApiCredentials apiCredentials) {
+        Set<Header> cloudMineHeaders = LibrarySpecificClassCreator.getCreator().getHeaderFactory().getCloudMineHeaders(apiCredentials.getApiKey());
+        RequestDBObject request = new RequestDBObject(RequestConstants.APP_SAVE_FILE_URL.copy().binary(fileId).asUrlString(), Verb.PUT, null, null, fileId, -1, SyncStatus.UNSYNCED, cloudMineHeaders);
         return request;
     }
 
-
     public static RequestDBObject createAccessListControllerRequest(String objectId, CMSessionToken sessionToken) {
+        createAccessListControllerRequest(objectId, sessionToken, CMApiCredentials.getCredentials());
+    }
+
+    public static RequestDBObject createAccessListControllerRequest(String objectId, CMSessionToken sessionToken, CMApiCredentials apiCredentials) {
         HeaderFactory headerFactory = LibrarySpecificClassCreator.getCreator().getHeaderFactory();
-        Set<Header> cloudMineHeaders = headerFactory.getCloudMineHeaders(CMApiCredentials.getApplicationApiKey());
-        cloudMineHeaders.add(headerFactory.getUserCloudMineHeader(sessionToken));
+        Set<Header> cloudMineHeaders = headerFactory.getCloudMineHeadersWithUser(CMApiCredentials.getApplicationApiKey(), sessionToken);
         RequestDBObject request = new RequestDBObject(RequestConstants.USER_SAVE_URL, Verb.PUT, (String)null, objectId, -1,
                 SyncStatus.UNSYNCED, new ArrayList<Header>(cloudMineHeaders));
         return request;
     }
 
     public static RequestDBObject createUserObjectRequest(String objectId, CMSessionToken sessionToken) {
+        return createUserObjectRequest(objectId, sessionToken, CMApiCredentials.getCredentials());
+    }
+
+    public static RequestDBObject createUserObjectRequest(String objectId, CMSessionToken sessionToken, CMApiCredentials apiCredentials) {
         HeaderFactory headerFactory = LibrarySpecificClassCreator.getCreator().getHeaderFactory();
-        Set<Header> cloudMineHeaders = headerFactory.getCloudMineHeaders(CMApiCredentials.getApplicationApiKey());
-        cloudMineHeaders.add(headerFactory.getUserCloudMineHeader(sessionToken));
+        Set<Header> cloudMineHeaders = headerFactory.getCloudMineHeadersWithUser(apiCredentials.getApiKey(), sessionToken);
         RequestDBObject request = new RequestDBObject(RequestConstants.USER_SAVE_URL, Verb.PUT, (String)null, objectId, -1,
                 SyncStatus.UNSYNCED, new ArrayList<Header>(cloudMineHeaders));
         return request;
     }
 
     public static RequestDBObject createUserFileRequest(String fileId, CMSessionToken sessionToken) {
+        return createUserFileRequest(fileId, sessionToken, CMApiCredentials.getCredentials());
+    }
+
+    public static RequestDBObject createUserFileRequest(String fileId, CMSessionToken sessionToken, CMApiCredentials apiCredentials) {
         HeaderFactory headerFactory = LibrarySpecificClassCreator.getCreator().getHeaderFactory();
-        Set<Header> cloudMineHeaders = headerFactory.getCloudMineHeaders(CMApiCredentials.getApplicationApiKey());
-        cloudMineHeaders.add(headerFactory.getUserCloudMineHeader(sessionToken));
+        Set<Header> cloudMineHeaders = headerFactory.getCloudMineHeadersWithUser(apiCredentials.getApiKey(), sessionToken);
         ArrayList<Header> headerList = new ArrayList<Header>(cloudMineHeaders);
         RequestDBObject request = new RequestDBObject(RequestConstants.USER_SAVE_FILE_URL.copy().binary(fileId).asUrlString(),
                 Verb.PUT, null, null, fileId, -1, SyncStatus.UNSYNCED, headerList);
@@ -124,7 +142,7 @@ public class RequestDBObject {
     private final String fileId;
     private final int id;
     private final SyncStatus syncStatus;
-    private final List<Header> headers;
+    private final Collection<Header> headers;
 
 
     public RequestDBObject(String requestUrl, Verb requestType, String jsonBody) {
@@ -142,11 +160,11 @@ public class RequestDBObject {
         this(requestUrl, requestType, jsonBody, null, -1, SyncStatus.UNSYNCED, headers);
     }
 
-    public RequestDBObject(String requestUrl, Verb requestType, String jsonBody, String objectId, int id, SyncStatus syncStatus, List<Header> headers) {
+    public RequestDBObject(String requestUrl, Verb requestType, String jsonBody, String objectId, int id, SyncStatus syncStatus, Collection<Header> headers) {
         this(requestUrl, requestType, jsonBody, objectId, null, id, syncStatus, headers);
     }
 
-    public RequestDBObject(String requestUrl, Verb requestType, String jsonBody, String objectId, String fileId, int id, SyncStatus syncStatus, List<Header> headers) {
+    public RequestDBObject(String requestUrl, Verb requestType, String jsonBody, String objectId, String fileId, int id, SyncStatus syncStatus, Collection<Header> headers) {
         this.requestUrl = requestUrl;
         this.requestType = requestType;
         this.jsonBody = jsonBody;
@@ -183,7 +201,7 @@ public class RequestDBObject {
         return syncStatus;
     }
 
-    public List<Header> getHeaders() {
+    public Collection<Header> getHeaders() {
         return headers;
     }
 
