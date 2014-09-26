@@ -98,7 +98,7 @@ public class RequestDBObject {
     }
 
     public static RequestDBObject createAccessListControllerRequest(String objectId, CMSessionToken sessionToken) {
-        createAccessListControllerRequest(objectId, sessionToken, CMApiCredentials.getCredentials());
+        return createAccessListControllerRequest(objectId, sessionToken, CMApiCredentials.getCredentials());
     }
 
     public static RequestDBObject createAccessListControllerRequest(String objectId, CMSessionToken sessionToken, CMApiCredentials apiCredentials) {

@@ -25,7 +25,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import me.cloudmine.annotations.Expand;
 import me.cloudmine.annotations.Optional;
 import me.cloudmine.annotations.Single;
-import org.jdom.Content;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,7 +169,7 @@ public class BaseLocallySavableCMObject extends CMObject implements LocallySavab
      * @return true if the request was inserted correctly and will eventually be saved
      */
     public boolean saveEventually(Context context) {
-        return saveEventually(context,  null);
+        return saveEventually(context,  (CMSessionToken)null);
     }
 
     public boolean saveEventually(Context context, CMSessionToken sessionToken) {
