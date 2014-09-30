@@ -45,7 +45,7 @@ public class BaseChannelDeleteSubscribersRequest extends CloudMineRequest<PushCh
     }
 
     public BaseChannelDeleteSubscribersRequest(String channel, CMSessionToken sessionToken, boolean allDevices, @Optional CMApiCredentials credentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, Response.ErrorListener errorListener) {
-        super(Method.POST, URLStrings.PUSH_CHANNEL + "/" + channel + URLStrings.UNSUBSCRIBE, getBodyForAllDevices(allDevices),
+        super(Method.POST, URLStrings.PUSH_CHANNEL + "/" + channel + "/" + URLStrings.UNSUBSCRIBE, getBodyForAllDevices(allDevices),
                 sessionToken, credentials, serverFunction, successListener, errorListener);
     }
 

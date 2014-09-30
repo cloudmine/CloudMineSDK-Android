@@ -22,12 +22,12 @@ public class BaseChannelAddSubscribersRequest extends CloudMineRequest<PushChann
 
     @Expand
     public BaseChannelAddSubscribersRequest(String channel, BaseCMChannel.SubscriberType type, String body, @Optional CMApiCredentials credentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, Response.ErrorListener errorListener) {
-        super(Method.POST, PUSH_CHANNEL + channel + "/" + type.url, body, null, credentials, serverFunction, successListener, errorListener);
+        super(Method.POST, PUSH_CHANNEL + "/" + channel + "/" + type.url, body, null, credentials, serverFunction, successListener, errorListener);
     }
 
     @Expand
     public BaseChannelAddSubscribersRequest(String channel, CMSessionToken sessionToken, boolean allDevices, @Optional CMApiCredentials credentials, @Optional CMServerFunction serverFunction, @Optional Response.Listener<PushChannelResponse> successListener, Response.ErrorListener errorListener) {
-        super(Method.POST, PUSH_CHANNEL + channel + URLStrings.SUBSCRIBE, allDevices ? "{\"user\":true}" : null, sessionToken, credentials, serverFunction, successListener, errorListener);
+        super(Method.POST, PUSH_CHANNEL + "/" + channel + "/" + URLStrings.SUBSCRIBE, allDevices ? "{\"user\":true}" : null, sessionToken, credentials, serverFunction, successListener, errorListener);
     }
 
     @Override

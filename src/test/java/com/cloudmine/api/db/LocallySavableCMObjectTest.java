@@ -65,6 +65,7 @@ public class LocallySavableCMObjectTest extends ServiceTestBase {
     @Test
     public void testLoadAllObjects() {
         Context context = Robolectric.application.getApplicationContext();
+
         ExtendedLocallySavableCMObject savableCMObject = new ExtendedLocallySavableCMObject("john", false, null, 2);
         savableCMObject.saveLocally(context);
 
