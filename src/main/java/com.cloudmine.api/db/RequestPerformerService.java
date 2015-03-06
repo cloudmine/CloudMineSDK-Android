@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * To force the service to run, start with the FORCE_RUN_KEY boolean set to true
  *
  * <br>
- * Copyright CloudMine LLC. All rights reserved<br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 public class RequestPerformerService extends Service {

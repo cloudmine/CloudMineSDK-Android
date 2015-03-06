@@ -21,6 +21,9 @@ import java.util.LinkedList;
  * {@link com.android.volley.toolbox.ImageLoader#getImageListener(android.widget.ImageView, int, int)}. Note that all function calls to
  * this class must be made from the main thead, and all responses will be delivered to the main
  * thread as well.
+ * <br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
+ * See LICENSE file included with SDK for details.
  */
 public class CMImageLoader extends ImageLoader {
     /** RequestQueue for dispatching ImageRequests onto. */

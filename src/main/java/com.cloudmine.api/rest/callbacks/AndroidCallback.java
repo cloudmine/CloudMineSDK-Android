@@ -6,7 +6,7 @@ import com.cloudmine.api.rest.response.ResponseConstructor;
 /**
  * A wrapper around Callback that makes it work with the AsyncHttp library. Should not
  * be extended.
- * <br>Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
+ * <br>Copyright CloudMine, Inc. All rights reserved<br> See LICENSE file included with SDK for details.
  */
 public final class AndroidCallback<T> extends AsyncHttpResponseHandler<T> implements Callback<T> {
 

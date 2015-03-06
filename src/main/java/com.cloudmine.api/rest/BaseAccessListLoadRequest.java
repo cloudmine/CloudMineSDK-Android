@@ -11,7 +11,7 @@ import me.cloudmine.annotations.Optional;
 
 /**
  * Load ACL information for a specific, logged in user
- * <br>Copyright CloudMine LLC. All rights reserved
+ * <br>Copyright CloudMine, Inc. All rights reserved
  * <br> See LICENSE file included with SDK for details.
  */
 public class BaseAccessListLoadRequest extends CloudMineRequest<CMObjectResponse>{

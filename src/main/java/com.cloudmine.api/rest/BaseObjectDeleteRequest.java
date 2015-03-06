@@ -15,7 +15,7 @@ import java.util.Collection;
 /**
  * A request for deleting one or more cloudmine objects
  * <br>
- * Copyright CloudMine LLC. All rights reserved<br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 public class BaseObjectDeleteRequest extends CloudMineRequest<ObjectModificationResponse> {

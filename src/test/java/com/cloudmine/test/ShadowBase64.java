@@ -7,7 +7,7 @@ import com.xtremelabs.robolectric.internal.Implements;
 import java.io.UnsupportedEncodingException;
 
 /**
- * <br>Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
+ * <br>Copyright CloudMine, Inc. All rights reserved<br> See LICENSE file included with SDK for details.
  * BaseCMUser: johnmccarthy
  * Date: 6/6/12, 4:28 PM
  */

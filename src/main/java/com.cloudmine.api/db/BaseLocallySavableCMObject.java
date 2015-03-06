@@ -39,7 +39,7 @@ import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
 /**
  * A {@link CMObject} that can be stored locally. Note that local storage happens on the calling thread.
  * <br>
- * Copyright CloudMine LLC. All rights reserved<br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 public class BaseLocallySavableCMObject extends CMObject implements LocallySavable {

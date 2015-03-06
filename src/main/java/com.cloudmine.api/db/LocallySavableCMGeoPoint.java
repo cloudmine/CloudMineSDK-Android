@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A {@link CMGeoPointInterface} that can be saved locally/synced to server eventually.
  * <br>
- * Copyright CloudMine LLC. All rights reserved<br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 public class LocallySavableCMGeoPoint extends com.cloudmine.api.db.LocallySavableCMObject implements CMGeoPointInterface {

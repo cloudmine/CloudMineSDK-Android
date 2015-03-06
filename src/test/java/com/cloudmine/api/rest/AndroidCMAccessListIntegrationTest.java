@@ -40,7 +40,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * <br>
- * Copyright CloudMine LLC. All rights reserved<br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 @RunWith(CloudMineTestRunner.class)

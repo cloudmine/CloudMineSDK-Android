@@ -5,6 +5,9 @@ import com.cloudmine.api.rest.CMURLBuilder;
 
 /**
  *
+ * <br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
+ * See LICENSE file included with SDK for details.
  */
 public abstract class RequestConstants {
 

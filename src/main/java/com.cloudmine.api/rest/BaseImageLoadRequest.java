@@ -16,7 +16,7 @@ import java.util.Map;
  * A request specifically for loading an image from CloudMine. Allows for resizing the image
  * once loaded
  * <br>
- * Copyright CloudMine LLC. All rights reserved<br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 public class BaseImageLoadRequest extends ImageRequest {

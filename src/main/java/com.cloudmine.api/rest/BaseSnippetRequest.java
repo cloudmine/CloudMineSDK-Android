@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * A Request for calling a server side code snippet. For detailed information about our
  * server side code environment, view the documentation here: https://cloudmine.me/docs/servercode
- * <br>Copyright CloudMine LLC. All rights reserved
+ * <br>Copyright CloudMine, Inc. All rights reserved
  * <br> See LICENSE file included with SDK for details.
  */
 public class BaseSnippetRequest extends CloudMineRequest<CMResponse> {

@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * <br>Copyright CloudMine LLC. All rights reserved
+ * <br>Copyright CloudMine, Inc. All rights reserved
  * <br> See LICENSE file included with SDK for details.
  */
 @EmptyConstructor

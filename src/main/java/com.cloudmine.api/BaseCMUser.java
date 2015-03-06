@@ -43,7 +43,7 @@ import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
 /**
  * Android specific BaseCMUser. Should be used over JavaCMUser unless running server side code
  * <br>
- * Copyright CloudMine LLC. All rights reserved<br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 @EmptyConstructor

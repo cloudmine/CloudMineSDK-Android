@@ -9,7 +9,7 @@ import com.cloudmine.api.rest.response.PaymentResponse;
 import org.apache.http.client.methods.HttpPost;
 
 /**
- * <br>Copyright CloudMine LLC. All rights reserved
+ * <br>Copyright CloudMine, Inc. All rights reserved
  * <br> See LICENSE file included with SDK for details.
  */
 public class AndroidUserCMWebService extends UserCMWebService {

@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * Social that requires an activity to authorize, so that the user can log in through a GUI
  * <br>
- * Copyright CloudMine LLC. All rights reserved<br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 public class CMAndroidSocial extends CMSocial {

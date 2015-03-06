@@ -4,7 +4,7 @@ import android.util.Base64;
 
 /**
  * <br>
- * Copyright CloudMine LLC. All rights reserved<br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 public class AndroidBase64Encoder implements Base64Encoder{

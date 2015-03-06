@@ -44,7 +44,7 @@ import static com.cloudmine.api.rest.SharedRequestQueueHolders.getRequestQueue;
 /**
  * A CMFile that can be cached locally.
  * <br>
- * Copyright CloudMine LLC. All rights reserved<br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 public class BaseCacheableCMFile extends CMFile implements LocallySavable{

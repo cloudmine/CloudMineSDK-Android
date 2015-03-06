@@ -7,7 +7,7 @@ import com.cloudmine.api.rest.options.CMServerFunction;
 
 /**
  * <br>
- * Copyright CloudMine LLC. All rights reserved<br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 public abstract class RequestBuilder<BUILDER_TYPE extends RequestBuilder, REQUEST_TYPE extends Request, RESPONSE_TYPE> {

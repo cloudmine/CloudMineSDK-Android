@@ -11,7 +11,7 @@ import me.cloudmine.annotations.Optional;
 
 /**
  * Create or update an AccessList. Requires a valid CMSessionToken
- * <br>Copyright CloudMine LLC. All rights reserved
+ * <br>Copyright CloudMine, Inc. All rights reserved
  * <br> See LICENSE file included with SDK for details.
  */
 public class BaseAccessListCreateRequest extends CloudMineRequest<CreationResponse> {

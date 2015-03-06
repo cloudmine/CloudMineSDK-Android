@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * A Request for changing a user's identifier - their e-mail or username that they use to
  * log in. Changing a user identifier invalidates all old sessions.
- * <br>Copyright CloudMine LLC. All rights reserved
+ * <br>Copyright CloudMine, Inc. All rights reserved
  * <br> See LICENSE file included with SDK for details.
  */
 public class BaseChangeUserIdentifierRequest extends CloudMineRequest<CMResponse> {

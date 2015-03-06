@@ -12,7 +12,7 @@ import me.cloudmine.annotations.Optional;
 /**
  * A Request for loading a logged in user's profile
  * <br>
- * Copyright CloudMine LLC. All rights reserved<br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 public class BaseProfileLoadRequest extends CloudMineRequest<CMObjectResponse> {

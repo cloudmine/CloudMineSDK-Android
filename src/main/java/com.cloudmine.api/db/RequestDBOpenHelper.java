@@ -23,7 +23,7 @@ import java.util.Map;
  * to an object id that will be loaded when the request is run.
  *
  * <br>
- * Copyright CloudMine LLC. All rights reserved<br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 public class RequestDBOpenHelper extends SQLiteOpenHelper {

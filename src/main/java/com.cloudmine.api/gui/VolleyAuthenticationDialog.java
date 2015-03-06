@@ -12,7 +12,7 @@ import com.cloudmine.api.rest.response.CMSocialLoginResponse;
 import java.util.Map;
 
 /**
- * <br>Copyright CloudMine LLC. All rights reserved
+ * <br>Copyright CloudMine, Inc. All rights reserved
  * <br> See LICENSE file included with SDK for details.
  */
 public class VolleyAuthenticationDialog extends AuthenticationDialog {

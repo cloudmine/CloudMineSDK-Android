@@ -16,7 +16,7 @@ import static junit.framework.Assert.assertTrue;
 
 /**
  * <br>
- * Copyright CloudMine LLC. All rights reserved<br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 public class ResponseCallbackTuple<SUCCESS_RESPONSE> implements Response.Listener<SUCCESS_RESPONSE>, Response.ErrorListener{

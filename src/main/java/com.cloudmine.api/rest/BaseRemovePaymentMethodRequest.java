@@ -11,7 +11,7 @@ import me.cloudmine.annotations.Optional;
 
 /**
  * A Volley {@link com.android.volley.Request} for removing a payment method from a user
- * <br>Copyright CloudMine LLC. All rights reserved
+ * <br>Copyright CloudMine, Inc. All rights reserved
  * <br> See LICENSE file included with SDK for details.
  */
 public class BaseRemovePaymentMethodRequest extends CloudMineRequest<PaymentResponse> {

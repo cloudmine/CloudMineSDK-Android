@@ -11,7 +11,7 @@ import me.cloudmine.annotations.Optional;
 /**
  * A Request for creating a new user
  * <br>
- * Copyright CloudMine LLC. All rights reserved<br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 public class BaseUserCreationRequest extends CloudMineRequest<CreationResponse> {

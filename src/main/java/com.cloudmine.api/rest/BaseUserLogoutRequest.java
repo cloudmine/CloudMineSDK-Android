@@ -15,7 +15,7 @@ import java.util.Date;
  * A Request for invalidating a session token. Note that if a user has multiple valid
  * session tokens, invalidating a single token will not invalidate
  * <br>
- * Copyright CloudMine LLC. All rights reserved<br>
+ * Copyright CloudMine, Inc. All rights reserved<br>
  * See LICENSE file included with SDK for details.
  */
 public class BaseUserLogoutRequest extends CloudMineRequest<CMResponse> {
