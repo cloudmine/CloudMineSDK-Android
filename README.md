@@ -2,6 +2,10 @@ This is the native Android SDK for Cloudmine.
 
 Setup
 ====
+Getting the CloudMine Android SDK Jar
+----
+If you have this repositiory cloned, then you'll be able to extract the latest version of the CloudMine Android SDK Jar from the zip file located inside the "artifacts" folder. Otherwise you can download it by [clicking here](../../raw/dev/artifacts/cloudmine-android-v0.6.6.zip).
+
 
 Eclipse
 ----
